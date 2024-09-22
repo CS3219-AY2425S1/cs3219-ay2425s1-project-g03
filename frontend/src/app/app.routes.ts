@@ -5,6 +5,6 @@ const accountModule = () => import('./account/account.module').then(x => x.Accou
 export const routes: Routes = [
     {
         path: 'account',
-        loadChildren: accountModule
+        loadChildren: accountModule,
     },
 ];

@@ -12,7 +12,16 @@ import { MessageService } from 'primeng/api';
 @Component({
     selector: 'app-register',
     standalone: true,
-    imports: [RouterLink, FormsModule, InputTextModule, ButtonModule, SelectButtonModule, PasswordModule, DividerModule, ToastModule],
+    imports: [
+        RouterLink,
+        FormsModule,
+        InputTextModule,
+        ButtonModule,
+        SelectButtonModule,
+        PasswordModule,
+        DividerModule,
+        ToastModule,
+    ],
     providers: [MessageService],
     templateUrl: './register.component.html',
     styleUrl: './login.component.css',
@@ -30,7 +39,7 @@ export class RegisterComponent {
     isProcessingRegistration = false;
 
     showError() {
-        this.messageService.add({ severity: 'error', summary: 'Registration Error', detail: 'Missing Details' })
+        this.messageService.add({ severity: 'error', summary: 'Registration Error', detail: 'Missing Details' });
     }
 
     onSubmit() {
@@ -40,7 +49,7 @@ export class RegisterComponent {
             setTimeout(() => {
                 this.isProcessingRegistration = false;
                 console.log('Form Submitted', this.user);
-            }, 3000); 
+            }, 3000);
         } else {
             console.log('Invalid form');
         }

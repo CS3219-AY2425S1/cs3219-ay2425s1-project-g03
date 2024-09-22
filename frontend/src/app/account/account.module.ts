@@ -14,7 +14,7 @@ import { AccountRoutingModule } from './account.component';
         AccountRoutingModule,
         LayoutComponent,
         LoginComponent,
-        RegisterComponent
+        RegisterComponent,
     ],
 })
-export class AccountModule { }
+export class AccountModule {}

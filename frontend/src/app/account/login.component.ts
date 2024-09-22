@@ -27,7 +27,7 @@ export class LoginComponent {
     isProcessingLogin = false;
 
     showError() {
-        this.messageService.add({ severity: 'error', summary: 'Log In Error', detail: 'Missing Details' })
+        this.messageService.add({ severity: 'error', summary: 'Log In Error', detail: 'Missing Details' });
     }
 
     onSubmit() {
@@ -38,7 +38,7 @@ export class LoginComponent {
             setTimeout(() => {
                 this.isProcessingLogin = false;
                 console.log('Form Submitted', this.user);
-            }, 3000); 
+            }, 3000);
         } else {
             console.log('Invalid form');
         }

@@ -7,16 +7,17 @@ import { LayoutComponent } from './layout.component';
 
 const routes: Routes = [
     {
-        path: '', component: LayoutComponent,
+        path: '',
+        component: LayoutComponent,
         children: [
             { path: 'login', component: LoginComponent },
-            { path: 'register', component: RegisterComponent }
-        ]
-    }
+            { path: 'register', component: RegisterComponent },
+        ],
+    },
 ];
 
 @NgModule({
     imports: [RouterModule.forChild(routes)],
-    exports: [RouterModule]
+    exports: [RouterModule],
 })
-export class AccountRoutingModule { }
+export class AccountRoutingModule {}
