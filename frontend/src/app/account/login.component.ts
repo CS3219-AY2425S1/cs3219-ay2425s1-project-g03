@@ -24,8 +24,9 @@ export class LoginComponent {
         { label: 'Login', value: 'login' },
         { label: 'Register', value: 'register' },
     ];
-
     authState: 'login' | 'register' = 'login';
+
+    isProcessingLogin = false;
 
     constructor(private router: Router) {}
 
@@ -37,7 +38,13 @@ export class LoginComponent {
 
     onSubmit() {
         if (this.user.username && this.user.password) {
-            console.log('Form Submitted', this.user);
+            this.isProcessingLogin = true;
+
+            // Simulate API request
+            setTimeout(() => {
+                this.isProcessingLogin = false;
+                console.log('Form Submitted', this.user);
+            }, 3000); 
         } else {
             console.log('Invalid form');
         }

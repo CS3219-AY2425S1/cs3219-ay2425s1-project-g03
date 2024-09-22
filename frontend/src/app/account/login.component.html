@@ -30,6 +30,12 @@
       />
     </div>
     
-    <p-button type="submit" label="Login" [disabled]="!loginForm.valid" class="p-fluid" />
+    <p-button 
+      type="submit" 
+      label="Login"
+      [loading]="isProcessingLogin" 
+      [disabled]="!loginForm.valid" 
+      class="align-self-center" 
+    />
   </form>
 </div>

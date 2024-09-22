@@ -26,8 +26,9 @@ export class RegisterComponent {
         { label: 'Login', value: 'login' },
         { label: 'Register', value: 'register' },
     ];
-
     authState: 'login' | 'register' = 'register';
+
+    isProcessingRegistration = false;
 
     constructor(private router: Router) {}
 
@@ -39,7 +40,11 @@ export class RegisterComponent {
 
     onSubmit() {
         if (this.user.username && this.user.password) {
-            console.log('Form Submitted', this.user);
+            this.isProcessingRegistration = true;
+            setTimeout(() => {
+                this.isProcessingRegistration = false;
+                console.log('Form Submitted', this.user);
+            }, 3000); 
         } else {
             console.log('Invalid form');
         }

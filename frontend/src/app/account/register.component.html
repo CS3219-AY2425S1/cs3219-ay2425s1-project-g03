@@ -57,6 +57,12 @@
       />
     </div>
     
-    <p-button type="submit" label="Register" [disabled]="!registerForm.valid" class="p-fluid" />
+    <p-button 
+      type="submit" 
+      label="Register"
+      [loading]="isProcessingRegistration" 
+      [disabled]="!registerForm.valid" 
+      class="align-self-center" 
+    />
   </form>
 </div>
