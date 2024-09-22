@@ -1,21 +1,10 @@
 import { Routes } from '@angular/router';
-import { AccountComponent } from './account/account.component';
-import { LoginComponent } from './account/login.component';
-import { RegisterComponent } from './account/register.component';
+
+const accountModule = () => import('./account/account.module').then(x => x.AccountModule);
 
 export const routes: Routes = [
     {
         path: 'account',
-        component: AccountComponent,
-        children: [
-            {
-                path: 'login',
-                component: LoginComponent,
-            },
-            {
-                path: 'register',
-                component: RegisterComponent,
-            },
-        ],
+        loadChildren: accountModule
     },
 ];

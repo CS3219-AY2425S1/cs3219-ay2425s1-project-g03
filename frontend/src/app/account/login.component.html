@@ -1,16 +1,5 @@
 <div id="login-container">
-  <h2 class="mt-0">Welcome to PeerPrep</h2>
-
-  <div class="flex w-full justify-content-center mb-3">
-    <p-selectButton 
-      [options]="stateOptions" 
-      [(ngModel)]="authState" 
-      optionLabel="label" 
-      optionValue="value"
-      [allowEmpty]="false"
-      (onChange)="onOptionChange($event)" 
-    />
-  </div>
+  <h2 class="mt-0 align-self-start">Log In</h2>
 
   <form #loginForm="ngForm" (ngSubmit)="onSubmit()" class="flex flex-column gap-3">
     <div class="p-field flex flex-column gap-2">
@@ -30,14 +19,22 @@
       />
     </div>
     
-    <p-button 
+    <p-button
       type="submit" 
-      label="Log In"
+      [label]="isProcessingLogin ? '' : 'Log In'"
       [loading]="isProcessingLogin" 
       [disabled]="!loginForm.valid" 
-      class="align-self-center" 
+      styleClass="w-full justify-content-center"
     />
   </form>
 
+  <p class="mt-4 mb-0">
+    Don't have an account? 
+    <a 
+      routerLink="../register"
+      class="text-blue-500 no-underline"
+    >Register</a>
+  </p>
+  
   <p-toast position="bottom-right" />
 </div>
