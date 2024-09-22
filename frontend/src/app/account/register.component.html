@@ -1,0 +1,62 @@
+<div id="login-container">
+  <h2 class="mt-0">Welcome to PeerPrep</h2>
+
+  <div class="flex w-full justify-content-center mb-3">
+    <p-selectButton 
+      [options]="stateOptions" 
+      [(ngModel)]="authState" 
+      optionLabel="label" 
+      optionValue="value"
+      [allowEmpty]="false"
+      (onChange)="onOptionChange($event)" 
+    />
+  </div>
+
+  <form #registerForm="ngForm" (ngSubmit)="onSubmit()" class="flex flex-column gap-3">
+    <div class="p-field flex flex-column gap-2">
+      <label for="username">Username</label>
+      <input pInputText required type="text" id="username" name="username" [(ngModel)]="user.username" />
+    </div>
+
+    <div class="p-field flex flex-column gap-2">
+      <label for="email">Email</label>
+      <input pInputText required email type="text" id="email" name="email" [(ngModel)]="user.email" />
+    </div>
+    
+    <div class="p-field flex flex-column gap-2">
+      <label for="password">Password</label>
+      <p-password 
+        required
+        inputId="password"
+        name="password"
+        [(ngModel)]="user.password" 
+        [toggleMask]="true"
+      >
+        <ng-template pTemplate="footer">
+            <p-divider /> 
+            <p class="mt-1 text-sm">Required</p>
+            <ul class="pl-2 ml-2 mt-0 text-sm line-height-3">
+                <li>At least one lowercase</li>
+                <li>At least one uppercase</li>
+                <li>At least one numeric</li>
+                <li>Minimum 8 characters</li>
+            </ul>
+        </ng-template>
+      </p-password>
+    </div>
+
+    <div class="p-field flex flex-column gap-2">
+      <label for="confirmPassword">Confirm Password</label>
+      <p-password 
+        required
+        inputId="confirmPassword"
+        name="confirmPassword"
+        [(ngModel)]="user.confirmPassword"
+        [toggleMask]="true"
+        [feedback]="false"
+      />
+    </div>
+    
+    <p-button type="submit" label="Register" [disabled]="!registerForm.valid" class="p-fluid" />
+  </form>
+</div>
