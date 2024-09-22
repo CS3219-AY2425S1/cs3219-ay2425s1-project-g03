@@ -28,7 +28,7 @@ export class RegisterComponent {
     };
 
     stateOptions: { label: string; value: string }[] = [
-        { label: 'Login', value: 'login' },
+        { label: 'Log In', value: 'login' },
         { label: 'Register', value: 'register' },
     ];
     authState: 'login' | 'register' = 'register';
