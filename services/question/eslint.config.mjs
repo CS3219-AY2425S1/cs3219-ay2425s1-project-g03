@@ -13,6 +13,8 @@ export default tseslint.config({
         eslintPluginPrettierRecommended,
     ],
     rules: {
+        '@typescript-eslint/no-explicit-any': 'off',
+
         // https://stackoverflow.com/questions/68816664/get-rid-of-error-delete-eslint-prettier-prettier-and-allow-use-double
         'prettier/prettier': [
             'error',

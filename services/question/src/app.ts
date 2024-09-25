@@ -9,7 +9,6 @@ const app: Express = express();
 
 // Middleware
 app.use(morgan('dev'));
-
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
@@ -23,6 +22,6 @@ app.use(
 
 // Routes
 app.use('/', router);
-app.use('/', questionRouter);
+app.use('/questions', questionRouter);
 
 export default app;

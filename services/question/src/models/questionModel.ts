@@ -20,6 +20,7 @@ const questionSchema = new Schema<IQuestion>(
             type: Number,
             required: true,
             unique: true,
+            immutable: true,
         },
         title: {
             type: String,
@@ -37,7 +38,7 @@ const questionSchema = new Schema<IQuestion>(
         difficulty: {
             type: String,
             required: true,
-            enum: ['Easy', 'Medium', 'Difficult'],
+            enum: ['Easy', 'Medium', 'Hard'],
         },
     },
     { versionKey: false },
