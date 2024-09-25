@@ -28,6 +28,8 @@ import { MessageService } from 'primeng/api';
 })
 export class RegisterComponent {
     constructor(private messageService: MessageService) {}
+    
+    PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/;
 
     user = {
         username: '',
@@ -35,8 +37,11 @@ export class RegisterComponent {
         password: '',
         confirmPassword: '',
     };
-
     isProcessingRegistration = false;
+
+    get hasValidPassword() {
+        return this.PASSWORD_REGEX.test(this.user.password);
+    }
 
     showError() {
         this.messageService.add({ severity: 'error', summary: 'Registration Error', detail: 'Missing Details' });

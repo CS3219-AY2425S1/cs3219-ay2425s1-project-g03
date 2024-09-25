@@ -43,7 +43,7 @@
             type="submit"
             [label]="isProcessingRegistration ? '' : 'Register'"
             [loading]="isProcessingRegistration"
-            [disabled]="!registerForm.valid"
+            [disabled]="!registerForm.valid && !hasValidPassword"
             styleClass="w-full justify-content-center" />
     </form>
 
