@@ -71,7 +71,7 @@ export class RegisterComponent {
             this.showError();
             setTimeout(() => {
                 this.isProcessingRegistration = false;
-                console.log('Form Submitted', this.userForm);
+                console.log('Form Submitted', this.userForm.value);
             }, 3000);
         } else {
             console.log('Invalid form');
