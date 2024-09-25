@@ -9,7 +9,10 @@
 
         <div class="form-field">
             <label for="email">Email</label>
-            <input pInputText required email type="text" id="email" name="email" [(ngModel)]="user.email" />
+            <input #emailInput="ngModel" pInputText required email type="text" id="email" name="email" [(ngModel)]="user.email" />
+            @if (emailInput.invalid && emailInput.dirty) {
+                <small>The provided email is invalid</small>
+            }
         </div>
 
         <div class="form-field">
