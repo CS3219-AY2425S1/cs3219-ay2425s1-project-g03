@@ -14,7 +14,7 @@ import { MessageService } from 'primeng/api';
     imports: [RouterLink, FormsModule, InputTextModule, ButtonModule, SelectButtonModule, PasswordModule, ToastModule],
     providers: [MessageService],
     templateUrl: './login.component.html',
-    styleUrl: './login.component.css',
+    styleUrl: './account.component.css',
 })
 export class LoginComponent {
     constructor(private messageService: MessageService) {}

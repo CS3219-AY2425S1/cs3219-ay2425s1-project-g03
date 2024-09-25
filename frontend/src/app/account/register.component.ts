@@ -24,7 +24,7 @@ import { MessageService } from 'primeng/api';
     ],
     providers: [MessageService],
     templateUrl: './register.component.html',
-    styleUrl: './login.component.css',
+    styleUrl: './account.component.css',
 })
 export class RegisterComponent {
     constructor(private messageService: MessageService) {}

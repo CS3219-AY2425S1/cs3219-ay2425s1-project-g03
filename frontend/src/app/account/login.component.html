@@ -1,13 +1,13 @@
-<div id="login-container">
+<div id="form-container">
     <h2 class="mt-0 align-self-start">Log In</h2>
 
     <form #loginForm="ngForm" (ngSubmit)="onSubmit()" class="flex flex-column gap-3">
-        <div class="p-field flex flex-column gap-2">
+        <div class="form-field">
             <label for="username">Username</label>
             <input pInputText required type="text" id="username" name="username" [(ngModel)]="user.username" />
         </div>
 
-        <div class="p-field flex flex-column gap-2">
+        <div class="form-field">
             <label for="password">Password</label>
             <p-password
                 required
