@@ -1,23 +1,21 @@
 <div id="form-container">
     <h2 class="mt-0 align-self-start">Register</h2>
 
-    <form #registerForm="ngForm" (ngSubmit)="onSubmit()" class="flex flex-column gap-3">
+    <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="flex flex-column gap-3">
         <div class="form-field">
             <label for="username">Username</label>
-            <input pInputText required type="text" id="username" name="username" [(ngModel)]="user.username" />
+            <input id="username" type="text" formControlName="username" pInputText required />
         </div>
-
         <div class="form-field">
             <label for="email">Email</label>
-            <input #emailInput="ngModel" pInputText required email type="text" id="email" name="email" [(ngModel)]="user.email" />
-            @if (emailInput.invalid && emailInput.dirty) {
+            <input id="email" type="text" formControlName="email" pInputText required email />
+            @if (isEmailInvalid) {
                 <small>The provided email is invalid</small>
             }
         </div>
-
         <div class="form-field">
             <label for="password">Password</label>
-            <p-password required inputId="password" name="password" [(ngModel)]="user.password" [toggleMask]="true">
+            <p-password id="password" formControlName="password" [toggleMask]="true">
                 <ng-template pTemplate="footer">
                     <p-divider />
                     <p class="mt-1 text-sm">Required</p>
@@ -29,24 +27,33 @@
                     </ul>
                 </ng-template>
             </p-password>
+            @if (isPasswordWeak) {
+                <small>The provided password is too weak</small>
+            }
         </div>
-
         <div class="form-field">
             <label for="confirmPassword">Confirm Password</label>
-            <p-password
-                required
-                inputId="confirmPassword"
-                name="confirmPassword"
-                [(ngModel)]="user.confirmPassword"
-                [toggleMask]="true"
-                [feedback]="false" />
+            <p-password id="confirmPassword" formControlName="confirmPassword" [toggleMask]="true" [feedback]="false">
+                <ng-template pTemplate="footer">
+                    <p-divider />
+                    <p class="mt-1 text-sm">Required</p>
+                    <ul class="pl-2 ml-2 mt-0 text-sm line-height-3">
+                        <li>At least one lowercase</li>
+                        <li>At least one uppercase</li>
+                        <li>At least one numeric</li>
+                        <li>Minimum 8 characters</li>
+                    </ul>
+                </ng-template>
+            </p-password>
+            @if (hasPasswordMismatch) {
+                <small>The provided passwords do not match!</small>
+            }
         </div>
-
         <p-button
             type="submit"
             [label]="isProcessingRegistration ? '' : 'Register'"
             [loading]="isProcessingRegistration"
-            [disabled]="!registerForm.valid && !hasValidPassword"
+            [disabled]="!userForm.valid"
             styleClass="w-full justify-content-center" />
     </form>
 
