@@ -1,46 +1,78 @@
 <div class="container">
-    <div class="form-wrapper">
-        <h2 class="mt-0">Matching Criteria</h2>
-        <p>Select any one criteria to start matching!</p>
+    <div class="form-wrapper w-full sm:w-30rem">
+        <h2 class="mt-0 mb-1">Matching Criteria</h2>
+        <p class="mt-0">Select any one criteria to start matching!</p>
         <form #matchForm="ngForm" class="flex flex-column gap-3">
-
             <div class="form-field">
                 <label for="topic">Topic</label>
-                <p-dropdown
-                    name="topic" 
-                    [options]="topics" 
-                    [(ngModel)]="selectedTopic" 
-                    optionLabel="name" 
-                    placeholder="Select a Topic"
+                <p-multiSelect
+                    name="topic"
+                    [options]="topics"
+                    [(ngModel)]="selectedTopics"
+                    optionLabel="name"
+                    placeholder="No Topic Selected"
+                    [showClear]="true"
+                    [maxSelectedLabels]="0"
+                    selectedItemsLabel="{{selectedTopics?.length}} topic{{selectedTopics != null && selectedTopics.length > 1 ? 's' : '' }} selected"
                     class="p-fluid" />
+
+                @if (selectedTopics != null && selectedTopics.length > 0) {
+                    <div class="flex flex-wrap gap-2">
+                        <p-chip
+                            *ngFor="let topic of selectedTopics; let i = index"
+                            [label]="topic.name"
+                            removable="true"
+                            (onRemove)="removeTopic(i)"
+                            styleClass="text-sm" />
+                    </div>
+                }
             </div>
+
 
             <div class="form-field">
                 <label for="difficulty">Difficulty</label>
                 <p-dropdown
-                    name="difficulty" 
-                    [options]="difficulties" 
-                    [(ngModel)]="selectedDifficulty" 
-                    optionLabel="label" 
-                    placeholder="Select a Difficulty"
+                    name="difficulty"
+                    [options]="difficulties"
+                    [(ngModel)]="selectedDifficulty"
+                    optionLabel="label"
+                    placeholder="No Difficulty Selected"
+                    [showClear]="true"
                     class="p-fluid" />
             </div>
 
             <div class="form-field">
                 <label for="programmingLanguage">Programming Language</label>
-                <p-dropdown 
+                <p-multiSelect
                     name="programmingLanguage"
-                    [options]="programmingLanguages" 
-                    [(ngModel)]="selectedProgrammingLanguage" 
-                    placeholder="Select a Language" 
+                    [options]="programmingLanguages"
+                    [(ngModel)]="selectedProgrammingLanguages"
+                    placeholder="No Language Selected"
+                    [showClear]="true"
+                    [maxSelectedLabels]="0"
+                    selectedItemsLabel="{{selectedProgrammingLanguages?.length}} language{{selectedProgrammingLanguages != null && selectedProgrammingLanguages.length > 1 ? 's' : '' }} selected"
                     class="p-fluid" />
+
+                @if (selectedProgrammingLanguages != null && selectedProgrammingLanguages.length > 0) {
+                    <div class="flex flex-wrap gap-2">
+                        <p-chip
+                            *ngFor="let language of selectedProgrammingLanguages; let i = index"
+                            [label]="language"
+                            removable="true"
+                            (onRemove)="removeLanguage(i)"
+                            styleClass="text-sm" />
+                    </div>
+                }
             </div>
 
             <p-button
                 type="submit"
                 [label]="isProcessingMatch ? '' : 'Start Matching'"
                 [loading]="isProcessingMatch"
-                [disabled]="selectedTopic == null && selectedDifficulty == null && selectedProgrammingLanguage == null"
+                [disabled]="
+                    selectedTopics === null && selectedDifficulty === null && selectedProgrammingLanguages === null
+                "
+                (click)="onMatch()"
                 styleClass="w-full justify-content-center" />
         </form>
     </div>

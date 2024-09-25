@@ -7,49 +7,74 @@ import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { PanelModule } from 'primeng/panel';
 import { MultiSelectModule } from 'primeng/multiselect';
+import { ChipModule } from 'primeng/chip';
 
 @Component({
-  selector: 'app-matching',
-  standalone: true,
-  imports: [PanelModule, DropdownModule, RadioButtonModule, AccordionModule, ButtonModule, FormsModule, CommonModule],
-  templateUrl: './matching.component.html',
-  styleUrl: './matching.component.css'
+    selector: 'app-matching',
+    standalone: true,
+    imports: [
+        ChipModule,
+        MultiSelectModule,
+        PanelModule,
+        DropdownModule,
+        RadioButtonModule,
+        AccordionModule,
+        ButtonModule,
+        FormsModule,
+        CommonModule,
+    ],
+    templateUrl: './matching.component.html',
+    styleUrl: './matching.component.css',
 })
 export class MatchingComponent implements OnInit {
-  topics: any[] = [];
-  selectedTopic: string[] | null = null;
-  
-  difficulties = [
-    { label: 'Easy', value: 'easy' }, 
-    { label: 'Medium', value: 'easy' }, 
-    { label: 'Hard', value: 'hard' }
-  ];
-  selectedDifficulty: string | null = null;
+    topics: any[] = [];
+    selectedTopics: any[] | null = null;
 
-  programmingLanguages: string[] = ['JavaScript', 'Python', 'Java', 'C++', 'Ruby'];
-  selectedProgrammingLanguage: string | null = null;
-
-  isProcessingMatch = false;
-
-  ngOnInit(): void {
-    this.fetchTopics();
-  }
-
-  fetchTopics() {
-    this.topics = [
-      { id: 1, name: 'Algorithms' },
-      { id: 2, name: 'Data Structures' },
-      { id: 3, name: 'Database Design' },
-      { id: 4, name: 'Machine Learning' },
-      { id: 5, name: 'Web Development' }
+    difficulties = [
+        { label: 'Easy', value: 'easy' },
+        { label: 'Medium', value: 'easy' },
+        { label: 'Hard', value: 'hard' },
     ];
-  }
+    selectedDifficulty: string | null = null;
 
-  onMatch() {
-    console.log({
-      topic: this.selectedTopic,
-      difficulty: this.selectedDifficulty,
-      programmingLanguage: this.selectedProgrammingLanguage
-    });
-  }
+    programmingLanguages: string[] = ['JavaScript', 'Python', 'Java', 'C++', 'Ruby'];
+    selectedProgrammingLanguages: string[] | null = null;
+
+    isProcessingMatch = false;
+
+    ngOnInit(): void {
+        this.fetchTopics();
+    }
+
+    fetchTopics() {
+        this.topics = [
+            { id: 1, name: 'Algorithms' },
+            { id: 2, name: 'Data Structures' },
+            { id: 3, name: 'Database Design' },
+            { id: 4, name: 'Machine Learning' },
+            { id: 5, name: 'Web Development' },
+        ];
+    }
+
+    onMatch() {
+        console.log({
+            topic: this.selectedTopics,
+            difficulty: this.selectedDifficulty,
+            programmingLanguage: this.selectedProgrammingLanguages,
+        });
+    }
+
+    removeTopic(index: number) {
+        if (this.selectedTopics == null) {
+            return;
+        }
+        this.selectedTopics = [...this.selectedTopics.slice(0, index), ...this.selectedTopics.slice(index + 1)];
+    }
+
+    removeLanguage(index: number) {
+        if (this.selectedProgrammingLanguages == null) {
+            return;
+        }
+        this.selectedProgrammingLanguages = [...this.selectedProgrammingLanguages.slice(0, index), ...this.selectedProgrammingLanguages.slice(index + 1)];
+    }
 }
