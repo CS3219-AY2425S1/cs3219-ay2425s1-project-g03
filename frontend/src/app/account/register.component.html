@@ -6,9 +6,9 @@
             <label for="username">Username</label>
             <input id="username" type="text" formControlName="username" pInputText />
             @if (isUsernameInvalid) {
-                <small class="text-red-300"
-                    >Username must contain only alphanumeric characters, dots, dashes, and underscores</small
-                >
+                <small class="text-red-300">
+                    The provided username can only contain alphanumeric characters, dots, dashes, and underscores
+                </small>
             }
         </div>
         <div class="form-field">
@@ -33,9 +33,8 @@
                         <li>At least one lowercase</li>
                         <li>At least one uppercase</li>
                         <li>At least one numeric</li>
-                        <li>At least one special character (e.g. $!&#64;#)</li>
+                        <li>At least one special character</li>
                         <li>Minimum 8 characters</li>
-                        <li>No spaces</li>
                     </ul>
                 </ng-template>
             </p-password>
