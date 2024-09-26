@@ -20,16 +20,22 @@
         </div>
         <div class="form-field">
             <label for="password">Password</label>
-            <p-password id="password" class="p-fluid" formControlName="password" [toggleMask]="true">
+            <p-password
+                id="password"
+                class="p-fluid"
+                formControlName="password"
+                [strongRegex]="strongPasswordRegex"
+                [toggleMask]="true">
                 <ng-template pTemplate="footer">
                     <p-divider />
-                    <p class="mt-1 text-sm">Required</p>
+                    <p class="mt-1 text-sm">Your password must contain:</p>
                     <ul class="pl-2 ml-2 mt-0 text-sm line-height-3">
                         <li>At least one lowercase</li>
                         <li>At least one uppercase</li>
                         <li>At least one numeric</li>
+                        <li>At least one special character (e.g. $!&#64;#)</li>
                         <li>Minimum 8 characters</li>
-                        <li>No spaces allowed</li>
+                        <li>No spaces</li>
                     </ul>
                 </ng-template>
             </p-password>
