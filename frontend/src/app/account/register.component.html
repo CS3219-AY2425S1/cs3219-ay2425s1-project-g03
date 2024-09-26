@@ -27,11 +27,14 @@
                         <li>At least one uppercase</li>
                         <li>At least one numeric</li>
                         <li>Minimum 8 characters</li>
+                        <li>No spaces allowed</li>
                     </ul>
                 </ng-template>
             </p-password>
             @if (isPasswordWeak) {
                 <small class="text-red-300">The provided password is too weak</small>
+            } @else if (isPasswordInvalid) {
+                <small class="text-red-300">The provided password contains invalid characters</small>
             }
         </div>
         <div class="form-field">
