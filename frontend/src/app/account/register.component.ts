@@ -8,10 +8,10 @@ import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
-import { PASSWORD_WEAK, weakPasswordValidator } from '../_validators/weak-password.validator';
-import { mismatchPasswordValidator, PASSWORD_MISMATCH } from '../_validators/mismatch-password.validator';
-import { invalidUsernameValidator, USERNAME_INVALID } from '../_validators/invalid-username.validator';
-import { invalidPasswordValidator, PASSWORD_INVALID } from '../_validators/invalid-password.validator';
+import { PASSWORD_WEAK, weakPasswordValidator } from './_validators/weak-password.validator';
+import { mismatchPasswordValidator, PASSWORD_MISMATCH } from './_validators/mismatch-password.validator';
+import { invalidUsernameValidator, USERNAME_INVALID } from './_validators/invalid-username.validator';
+import { invalidPasswordValidator, PASSWORD_INVALID } from './_validators/invalid-password.validator';
 
 @Component({
     selector: 'app-register',
