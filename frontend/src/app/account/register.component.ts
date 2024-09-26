@@ -36,9 +36,9 @@ export class RegisterComponent {
     userForm: FormGroup = new FormGroup(
         {
             username: new FormControl('', [Validators.required, invalidUsernameValidator()]),
-            email: new FormControl(''),
+            email: new FormControl('', [Validators.required, Validators.email]),
             password: new FormControl('', [Validators.required, weakPasswordValidator()]),
-            confirmPassword: new FormControl(''),
+            confirmPassword: new FormControl('', [Validators.required]),
         },
         {
             validators: mismatchPasswordValidator('password', 'confirmPassword'),

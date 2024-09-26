@@ -4,16 +4,16 @@
     <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="form-container">
         <div class="form-field">
             <label for="username">Username</label>
-            <input id="username" type="text" formControlName="username" pInputText required />
+            <input id="username" type="text" formControlName="username" pInputText />
             @if (isUsernameInvalid) {
-                <small>Username must contain only alphanumeric characters, dots, dashes, and underscores</small>
+                <small class="text-red-300">Username must contain only alphanumeric characters, dots, dashes, and underscores</small>
             }
         </div>
         <div class="form-field">
             <label for="email">Email</label>
-            <input id="email" type="text" formControlName="email" pInputText required email />
+            <input id="email" type="email" formControlName="email" pInputText />
             @if (isEmailInvalid) {
-                <small>The provided email is invalid</small>
+                <small class="text-red-300">The provided email is invalid</small>
             }
         </div>
         <div class="form-field">
@@ -31,25 +31,14 @@
                 </ng-template>
             </p-password>
             @if (isPasswordWeak) {
-                <small>The provided password is too weak</small>
+                <small class="text-red-300">The provided password is too weak</small>
             }
         </div>
         <div class="form-field">
             <label for="confirmPassword">Confirm Password</label>
-            <p-password id="confirmPassword" class="p-fluid" formControlName="confirmPassword" [toggleMask]="true" [feedback]="false">
-                <ng-template pTemplate="footer">
-                    <p-divider />
-                    <p class="mt-1 text-sm">Required</p>
-                    <ul class="pl-2 ml-2 mt-0 text-sm line-height-3">
-                        <li>At least one lowercase</li>
-                        <li>At least one uppercase</li>
-                        <li>At least one numeric</li>
-                        <li>Minimum 8 characters</li>
-                    </ul>
-                </ng-template>
-            </p-password>
+            <p-password id="confirmPassword" class="p-fluid" formControlName="confirmPassword" [toggleMask]="true" [feedback]="false" />
             @if (hasPasswordMismatch) {
-                <small>The provided passwords do not match!</small>
+                <small class="text-red-300">The provided passwords do not match!</small>
             }
         </div>
         <p-button
@@ -65,5 +54,5 @@
         <a routerLink="../login" class="text-blue-500 no-underline">Log In</a>
     </p>
 
-    <p-toast position="bottom-right" />
+    <p-toast position="bottom-right" [breakpoints]="{ '920px': { width: '90%' } }" />
 </div>
