@@ -6,7 +6,9 @@
             <label for="username">Username</label>
             <input id="username" type="text" formControlName="username" pInputText />
             @if (isUsernameInvalid) {
-                <small class="text-red-300">Username must contain only alphanumeric characters, dots, dashes, and underscores</small>
+                <small class="text-red-300"
+                    >Username must contain only alphanumeric characters, dots, dashes, and underscores</small
+                >
             }
         </div>
         <div class="form-field">
@@ -39,7 +41,12 @@
         </div>
         <div class="form-field">
             <label for="confirmPassword">Confirm Password</label>
-            <p-password id="confirmPassword" class="p-fluid" formControlName="confirmPassword" [toggleMask]="true" [feedback]="false" />
+            <p-password
+                id="confirmPassword"
+                class="p-fluid"
+                formControlName="confirmPassword"
+                [toggleMask]="true"
+                [feedback]="false" />
             @if (hasPasswordMismatch) {
                 <small class="text-red-300">The provided passwords do not match!</small>
             }
