@@ -27,3 +27,13 @@ services:
   user-db:
     ports:
       - 27018:27017
+
+  match:
+    command: npm run dev
+    volumes:
+      - /app/node_modules
+      - ./services/match:/app
+  
+  match-db:
+    ports:
+      - 27019:27017
