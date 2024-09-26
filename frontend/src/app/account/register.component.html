@@ -1,10 +1,13 @@
-<div id="form-container">
+<div class="container w-full sm:w-22rem">
     <h2 class="mt-0 align-self-start">Register</h2>
 
-    <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="flex flex-column gap-3">
+    <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="form-container">
         <div class="form-field">
             <label for="username">Username</label>
             <input id="username" type="text" formControlName="username" pInputText required />
+            @if (isUsernameInvalid) {
+                <small>Username must contain only alphanumeric characters, dots, dashes, and underscores</small>
+            }
         </div>
         <div class="form-field">
             <label for="email">Email</label>
@@ -15,7 +18,7 @@
         </div>
         <div class="form-field">
             <label for="password">Password</label>
-            <p-password id="password" formControlName="password" [toggleMask]="true">
+            <p-password id="password" class="p-fluid" formControlName="password" [toggleMask]="true">
                 <ng-template pTemplate="footer">
                     <p-divider />
                     <p class="mt-1 text-sm">Required</p>
@@ -33,7 +36,7 @@
         </div>
         <div class="form-field">
             <label for="confirmPassword">Confirm Password</label>
-            <p-password id="confirmPassword" formControlName="confirmPassword" [toggleMask]="true" [feedback]="false">
+            <p-password id="confirmPassword" class="p-fluid" formControlName="confirmPassword" [toggleMask]="true" [feedback]="false">
                 <ng-template pTemplate="footer">
                     <p-divider />
                     <p class="mt-1 text-sm">Required</p>

@@ -10,6 +10,7 @@ import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { PASSWORD_WEAK, weakPasswordValidator } from '../_validators/weak-password.validator';
 import { mismatchPasswordValidator, PASSWORD_MISMATCH } from '../_validators/mismatch-password.validator';
+import { invalidUsernameValidator, USERNAME_INVALID } from '../_validators/invalid-username.validator';
 
 @Component({
     selector: 'app-register',
@@ -34,7 +35,7 @@ export class RegisterComponent {
 
     userForm: FormGroup = new FormGroup(
         {
-            username: new FormControl(''),
+            username: new FormControl('', [Validators.required, invalidUsernameValidator()]),
             email: new FormControl(''),
             password: new FormControl('', [Validators.required, weakPasswordValidator()]),
             confirmPassword: new FormControl(''),
@@ -44,6 +45,11 @@ export class RegisterComponent {
         },
     );
     isProcessingRegistration = false;
+
+    get isUsernameInvalid(): boolean {
+        const usernameControl = this.userForm.controls['username'];
+        return usernameControl.dirty && usernameControl.hasError(USERNAME_INVALID);
+    }
 
     get isEmailInvalid(): boolean {
         const emailControl = this.userForm.controls['email'];

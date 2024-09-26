@@ -1,7 +1,7 @@
-<div id="form-container">
+<div class="container w-full sm:w-22rem">
     <h2 class="mt-0 align-self-start">Log In</h2>
 
-    <form #loginForm="ngForm" (ngSubmit)="onSubmit()" class="flex flex-column gap-3">
+    <form #loginForm="ngForm" (ngSubmit)="onSubmit()" class="form-container">
         <div class="form-field">
             <label for="username">Username</label>
             <input pInputText required type="text" id="username" name="username" [(ngModel)]="user.username" />
