@@ -8,19 +8,20 @@
                 <p-multiSelect
                     name="topic"
                     [options]="topics"
-                    [(ngModel)]="selectedTopics"
-                    optionLabel="name"
+                    [(ngModel)]="userCriteria.topics"
                     placeholder="No Topic Selected"
                     [showClear]="true"
                     [maxSelectedLabels]="0"
-                    selectedItemsLabel="{{selectedTopics?.length}} topic{{selectedTopics != null && selectedTopics.length > 1 ? 's' : '' }} selected"
+                    selectedItemsLabel="{{ userCriteria.topics?.length }} topic{{
+                        userCriteria.topics !== null && userCriteria.topics.length > 1 ? 's' : ''
+                    }} selected"
                     class="p-fluid" />
 
-                @if (selectedTopics != null && selectedTopics.length > 0) {
+                @if (userCriteria.topics !== null && userCriteria.topics.length > 0) {
                     <div class="flex flex-wrap gap-2">
                         <p-chip
-                            *ngFor="let topic of selectedTopics; let i = index"
-                            [label]="topic.name"
+                            *ngFor="let topic of userCriteria.topics; let i = index"
+                            [label]="topic"
                             removable="true"
                             (onRemove)="removeTopic(i)"
                             styleClass="text-sm" />
@@ -28,13 +29,12 @@
                 }
             </div>
 
-
             <div class="form-field">
                 <label for="difficulty">Difficulty</label>
                 <p-dropdown
                     name="difficulty"
                     [options]="difficulties"
-                    [(ngModel)]="selectedDifficulty"
+                    [(ngModel)]="userCriteria.difficulty"
                     optionLabel="label"
                     placeholder="No Difficulty Selected"
                     [showClear]="true"
@@ -50,10 +50,12 @@
                     placeholder="No Language Selected"
                     [showClear]="true"
                     [maxSelectedLabels]="0"
-                    selectedItemsLabel="{{selectedProgrammingLanguages?.length}} language{{selectedProgrammingLanguages != null && selectedProgrammingLanguages.length > 1 ? 's' : '' }} selected"
+                    selectedItemsLabel="{{ selectedProgrammingLanguages?.length }} language{{
+                        selectedProgrammingLanguages !== null && selectedProgrammingLanguages.length > 1 ? 's' : ''
+                    }} selected"
                     class="p-fluid" />
 
-                @if (selectedProgrammingLanguages != null && selectedProgrammingLanguages.length > 0) {
+                @if (selectedProgrammingLanguages !== null && selectedProgrammingLanguages.length > 0) {
                     <div class="flex flex-wrap gap-2">
                         <p-chip
                             *ngFor="let language of selectedProgrammingLanguages; let i = index"
@@ -70,7 +72,9 @@
                 [label]="isProcessingMatch ? '' : 'Start Matching'"
                 [loading]="isProcessingMatch"
                 [disabled]="
-                    selectedTopics === null && selectedDifficulty === null && selectedProgrammingLanguages === null
+                    userCriteria.topics === null &&
+                    userCriteria.topics === null &&
+                    selectedProgrammingLanguages === null
                 "
                 (click)="onMatch()"
                 styleClass="w-full justify-content-center" />
