@@ -80,5 +80,13 @@
         </form>
     </div>
 
-    <app-finding-match [isVisible]="isProcessingMatch" [userCriteria]="userCriteria" (close)="onMatchDialogClose()" />
+    <app-finding-match
+        [isVisible]="isProcessingMatch"
+        [userCriteria]="userCriteria"
+        (matchFailed)="onMatchFailed()"
+        (dialogClose)="onMatchDialogClose()" />
+    <app-retry-matching
+        [isVisible]="isMatchFailed"
+        (retryMatch)="onRetryMatchRequest()"
+        (dialogClose)="onRetryMatchDialogClose()" />
 </div>

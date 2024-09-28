@@ -4,6 +4,7 @@
     [modal]="true"
     [draggable]="false"
     [closeOnEscape]="false"
+    (onShow)="onDialogShow()"
     [closable]="false">
     <ng-template pTemplate="header">
         <div class="flex flex-column w-full align-items-center justify-content-center gap-2">
@@ -45,13 +46,7 @@
 
     <ng-template pTemplate="footer">
         <div class="flex w-full justify-content-center align-items-center">
-            <p-button
-                type="button"
-                label="Cancel Match"
-                severity="danger"
-                [outlined]="true"
-                (click)="closeDialog()"
-                styleClass="p-fluid" />
+            <p-button type="button" label="Cancel Match" severity="danger" [outlined]="true" (click)="closeDialog()" />
         </div>
     </ng-template>
 </p-dialog>

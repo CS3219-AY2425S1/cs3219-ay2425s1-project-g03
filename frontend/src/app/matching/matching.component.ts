@@ -10,12 +10,14 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { ChipModule } from 'primeng/chip';
 import { FindingMatchComponent } from './finding-match/finding-match.component';
 import { UserCriteria } from './user-criteria.model';
+import { RetryMatchingComponent } from './retry-matching/retry-matching.component';
 
 @Component({
     selector: 'app-matching',
     standalone: true,
     imports: [
         FindingMatchComponent,
+        RetryMatchingComponent,
         ChipModule,
         MultiSelectModule,
         PanelModule,
@@ -43,6 +45,7 @@ export class MatchingComponent implements OnInit {
     selectedProgrammingLanguages: string[] | null = null;
 
     isProcessingMatch = false;
+    isMatchFailed = false;
 
     ngOnInit(): void {
         this.fetchTopics();
@@ -59,10 +62,26 @@ export class MatchingComponent implements OnInit {
             programmingLanguage: this.selectedProgrammingLanguages,
         });
         this.isProcessingMatch = true;
+        // TODO: Add API request to start matching.
+    }
+
+    onMatchFailed() {
+        this.isProcessingMatch = false;
+        this.isMatchFailed = true;
+    }
+
+    onRetryMatchRequest() {
+        this.isMatchFailed = false;
+        this.isProcessingMatch = true;
+        // TODO: Add API request to retry matching.
     }
 
     onMatchDialogClose() {
         this.isProcessingMatch = false;
+    }
+
+    onRetryMatchDialogClose() {
+        this.isMatchFailed = false;
     }
 
     removeTopic(index: number) {

@@ -17,10 +17,23 @@ export class FindingMatchComponent {
     @Input() userCriteria: UserCriteria = { topics: null, difficulty: null };
     @Input() isVisible = false;
 
-    @Output() close = new EventEmitter<void>();
+    @Output() dialogClose = new EventEmitter<void>();
+    @Output() matchFailed = new EventEmitter<void>();
 
     closeDialog() {
-        this.isVisible = false;
-        this.close.emit();
+        this.dialogClose.emit();
+    }
+
+    onMatchFailed() {
+        this.matchFailed.emit();
+    }
+
+    onDialogShow() {
+        // Simulate request to API and subsequent failure.
+        setTimeout(() => {
+            if (this.isVisible) {
+                this.onMatchFailed();
+            }
+        }, 3000);
     }
 }

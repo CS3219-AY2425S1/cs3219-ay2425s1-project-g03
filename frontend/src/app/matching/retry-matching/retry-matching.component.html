@@ -1,0 +1,24 @@
+<p-dialog
+    styleClass="w-11 sm:w-22rem"
+    [(visible)]="isVisible"
+    [modal]="true"
+    [draggable]="false"
+    [closeOnEscape]="false"
+    [closable]="false">
+    <ng-template pTemplate="header">
+        <div class="flex flex-column w-full align-items-center justify-content-center gap-2">
+            <h2 class="mt-0 mb-0">No Match Found</h2>
+        </div>
+    </ng-template>
+
+    <div>
+        <p class="text-center m-0">Sorry, we could not find a suitable match. Try again or modify your criteria.</p>
+    </div>
+
+    <ng-template pTemplate="footer">
+        <div class="flex w-full gap-1 justify-content-end align-items-center">
+            <p-button type="button" label="Cancel" severity="danger" text="true" (click)="closeDialog()" />
+            <p-button type="button" label="Retry" (click)="onRetryMatch()" />
+        </div>
+    </ng-template>
+</p-dialog>
