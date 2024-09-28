@@ -7,7 +7,7 @@ const port = process.env.PORT || 8082;
 
 const server = http.createServer(index);
 
-await connectToDB().then(() => {
+connectToDB().then(() => {
   console.log("MongoDB Connected!");
 
   server.listen(port);

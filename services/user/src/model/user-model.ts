@@ -1,8 +1,17 @@
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 
 const Schema = mongoose.Schema;
 
-const UserModelSchema = new Schema({
+export interface User {
+  id: Types.ObjectId;
+  username: string;
+  email: string;
+  password: string;
+  createdAt: Date;
+  isAdmin: boolean;
+}
+
+const UserModelSchema = new Schema<User>({
   username: {
     type: String,
     required: true,

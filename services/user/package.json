@@ -2,20 +2,24 @@
   "name": "user-service",
   "version": "1.0.0",
   "description": "",
-  "main": "./src/index.js",
-  "type": "module",
+  "main": "./dist/server.js",
   "scripts": {
-    "start": "node ./src/server.js",
-    "dev": "nodemon ./src/server.js",
+    "build": "npx tsc",
+    "start": "npm run build && node ./dist/server.js",
+    "dev": "nodemon --files ./src/server.ts",
     "test": "mocha --require ts-node/register tests/**/*.spec.ts --exit"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@types/chai": "^5.0.0",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/jsonwebtoken": "^9.0.7",
     "@types/mocha": "^10.0.8",
-    "@types/node": "^22.6.1",
+    "@types/node": "^20.16.10",
     "chai": "^5.1.1",
     "chai-http": "^5.0.0",
     "mocha": "^10.7.3",
@@ -26,9 +30,11 @@
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
-    "express": "^4.19.2",
+    "express": "^4.21.0",
+    "http": "^0.0.1-security",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.5.4"
   }

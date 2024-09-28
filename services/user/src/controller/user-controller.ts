@@ -11,151 +11,164 @@ import {
   updateUserById as _updateUserById,
   updateUserPrivilegeById as _updateUserPrivilegeById,
 } from "../model/repository";
+import { Request, Response } from "express";
+import { User } from "../model/user-model";
+import { handleBadRequest, handleConflict, handleInternalError, handleNotFound, handleSuccess } from "../utils/helper";
 
-export async function createUser(req, res) {
+export async function createUser(req: Request, res: Response) {
   try {
     const { username, email, password } = req.body;
     if (username && email && password) {
       const existingUser = await _findUserByUsernameOrEmail(username, email);
       if (existingUser) {
-        return res.status(409).json({ message: "username or email already exists" });
+        handleConflict(res, "username or email already exists");
+        return;
       }
       const salt = bcrypt.genSaltSync(10);
       const hashedPassword = bcrypt.hashSync(password, salt);
       const createdUser = await _createUser(username, email, hashedPassword);
-      return res.status(201).json({
-        message: `Created new user ${username} successfully`,
-        data: formatUserResponse(createdUser),
-      });
+      handleSuccess(res, 201, `Created new user ${username} successfully`, formatUserResponse(createdUser));
     } else {
-      return res.status(400).json({ message: "username and/or email and/or password are missing" });
+      handleBadRequest(res, "username and/or email and/or password are missing");
     }
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ message: "Unknown error when creating new user!" });
+    handleInternalError(res, "Unknown error when creating new user!");
   }
 }
 
-export async function getUser(req, res) {
+export async function getUser(req: Request, res: Response) {
   try {
     const userId = req.params.id;
     if (!isValidObjectId(userId)) {
-      return res.status(404).json({ message: `User ${userId} not found` });
+      handleNotFound(res, `User ${userId} not found`);
+      return;
     }
 
     const user = await _findUserById(userId);
     if (!user) {
-      return res.status(404).json({ message: `User ${userId} not found` });
+      handleNotFound(res, `User ${userId} not found`);
+      return;
     } else {
-      return res.status(200).json({ message: `Found user`, data: formatUserResponse(user) });
+      handleSuccess(res, 200, 'Found user', formatUserResponse(user));
     }
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ message: "Unknown error when getting user!" });
+    handleInternalError(res, "Unknown error when getting user!");
+    return;
   }
 }
 
-export async function getAllUsers(req, res) {
+export async function getAllUsers(req: Request, res: Response) {
   try {
     const users = await _findAllUsers();
-
-    return res.status(200).json({ message: `Found users`, data: users.map(formatUserResponse) });
+    handleSuccess(res, 200, 'Found users', users.map(formatUserResponse));
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ message: "Unknown error when getting all users!" });
+    handleInternalError(res, "Unknown error when getting all users!");
   }
 }
 
-export async function updateUser(req, res) {
+export async function updateUser(req: Request, res: Response) {
   try {
     const { username, email, password } = req.body;
-    if (username || email || password) {
-      const userId = req.params.id;
-      if (!isValidObjectId(userId)) {
-        return res.status(404).json({ message: `User ${userId} not found` });
-      }
-      const user = await _findUserById(userId);
-      if (!user) {
-        return res.status(404).json({ message: `User ${userId} not found` });
-      }
-      if (username || email) {
-        let existingUser = await _findUserByUsername(username);
-        if (existingUser && existingUser.id !== userId) {
-          return res.status(409).json({ message: "username already exists" });
-        }
-        existingUser = await _findUserByEmail(email);
-        if (existingUser && existingUser.id !== userId) {
-          return res.status(409).json({ message: "email already exists" });
-        }
-      }
-
-      let hashedPassword;
-      if (password) {
-        const salt = bcrypt.genSaltSync(10);
-        hashedPassword = bcrypt.hashSync(password, salt);
-      }
-      const updatedUser = await _updateUserById(userId, username, email, hashedPassword);
-      return res.status(200).json({
-        message: `Updated data for user ${userId}`,
-        data: formatUserResponse(updatedUser),
-      });
-    } else {
-      return res.status(400).json({ message: "No field to update: username and email and password are all missing!" });
+    if (!(username || email || password)) {
+      handleBadRequest(res, "No field to update: username and email and password are all missing!");
+      return;
     }
+
+    const userId = req.params.id;
+    if (!isValidObjectId(userId)) {
+      handleNotFound(res, `User ${userId} not found`);
+      return;
+    }
+    const user = await _findUserById(userId);
+    if (!user) {
+      handleNotFound(res, `User ${userId} not found`);
+      return;
+    }
+    if (username || email) {
+      const userByUsername = await _findUserByUsername(username);
+      if (userByUsername?.id !== userId) {
+        handleConflict(res, "username already exists");
+        return;
+      }
+      const userByEmail = await _findUserByEmail(email);
+      if (userByEmail?.id !== userId) {
+        handleConflict(res, "email already exists");
+        return;
+      }
+    }
+
+    if (!password) {
+      handleBadRequest(res, "No field to update: password is missing!");
+      return;
+    }
+    const salt = bcrypt.genSaltSync(10);
+    const hashedPassword = bcrypt.hashSync(password, salt);
+
+    const updatedUser = await _updateUserById(userId, username, email, hashedPassword) as User;
+    handleSuccess(res, 200, `Updated data for user ${userId}`, formatUserResponse(updatedUser));
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ message: "Unknown error when updating user!" });
+    handleInternalError(res, "Unknown error when updating user!");
+    return;
   }
 }
 
-export async function updateUserPrivilege(req, res) {
+export async function updateUserPrivilege(req: Request, res: Response) {
   try {
     const { isAdmin } = req.body;
 
-    if (isAdmin !== undefined) {  // isAdmin can have boolean value true or false
-      const userId = req.params.id;
-      if (!isValidObjectId(userId)) {
-        return res.status(404).json({ message: `User ${userId} not found` });
-      }
-      const user = await _findUserById(userId);
-      if (!user) {
-        return res.status(404).json({ message: `User ${userId} not found` });
-      }
-
-      const updatedUser = await _updateUserPrivilegeById(userId, isAdmin === true);
-      return res.status(200).json({
-        message: `Updated privilege for user ${userId}`,
-        data: formatUserResponse(updatedUser),
-      });
-    } else {
-      return res.status(400).json({ message: "isAdmin is missing!" });
+    if (isAdmin === undefined) {
+      handleBadRequest(res, "isAdmin is missing!");
+      return;
     }
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ message: "Unknown error when updating user privilege!" });
-  }
-}
 
-export async function deleteUser(req, res) {
-  try {
     const userId = req.params.id;
     if (!isValidObjectId(userId)) {
-      return res.status(404).json({ message: `User ${userId} not found` });
+      handleNotFound(res, `User ${userId} not found`);
+      return;
     }
     const user = await _findUserById(userId);
     if (!user) {
-      return res.status(404).json({ message: `User ${userId} not found` });
+      handleNotFound(res, `User ${userId} not found`);
+      return;
     }
 
-    await _deleteUserById(userId);
-    return res.status(200).json({ message: `Deleted user ${userId} successfully` });
+    const updatedUser = await _updateUserPrivilegeById(userId, isAdmin === true) as User;
+    handleSuccess(res, 200, `Updated privilege for user ${userId}`, formatUserResponse(updatedUser));
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ message: "Unknown error when deleting user!" });
+    handleInternalError(res, "Unknown error when updating user privilege!");
+    return;
   }
 }
 
-export function formatUserResponse(user) {
+export async function deleteUser(req: Request, res: Response) {
+  try {
+    const userId = req.params.id;
+    if (!isValidObjectId(userId)) {
+      handleNotFound(res, `User ${userId} not found`);
+      return;
+    }
+    const user = await _findUserById(userId);
+    if (!user) {
+      handleNotFound(res, `User ${userId} not found`);
+      return;
+    }
+
+    await _deleteUserById(userId);
+    handleSuccess(res, 200, `Deleted user ${userId} successfully`);
+    return;
+  } catch (err) {
+    console.error(err);
+    handleInternalError(res, "Unknown error when deleting user!");
+    return;
+  }
+}
+
+export function formatUserResponse(user: User) {
   return {
     id: user.id,
     username: user.username,

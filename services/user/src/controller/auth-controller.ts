@@ -2,40 +2,54 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { findUserByUsername as _findUserByUsername } from "../model/repository";
 import { formatUserResponse } from "./user-controller";
+import { Request, Response } from "express";
+import { handleBadRequest, handleInternalError, handleSuccess, handleUnauthorized } from "../utils/helper";
 
-export async function handleLogin(req, res) {
+export async function handleLogin(req: Request, res: Response) {
   const { username, password } = req.body;
-  if (username && password) {
-    try {
-      const user = await _findUserByUsername(username);
-      if (!user) {
-        return res.status(401).json({ message: "Wrong username and/or password" });
-      }
+  if (!(username && password)) {
+    handleBadRequest(res, "Missing username and/or password");
+    return;
+  }
 
-      const match = await bcrypt.compare(password, user.password);
-      if (!match) {
-        return res.status(401).json({ message: "Wrong username and/or password" });
-      }
-
-      const accessToken = jwt.sign({
-        id: user.id,
-      }, process.env.JWT_SECRET, {
-        expiresIn: "1d",
-      });
-      return res.status(200).json({ message: "User logged in", data: { accessToken, ...formatUserResponse(user) } });
-    } catch (err) {
-      return res.status(500).json({ message: err.message });
+  try {
+    const user = await _findUserByUsername(username);
+    if (!user) {
+      handleUnauthorized(res, "Wrong username and/or password");
+      return;
     }
-  } else {
-    return res.status(400).json({ message: "Missing username and/or password" });
+
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) {
+      handleUnauthorized(res, "Wrong username and/or password");
+      return;
+    }
+
+    if (!process.env.JWT_SECRET) {
+      handleInternalError(res, 'JWT secret not specified');
+      return;
+    }
+
+    const accessToken = jwt.sign({
+      id: user.id,
+    }, process.env.JWT_SECRET, {
+      expiresIn: "1d",
+    });
+    handleSuccess(res, 200, "User logged in", { accessToken, ...formatUserResponse(user) });
+    return;
+  } catch (err) {
+    console.error(err);
+    handleInternalError(res);
+    return;
   }
 }
 
-export async function handleVerifyToken(req, res) {
+export async function handleVerifyToken(req: Request, res: Response) {
   try {
     const verifiedUser = req.user;
-    return res.status(200).json({ message: "Token verified", data: verifiedUser });
+    handleSuccess(res, 200, "Token verified", verifiedUser);
   } catch (err) {
-    return res.status(500).json({ message: err.message });
+    console.error(err);
+    handleInternalError(res);
   }
 }

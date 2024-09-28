@@ -1,4 +1,4 @@
-import express from "express";
+import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 
 import userRoutes from "./routes/user-routes";
@@ -12,7 +12,7 @@ app.use(cors()); // config cors so that front-end can use
 app.options("*", cors());
 
 // To handle CORS Errors
-app.use((req, res, next) => {
+app.use((req: Request, res: Response, next: NextFunction) => {
   res.header("Access-Control-Allow-Origin", "*"); // "*" -> Allow all links to access
 
   res.header(
@@ -23,7 +23,8 @@ app.use((req, res, next) => {
   // Browsers usually send this before PUT or POST Requests
   if (req.method === "OPTIONS") {
     res.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT, PATCH");
-    return res.status(200).json({});
+    res.status(200).json({});
+    return;
   }
 
   // Continue Route Processing
@@ -33,7 +34,7 @@ app.use((req, res, next) => {
 app.use("/users", userRoutes);
 app.use("/auth", authRoutes);
 
-app.get("/", (req, res, next) => {
+app.get("/", (req: Request, res: Response) => {
   console.log("Sending Greetings!");
   res.json({
     message: "Hello World from user-service",
@@ -41,19 +42,10 @@ app.get("/", (req, res, next) => {
 });
 
 // Handle When No Route Match Is Found
-app.use((req, res, next) => {
+app.use((req: Request, res: Response, next: NextFunction) => {
   const error = new Error("Route Not Found");
-  error.status = 404;
+  res.status(404);
   next(error);
-});
-
-app.use((error, req, res, next) => {
-  res.status(error.status || 500);
-  res.json({
-    error: {
-      message: error.message,
-    },
-  });
 });
 
 export default app;
