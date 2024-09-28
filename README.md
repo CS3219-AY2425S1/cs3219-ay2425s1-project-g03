@@ -65,4 +65,4 @@ Once you are done, stop and remove the containers using:
 docker compose down -v
 ```
 
-If you would like to keep your data, you can run the command without the `-v` flag.
+Note that this will clear any data stored in volumes associated with the containers. If you would like to keep your data, you can run the command without the `-v` flag, which will remove the containers but retain the data in the volumes for future use.
