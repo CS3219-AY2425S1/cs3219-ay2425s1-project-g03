@@ -19,7 +19,7 @@ git clone https://github.com/CS3219-AY2425S1/cs3219-ay2425s1-project-g03.git
 
 **Step 1: Copy Environment Configuration File**
 
-To get started, copy the contents of `.env.sample` into a new `.env.` file located at the root level of the project. 
+To get started, copy the contents of `.env.sample` into a new `.env` file located at the root level of the project. 
 
 **Step 2: Build the Docker containers**
 
