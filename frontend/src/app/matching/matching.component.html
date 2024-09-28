@@ -35,7 +35,6 @@
                     name="difficulty"
                     [options]="difficulties"
                     [(ngModel)]="userCriteria.difficulty"
-                    optionLabel="label"
                     placeholder="No Difficulty Selected"
                     [showClear]="true"
                     class="p-fluid" />
@@ -73,11 +72,13 @@
                 [loading]="isProcessingMatch"
                 [disabled]="
                     userCriteria.topics === null &&
-                    userCriteria.topics === null &&
+                    userCriteria.difficulty === null &&
                     selectedProgrammingLanguages === null
                 "
                 (click)="onMatch()"
                 styleClass="w-full justify-content-center" />
         </form>
     </div>
+
+    <app-finding-match [isVisible]="isProcessingMatch" [userCriteria]="userCriteria" (close)="onMatchDialogClose()" />
 </div>

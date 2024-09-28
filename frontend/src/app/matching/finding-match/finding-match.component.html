@@ -1,0 +1,57 @@
+<p-dialog
+    styleClass="w-11 sm:w-22rem"
+    [(visible)]="isVisible"
+    [modal]="true"
+    [draggable]="false"
+    [closeOnEscape]="false"
+    [closable]="false">
+    <ng-template pTemplate="header">
+        <div class="flex flex-column w-full align-items-center justify-content-center gap-2">
+            <p-progressSpinner styleClass="w-2rem h-2rem mt-0" strokeWidth="6" />
+            <h2 class="mt-0 mb-0">Finding a Match...</h2>
+        </div>
+    </ng-template>
+
+    <div class="flex flex-column gap-3">
+        <div class="flex flex-column gap-2">
+            @if (userCriteria.topics !== null && userCriteria.topics.length > 0) {
+                <p class="m-0">Topics selected</p>
+                <div class="flex flex-wrap gap-2">
+                    @for (topic of userCriteria.topics; track topic) {
+                        <p-chip [label]="topic" styleClass="text-sm" />
+                    }
+                </div>
+            } @else {
+                <p class="m-0 font-medium">No topics selected</p>
+            }
+        </div>
+
+        <div class="flex flex-column gap-2">
+            @if (userCriteria.difficulty !== null) {
+                <p class="m-0">Difficulty selected</p>
+                <p-chip
+                    [label]="userCriteria.difficulty"
+                    styleClass="text-sm"
+                    [ngClass]="{
+                        'easy-chip': userCriteria.difficulty === 'Easy',
+                        'medium-chip': userCriteria.difficulty === 'Medium',
+                        'hard-chip': userCriteria.difficulty === 'Hard',
+                    }" />
+            } @else {
+                <p class="m-0 font-medium">No difficulty selected</p>
+            }
+        </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+        <div class="flex w-full justify-content-center align-items-center">
+            <p-button
+                type="button"
+                label="Cancel Match"
+                severity="danger"
+                [outlined]="true"
+                (click)="closeDialog()"
+                styleClass="p-fluid" />
+        </div>
+    </ng-template>
+</p-dialog>

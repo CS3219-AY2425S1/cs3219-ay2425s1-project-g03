@@ -8,12 +8,14 @@ import { ButtonModule } from 'primeng/button';
 import { PanelModule } from 'primeng/panel';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { ChipModule } from 'primeng/chip';
+import { FindingMatchComponent } from './finding-match/finding-match.component';
 import { UserCriteria } from './user-criteria.model';
 
 @Component({
     selector: 'app-matching',
     standalone: true,
     imports: [
+        FindingMatchComponent,
         ChipModule,
         MultiSelectModule,
         PanelModule,
@@ -35,11 +37,7 @@ export class MatchingComponent implements OnInit {
 
     topics: string[] = [];
 
-    difficulties = [
-        { label: 'Easy', value: 'easy' },
-        { label: 'Medium', value: 'easy' },
-        { label: 'Hard', value: 'hard' },
-    ];
+    difficulties = ['Easy', 'Medium', 'Hard'];
 
     programmingLanguages: string[] = ['JavaScript', 'Python', 'Java', 'C++', 'Ruby'];
     selectedProgrammingLanguages: string[] | null = null;
@@ -60,6 +58,11 @@ export class MatchingComponent implements OnInit {
             difficulty: this.userCriteria.difficulty,
             programmingLanguage: this.selectedProgrammingLanguages,
         });
+        this.isProcessingMatch = true;
+    }
+
+    onMatchDialogClose() {
+        this.isProcessingMatch = false;
     }
 
     removeTopic(index: number) {
