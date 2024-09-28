@@ -40,6 +40,7 @@ services:
       - ./services/question/init-mongo/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js
     networks:
       - question-db-network
+    command: --quiet
     restart: always
 
   user:
