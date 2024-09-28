@@ -13,21 +13,21 @@
         </div>
     </ng-template>
 
-    <div class="flex flex-column gap-3">
-        <div class="flex flex-column gap-2">
+    <div class="flex flex-column gap-4">
+        <div class="flex flex-column gap-2 align-items-center">
             @if (userCriteria.topics !== null && userCriteria.topics.length > 0) {
                 <p class="m-0">Topics selected</p>
-                <div class="flex flex-wrap gap-2">
+                <div class="flex flex-wrap gap-2 justify-content-center">
                     @for (topic of userCriteria.topics; track topic) {
                         <p-chip [label]="topic" styleClass="text-sm" />
                     }
                 </div>
             } @else {
-                <p class="m-0 font-medium">No topics selected</p>
+                <p class="m-0 font-medium text-gray-500">No topics selected</p>
             }
         </div>
 
-        <div class="flex flex-column gap-2">
+        <div class="flex flex-column gap-2 align-items-center">
             @if (userCriteria.difficulty !== null) {
                 <p class="m-0">Difficulty selected</p>
                 <p-chip
@@ -39,7 +39,7 @@
                         'hard-chip': userCriteria.difficulty === 'Hard',
                     }" />
             } @else {
-                <p class="m-0 font-medium">No difficulty selected</p>
+                <p class="m-0 font-medium text-gray-500">No difficulty selected</p>
             }
         </div>
     </div>
