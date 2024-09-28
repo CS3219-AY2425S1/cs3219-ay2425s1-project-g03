@@ -1,0 +1,23 @@
+services:
+  frontend:
+    volumes:
+      - /app/node_modules
+      - ./frontend:/app
+  
+  question:
+    ports:
+      - 8081:8081
+    volumes:
+      - /app/node_modules
+      - ./services/question:/app
+
+  question-db:
+    ports:
+      - 27017:27017
+
+  user:
+    ports:
+      - 8082:8082
+    volumes:
+      - /app/node_modules
+      - ./services/user:/app
