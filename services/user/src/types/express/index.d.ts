@@ -1,8 +1,8 @@
 // https://blog.logrocket.com/extend-express-request-object-typescript/
 
-import { RequestUser } from "../custom";
+import { RequestUser } from '../custom';
 
-export {}
+export {};
 
 declare global {
     namespace Express {

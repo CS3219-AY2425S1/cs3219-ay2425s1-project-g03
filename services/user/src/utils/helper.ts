@@ -1,5 +1,4 @@
-import { Response } from "express";
-
+import { Response } from 'express';
 
 /**
  * Handles unsuccessful response and sends a 500 response with the error message.

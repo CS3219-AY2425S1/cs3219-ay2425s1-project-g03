@@ -3,7 +3,7 @@ import { createUser } from './repository.js';
 //need to separate orm functions from repository to decouple business logic from persistence
 export async function ormCreateUser(username, password) {
     try {
-        const newUser = await createUser({username, password});
+        const newUser = await createUser({ username, password });
         newUser.save();
         return true;
     } catch (err) {
@@ -11,4 +11,3 @@ export async function ormCreateUser(username, password) {
         return { err };
     }
 }
-
