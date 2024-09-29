@@ -1,0 +1,21 @@
+::ng-deep .p-menubar {
+    border-radius: 0;
+    border-style: none;
+    position: sticky;
+    background-color: rgba(9, 9, 11, 0.8);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+    justify-content: center;
+    height: 80px;
+}
+
+:host ::ng-deep p-menubarsub {
+    width: 100%;
+}
+
+::ng-deep .p-submenu-list {
+    right: 0%;
+    left: unset;
+}

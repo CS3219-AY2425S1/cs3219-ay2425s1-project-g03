@@ -1,1 +1,11 @@
-<p>navigation-bar works!</p>
+<p-menubar [model]="items">
+    <ng-template pTemplate="start">
+        <p class="pl-2 mr-3">PeerPrep</p>
+    </ng-template>
+    <ng-template pTemplate="item" let-item>
+        <a [routerLink]="item.route" class="p-menuitem-link">
+            <span [class]="item.icon"></span>
+            <span class="ml-2">{{ item.label }}</span>
+        </a>
+    </ng-template>
+</p-menubar>
