@@ -19,6 +19,9 @@ export class FindingMatchComponent {
 
     @Output() dialogClose = new EventEmitter<void>();
     @Output() matchFailed = new EventEmitter<void>();
+    @Output() matchSuccess = new EventEmitter<void>();
+
+    isFindingMatch = true;
 
     closeDialog() {
         this.dialogClose.emit();
@@ -28,11 +31,19 @@ export class FindingMatchComponent {
         this.matchFailed.emit();
     }
 
+    onMatchSuccess() {
+        this.isFindingMatch = false;
+        this.matchSuccess.emit();
+        // Possible to handle routing to workspace here.
+    }
+
     onDialogShow() {
-        // Simulate request to API and subsequent failure.
+        // Simulate request to API and subsequent success/failure.
         setTimeout(() => {
             if (this.isVisible) {
-                this.onMatchFailed();
+                // Toggle to simulate different situations.
+                // this.onMatchFailed();
+                this.onMatchSuccess();
             }
         }, 3000);
     }

@@ -8,8 +8,13 @@
     [closable]="false">
     <ng-template pTemplate="header">
         <div class="flex flex-column w-full align-items-center justify-content-center gap-2">
-            <p-progressSpinner styleClass="w-2rem h-2rem mt-0" strokeWidth="6" />
-            <h2 class="mt-0 mb-0">Finding a Match...</h2>
+            @if (isFindingMatch) {
+                <p-progressSpinner styleClass="w-2rem h-2rem mt-0" strokeWidth="6" />
+                <h2 class="mt-0 mb-0">Finding a Match...</h2>
+            } @else {
+                <i class="pi pi-check text-4xl text-green-300"></i>
+                <h2 class="mt-0 mb-0">Match Found!</h2>
+            }
         </div>
     </ng-template>
 
@@ -46,7 +51,16 @@
 
     <ng-template pTemplate="footer">
         <div class="flex w-full justify-content-center align-items-center">
-            <p-button type="button" label="Cancel Match" severity="danger" [outlined]="true" (click)="closeDialog()" />
+            @if (isFindingMatch) {
+                <p-button
+                    type="button"
+                    label="Cancel Match"
+                    severity="danger"
+                    [outlined]="true"
+                    (click)="closeDialog()" />
+            } @else {
+                <p class="mb-0 font-medium text-blue-300">Redirecting you to the workspace...</p>
+            }
         </div>
     </ng-template>
 </p-dialog>
