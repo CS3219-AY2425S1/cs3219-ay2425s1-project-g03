@@ -11,6 +11,8 @@ import { ChipModule } from 'primeng/chip';
 import { FindingMatchComponent } from './finding-match/finding-match.component';
 import { UserCriteria } from './user-criteria.model';
 import { RetryMatchingComponent } from './retry-matching/retry-matching.component';
+import { QuestionService } from '../../_services/question.service';
+import { MessageService } from 'primeng/api';
 
 @Component({
     selector: 'app-matching',
@@ -28,6 +30,7 @@ import { RetryMatchingComponent } from './retry-matching/retry-matching.componen
         FormsModule,
         CommonModule,
     ],
+    providers: [QuestionService, MessageService],
     templateUrl: './matching.component.html',
     styleUrl: './matching.component.css',
 })
@@ -38,24 +41,48 @@ export class MatchingComponent implements OnInit {
     };
 
     topics: string[] = [];
-
     difficulties = ['Easy', 'Medium', 'Hard'];
 
+    isLoadingTopics = true;
     isProcessingMatch = false;
     isMatchFailed = false;
+
+    constructor(
+        private messageService: MessageService,
+        private questionService: QuestionService,
+    ) {}
 
     ngOnInit(): void {
         this.fetchTopics();
     }
 
     fetchTopics() {
-        this.topics = ['Algorithms', 'Data Structures', 'Database Design', 'Machine Learning', 'Web Development'];
+        this.questionService.getTopics().subscribe({
+            next: response => {
+                this.topics = response.data || [];
+            },
+            error: () => {
+                this.topics = [];
+                this.onErrorReceive('Failed to load topics. Please try again later.');
+            },
+            complete: () => {
+                this.isLoadingTopics = false;
+            },
+        });
+    }
+
+    onErrorReceive(errorMessage: string) {
+        this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: errorMessage,
+        });
     }
 
     onMatch() {
         console.log({
             topic: this.userCriteria.topics,
-            difficulty: this.userCriteria.difficulty
+            difficulty: this.userCriteria.difficulty,
         });
         this.isProcessingMatch = true;
         // TODO: Add API request to start matching.

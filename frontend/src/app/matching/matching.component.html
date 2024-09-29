@@ -10,6 +10,7 @@
                     [options]="topics"
                     [(ngModel)]="userCriteria.topics"
                     placeholder="No Topic Selected"
+                    [loading]="isLoadingTopics"
                     [showClear]="true"
                     [maxSelectedLabels]="0"
                     selectedItemsLabel="{{ userCriteria.topics?.length }} topic{{
@@ -44,10 +45,7 @@
                 type="submit"
                 [label]="isProcessingMatch ? '' : 'Start Matching'"
                 [loading]="isProcessingMatch"
-                [disabled]="
-                    userCriteria.topics === null &&
-                    userCriteria.difficulty === null
-                "
+                [disabled]="userCriteria.topics === null && userCriteria.difficulty === null"
                 (click)="onMatch()"
                 styleClass="w-full justify-content-center" />
         </form>
