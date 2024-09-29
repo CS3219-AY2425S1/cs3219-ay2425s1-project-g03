@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { findUserById as _findUserById } from "../model/repository.js";
+import { findUserById as _findUserById } from "../model/repository";
 
 export function verifyAccessToken(req, res, next) {
   const authHeader = req.headers["authorization"];

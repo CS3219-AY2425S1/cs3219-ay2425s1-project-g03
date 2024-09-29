@@ -10,7 +10,7 @@ import {
   findUserByUsernameOrEmail as _findUserByUsernameOrEmail,
   updateUserById as _updateUserById,
   updateUserPrivilegeById as _updateUserPrivilegeById,
-} from "../model/repository.js";
+} from "../model/repository";
 
 export async function createUser(req, res) {
   try {

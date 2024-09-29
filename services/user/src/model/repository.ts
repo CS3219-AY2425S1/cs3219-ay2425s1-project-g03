@@ -1,4 +1,4 @@
-import UserModel from "./user-model.js";
+import UserModel from "./user-model";
 import "dotenv/config";
 import { connect } from "mongoose";
 

@@ -1,7 +1,7 @@
 import http from "http";
-import index from "./index.js";
+import index from "./index";
 import "dotenv/config";
-import { connectToDB } from "./model/repository.js";
+import { connectToDB } from "./model/repository";
 
 const port = process.env.PORT || 8082;
 
