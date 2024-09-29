@@ -40,40 +40,13 @@
                     class="p-fluid" />
             </div>
 
-            <div class="form-field">
-                <label for="programmingLanguage">Programming Language</label>
-                <p-multiSelect
-                    name="programmingLanguage"
-                    [options]="programmingLanguages"
-                    [(ngModel)]="selectedProgrammingLanguages"
-                    placeholder="No Language Selected"
-                    [showClear]="true"
-                    [maxSelectedLabels]="0"
-                    selectedItemsLabel="{{ selectedProgrammingLanguages?.length }} language{{
-                        selectedProgrammingLanguages !== null && selectedProgrammingLanguages.length > 1 ? 's' : ''
-                    }} selected"
-                    class="p-fluid" />
-
-                @if (selectedProgrammingLanguages !== null && selectedProgrammingLanguages.length > 0) {
-                    <div class="flex flex-wrap gap-2">
-                        <p-chip
-                            *ngFor="let language of selectedProgrammingLanguages; let i = index"
-                            [label]="language"
-                            removable="true"
-                            (onRemove)="removeLanguage(i)"
-                            styleClass="text-sm" />
-                    </div>
-                }
-            </div>
-
             <p-button
                 type="submit"
                 [label]="isProcessingMatch ? '' : 'Start Matching'"
                 [loading]="isProcessingMatch"
                 [disabled]="
                     userCriteria.topics === null &&
-                    userCriteria.difficulty === null &&
-                    selectedProgrammingLanguages === null
+                    userCriteria.difficulty === null
                 "
                 (click)="onMatch()"
                 styleClass="w-full justify-content-center" />

@@ -41,9 +41,6 @@ export class MatchingComponent implements OnInit {
 
     difficulties = ['Easy', 'Medium', 'Hard'];
 
-    programmingLanguages: string[] = ['JavaScript', 'Python', 'Java', 'C++', 'Ruby'];
-    selectedProgrammingLanguages: string[] | null = null;
-
     isProcessingMatch = false;
     isMatchFailed = false;
 
@@ -58,8 +55,7 @@ export class MatchingComponent implements OnInit {
     onMatch() {
         console.log({
             topic: this.userCriteria.topics,
-            difficulty: this.userCriteria.difficulty,
-            programmingLanguage: this.selectedProgrammingLanguages,
+            difficulty: this.userCriteria.difficulty
         });
         this.isProcessingMatch = true;
         // TODO: Add API request to start matching.
@@ -91,16 +87,6 @@ export class MatchingComponent implements OnInit {
         this.userCriteria.topics = [
             ...this.userCriteria.topics.slice(0, index),
             ...this.userCriteria.topics.slice(index + 1),
-        ];
-    }
-
-    removeLanguage(index: number) {
-        if (this.selectedProgrammingLanguages == null) {
-            return;
-        }
-        this.selectedProgrammingLanguages = [
-            ...this.selectedProgrammingLanguages.slice(0, index),
-            ...this.selectedProgrammingLanguages.slice(index + 1),
         ];
     }
 }
