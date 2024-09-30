@@ -1,6 +1,13 @@
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;700&display=swap" rel="stylesheet" />
+
 <p-menubar [model]="items">
     <ng-template pTemplate="start">
-        <p class="pl-2 mr-3">PeerPrep</p>
+        <div class="flex align-items-center" style="cursor: pointer" [routerLink]="['/matching']">
+            <img src="/logo.png" alt="logo" style="width: auto; height: 55px" />
+            <p class="pl-2 mr-3 poppins-bold logo-font-size">PeerPrep</p>
+        </div>
     </ng-template>
     <ng-template pTemplate="item" let-item>
         <a [routerLink]="item.route" class="p-menuitem-link">
