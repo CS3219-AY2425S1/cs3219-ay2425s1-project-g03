@@ -32,12 +32,6 @@ export class NavigationBarComponent implements OnInit {
         if (this.isLoggedIn) {
             this.items = [
                 {
-                    label: 'Home',
-                    icon: 'pi pi-home',
-                    route: 'matching',
-                    style: { 'margin-right': 'auto' },
-                },
-                {
                     label: this.dummyUserName,
                     icon: 'pi pi-user',
                     route: '/profile',
@@ -46,6 +40,12 @@ export class NavigationBarComponent implements OnInit {
                         {
                             label: 'View Profile',
                             icon: 'pi pi-user',
+                            // route: '',
+                            class: 'p-submenu-list',
+                        },
+                        {
+                            label: 'View Match History',
+                            icon: 'pi pi-trophy',
                             // route: '',
                             class: 'p-submenu-list',
                         },
@@ -75,6 +75,10 @@ export class NavigationBarComponent implements OnInit {
                 },
             ];
         }
+    }
+
+    navigateHome() {
+        this.router.navigate(['/account/login']);
     }
 
     logout() {
