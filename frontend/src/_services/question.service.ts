@@ -51,8 +51,8 @@ export class QuestionService {
         return this.http.get<QuestionResponse>(this.baseUrl, { params });
     }
 
-    getQuestionByID(id: number): Observable<QuestionResponse> {
-        return this.http.get<QuestionResponse>(this.baseUrl + '/' + id);
+    getQuestionByID(id: number): Observable<SingleQuestionResponse> {
+        return this.http.get<SingleQuestionResponse>(this.baseUrl + '/' + id);
     }
 
     getQuestionByParam(topics: string[], difficulty: string, limit?: number): Observable<QuestionResponse> {
