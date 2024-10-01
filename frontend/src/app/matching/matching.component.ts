@@ -36,7 +36,7 @@ import { MessageService } from 'primeng/api';
 })
 export class MatchingComponent implements OnInit {
     userCriteria: UserCriteria = {
-        topics: null,
+        topics: [],
         difficulty: null,
     };
 
@@ -69,6 +69,14 @@ export class MatchingComponent implements OnInit {
                 this.isLoadingTopics = false;
             },
         });
+    }
+
+    /**
+     * To reset selected topics to an empty array as PrimeNG sets it to null
+     * when clearing the input.
+     */
+    onSelectedTopicsClear() {
+        this.userCriteria.topics = [];
     }
 
     onErrorReceive(errorMessage: string) {

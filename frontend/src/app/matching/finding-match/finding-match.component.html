@@ -20,7 +20,7 @@
 
     <div class="flex flex-column gap-4">
         <div class="flex flex-column gap-2 align-items-center">
-            @if (userCriteria.topics !== null && userCriteria.topics.length > 0) {
+            @if (userCriteria.topics.length > 0) {
                 <p class="m-0">Topics selected</p>
                 <div class="flex flex-wrap gap-2 justify-content-center">
                     @for (topic of userCriteria.topics; track topic) {

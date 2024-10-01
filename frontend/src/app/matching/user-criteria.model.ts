@@ -1,4 +1,4 @@
 export interface UserCriteria {
-    topics: string[] | null;
+    topics: string[];
     difficulty: 'Easy' | 'Medium' | 'Hard' | null;
 }

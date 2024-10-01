@@ -12,13 +12,14 @@
                     placeholder="No Topic Selected"
                     [loading]="isLoadingTopics"
                     [showClear]="true"
+                    (onClear)="onSelectedTopicsClear()"
                     [maxSelectedLabels]="0"
-                    selectedItemsLabel="{{ userCriteria.topics?.length }} topic{{
-                        userCriteria.topics !== null && userCriteria.topics.length > 1 ? 's' : ''
+                    selectedItemsLabel="{{ userCriteria.topics.length }} topic{{
+                        userCriteria.topics.length > 1 ? 's' : ''
                     }} selected"
                     class="p-fluid" />
 
-                @if (userCriteria.topics !== null && userCriteria.topics.length > 0) {
+                @if (userCriteria.topics.length > 0) {
                     <div class="flex flex-wrap gap-2">
                         <p-chip
                             *ngFor="let topic of userCriteria.topics; let i = index"
@@ -45,7 +46,7 @@
                 type="submit"
                 [label]="isProcessingMatch ? '' : 'Start Matching'"
                 [loading]="isProcessingMatch"
-                [disabled]="userCriteria.topics === null && userCriteria.difficulty === null"
+                [disabled]="userCriteria.topics.length === 0 && userCriteria.difficulty === null"
                 (click)="onMatch()"
                 styleClass="w-full justify-content-center" />
         </form>
