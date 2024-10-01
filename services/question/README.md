@@ -431,8 +431,8 @@ curl -X DELETE http://localhost:8081/questions/21
 
 This endpoint allows the deletion of multiple questions by the question ID.
 
-- **HTTP Method**: `DELETE`
-- **Endpoint**: `/questions`
+- **HTTP Method**: `POST`
+- **Endpoint**: `/questions/delete`
 
 ### Parameters:
 
@@ -450,7 +450,7 @@ This endpoint allows the deletion of multiple questions by the question ID.
 ### Command Line Example:
 
 ```
-curl -X DELETE http://localhost:8081/questions -H "Content-Type: application/json" -d '{"ids": [21]}'
+curl -X POST http://localhost:8081/questions/delete -H "Content-Type: application/json" -d '{"ids": [21]}'
 ```
 
 ### Example of Response Body for Success:
