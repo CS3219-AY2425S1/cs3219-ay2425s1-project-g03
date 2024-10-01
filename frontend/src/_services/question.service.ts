@@ -13,8 +13,8 @@ import { ApiService } from './api.service';
 @Injectable({
     providedIn: 'root',
 })
-export class QuestionService extends ApiService {
-    protected apiPath = 'question/questions';
+export class QuestionService {
+    private baseUrl = API_CONFIG.baseUrl + '/questions';
 
     private httpOptions = {
         headers: new HttpHeaders({
@@ -48,11 +48,11 @@ export class QuestionService extends ApiService {
         }
 
         // send request
-        return this.http.get<QuestionResponse>(this.apiUrl, { params });
+        return this.http.get<QuestionResponse>(this.baseUrl, { params });
     }
 
-    getQuestionByID(id: number): Observable<SingleQuestionResponse> {
-        return this.http.get<SingleQuestionResponse>(this.apiUrl + '/' + id);
+    getQuestionByID(id: number): Observable<QuestionResponse> {
+        return this.http.get<QuestionResponse>(this.baseUrl + '/' + id);
     }
 
     getQuestionByParam(topics: string[], difficulty: string, limit?: number): Observable<QuestionResponse> {
@@ -63,32 +63,32 @@ export class QuestionService extends ApiService {
         }
         params = params.append('topics', topics.join(',')).append('difficulty', difficulty);
 
-        return this.http.get<QuestionResponse>(this.apiUrl + '/search', { params });
+        return this.http.get<QuestionResponse>(this.baseUrl + '/search', { params });
     }
 
     getTopics(): Observable<TopicResponse> {
-        return this.http.get<TopicResponse>(this.apiUrl + '/topics');
+        return this.http.get<TopicResponse>(this.baseUrl + '/topics');
     }
 
     addQuestion(question: QuestionBody): Observable<SingleQuestionResponse> {
         return this.http
-            .post<SingleQuestionResponse>(this.apiUrl, question, this.httpOptions)
+            .post<SingleQuestionResponse>(this.baseUrl, question, this.httpOptions)
             .pipe(catchError(this.handleError));
     }
 
     updateQuestion(id: number, question: QuestionBody): Observable<SingleQuestionResponse> {
         return this.http
-            .put<SingleQuestionResponse>(this.apiUrl + '/' + id, question, this.httpOptions)
+            .put<SingleQuestionResponse>(this.baseUrl + '/' + id, question, this.httpOptions)
             .pipe(catchError(this.handleError));
     }
 
     deleteQuestion(id: number): Observable<SingleQuestionResponse> {
-        return this.http.delete<SingleQuestionResponse>(this.apiUrl + '/' + id).pipe(catchError(this.handleError));
+        return this.http.delete<SingleQuestionResponse>(this.baseUrl + '/' + id).pipe(catchError(this.handleError));
     }
 
     deleteQuestions(ids: number[]): Observable<MessageOnlyResponse> {
         return this.http
-            .post<MessageOnlyResponse>(this.apiUrl + '/delete', { ids }, this.httpOptions)
+            .post<MessageOnlyResponse>(this.baseUrl + '/delete', { ids }, this.httpOptions)
             .pipe(catchError(this.handleError));
     }
 

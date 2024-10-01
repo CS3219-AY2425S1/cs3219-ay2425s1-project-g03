@@ -427,34 +427,33 @@ curl -X DELETE http://localhost:8081/questions/21
 
 ---
 
-### Delete Questions
+## Delete Questions
 
-This endpoint allows the deletion of multiple questions by their question IDs.
+This endpoint allows the deletion of multiple questions by the question ID.
 
-- **HTTP Method**: `POST`
-- **Endpoint**: `/questions/delete`
+- **HTTP Method**: `DELETE`
+- **Endpoint**: `/questions`
 
-#### Parameters:
+### Parameters:
 
-- `ids` (Required) - An array of integers representing the IDs of the questions to delete, e.g. `[1, 2, 3]`.
+- `ids` (Required) - The IDs of the questions to delete.
 
-#### Responses:
+### Responses:
 
-| Response Code               | Explanation                                          |
-|-----------------------------|------------------------------------------------------|
-| 200 (OK)                    | Success, the question is deleted successfully.       |
-| 400 (Bad Request)           | The `ids` parameter was not specified or is invalid. |
-| 404 (Not Found)             | A question with the specified id not found.          |
-| 500 (Internal Server Error) | Unexpected error in the database or server.          |
+| Response Code               | Explanation                                    |
+|-----------------------------|------------------------------------------------|
+| 200 (OK)                    | Success, the question is deleted successfully. |
+| 400 (Bad Request)           | The `id` was not specified                     |
+| 404 (Not Found)             | A question with the specified id not found.    |
+| 500 (Internal Server Error) | Unexpected error in the database or server.    |
 
-#### Command Line Example:
+### Command Line Example:
 
 ```
-Delete Questions:
-curl -X POST http://localhost:8081/questions/delete -H "Content-Type: application/json" -d '{"ids": [21, 22]}'
+curl -X DELETE http://localhost:8081/questions -H "Content-Type: application/json" -d '{"ids": [21]}'
 ```
 
-#### Example of Response Body for Success:
+### Example of Response Body for Success:
 
 ```json
 {
@@ -465,88 +464,3 @@ curl -X POST http://localhost:8081/questions/delete -H "Content-Type: applicatio
 ```
 
 ---
-
-## Producers
-
-### Question Found Producer
-
-- This producer emits a message when a question has been successfully found for a match.
-- **Queue**: `QUESTION_FOUND`
-- **Data Produced**
-  - `user1` - The first user associated with the successful match.
-  - `user2` - The second user associated with the successful match.
-  - `question` - The question assigned to the successful match.
-
-  ```json
-    {
-      "user1": {
-        "id": "6713d1778986bf54b29bd0f8",
-        "username": "user123",
-        "requestId": "6714d1806da8e6d033ac2be1",
-      },
-      "user2": {
-        "id": "6713d17f8986bf54b29bd0fe",
-        "username": "userabc",
-        "requestId": "6714dab233a91c7f7c9b9b15",
-      },
-      "question": {
-        "_id": "66f77e7bf9530832bd839239",
-        "id": 21,
-        "title": "Reverse Integer",
-        "description": "Given a signed 32-bit integer x, return x with its digits reversed.",
-        "topics": ["Math"],
-        "difficulty": "Medium"
-      }
-    }
-  ```
-
----
-
-### Match Failed Producer
-
-- This producer emits a message when a question could not be found for a match.
-- **Queue**: `MATCH_FAILED`
-- **Data Produced**
-  - `requestId1` - The first request ID associated with the match failure.
-  - `requestId2` - The second request ID associated with the match failure.
-  - `reason` - The error encountered.
-
-  ```json
-    {
-      "requestId1": "6714d1806da8e6d033ac2be1",
-      "requestId2": "67144180cda8e610333e4b12",
-      "reason": "No questions were found",
-    }
-  ```
-
----
-
-## Consumers
-
-### Match Found Consumer
-
-- This consumer attempts to find and assign a compatible question.
-- Upon successfully finding a question, it produces a `QUESTION_FOUND` message.
-- **Queue**: `MATCH_FOUND` - This message is emitted when a match is found between two match requests.s
-- **Data Consumed**
-  - `user1` - The first user associated with the match request.
-  - `user2` - The second user associated with the match request.
-  - `topics` - The topics in common between the two requests.
-  - `difficulty` - The difficulty of the match request.
-
-  ```json
-    {
-      "user1": {
-        "id": "6713d1778986bf54b29bd0f8",
-        "username": "user123",
-        "requestId": "6714d1806da8e6d033ac2be1",
-      },
-      "user2": {
-        "id": "6714d1806da8e6d033ac2be1",
-        "username": "userabc",
-        "requestId": "6713d1778986bf54b29bd0f8",
-      },
-      "topics": [ "Algorithms", "Arrays" ],
-      "difficulty": "Hard"
-    }
-    ```

@@ -45,4 +45,9 @@ questionRouter.delete('/:id', verifyAccessToken, verifyIsAdmin, deleteQuestion);
  */
 questionRouter.post('/delete', verifyAccessToken, verifyIsAdmin, deleteQuestions);
 
+/**
+ * Delete questions from the database.
+ */
+questionRouter.post('/delete', deleteQuestions);
+
 export default questionRouter;
