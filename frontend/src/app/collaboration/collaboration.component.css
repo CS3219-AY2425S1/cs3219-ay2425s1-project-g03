@@ -2,11 +2,6 @@
     flex: 0 50%;
 }
 
-::ng-deep .header {
-    font-size: 25px;
-    font-weight: 500;
-}
-
 ::ng-deep .background {
     background-color: #121212;
 }
@@ -20,6 +15,3 @@
     margin-top: 1rem;
 }
 
-::ng-deep .b1 {
-    height: calc(100% - 80px);
-}
