@@ -3,6 +3,7 @@ import { Question } from '../../questions/question.model';
 import { QuestionService } from '../../../_services/question.service';
 import { ChipModule } from 'primeng/chip';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
+import { DifficultyLevels } from '../../questions/difficulty-levels.enum';
 
 @Component({
     selector: 'app-question-box',
@@ -16,6 +17,8 @@ export class QuestionBoxComponent implements OnInit {
     question!: Question;
 
     questionId = 1;
+
+    difficultyLevels = DifficultyLevels;
 
     constructor(private questionService: QuestionService) {}
 

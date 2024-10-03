@@ -1,10 +1,25 @@
 <div class="card flex flex-column" style="height: 100vh">
-    <div class="container flex flex-1 flex-col overflow-hidden pb-2 m-4">
+    <div class="container flex flex-1 flex-column overflow-hidden pb-2 m-4">
         <div class="flex-1 overflow-hidden w-full p-4">
             <div class="w-full mb-4">
                 <h1 class="m-0 mb-4">{{ question.title }}</h1>
                 <div class="flex gap-2 flex-wrap">
-                    <p-chip> {{ question.difficulty }}</p-chip>
+                    <!-- {{ question.difficulty }} -->
+                    @switch (question.difficulty) {
+                        @case (difficultyLevels.EASY) {
+                            <p-chip class="easy-chip"> {{ question.difficulty }} </p-chip>
+                        }
+                        @case (difficultyLevels.MEDIUM) {
+                            <p-chip class=".medium-chip"> {{ question.difficulty }} </p-chip>
+                        }
+                        @case (difficultyLevels.HARD) {
+                            <p-chip class="hard-chip"> {{ question.difficulty }} </p-chip>
+                        }
+                        @default {
+                            <p-chip class="easy-chip"> {{ question.difficulty }} </p-chip>
+                        }
+                    }
+
                     @for (topic of question.topics; track topic) {
                         <p-chip> {{ topic }}</p-chip>
                     }
