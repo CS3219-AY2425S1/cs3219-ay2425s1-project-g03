@@ -6,11 +6,12 @@ import { DOCUMENT } from '@angular/common';
 import { EditorView } from 'codemirror';
 import { python } from '@codemirror/lang-python';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
     selector: 'app-editor',
     standalone: true,
-    imports: [ScrollPanelModule],
+    imports: [ScrollPanelModule, ButtonModule],
     templateUrl: './editor.component.html',
     styleUrl: './editor.component.css',
 })

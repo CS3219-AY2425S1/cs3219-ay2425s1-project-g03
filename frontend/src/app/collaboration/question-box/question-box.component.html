@@ -1,14 +1,18 @@
-<div class="card flex flex-column pb-4" style="height: 100vh">
-    <p-scrollPanel [style]="{ height: '100%' }" class="flex-auto mx-4 p-4 scroll-panel overflow-auto container">
-        <div class="w-full mb-4">
-            <h1 class="m-0 mb-4">{{ question.title }}</h1>
-            <div class="flex gap-2 flex-wrap">
-                <p-chip> {{ question.difficulty }}</p-chip>
-                @for (topic of question.topics; track topic) {
-                    <p-chip> {{ topic }}</p-chip>
-                }
+<div class="card flex flex-column" style="height: 100vh">
+    <div class="container flex flex-1 flex-col overflow-hidden pb-2 m-4">
+        <div class="flex-1 overflow-hidden w-full p-4">
+            <div class="w-full mb-4">
+                <h1 class="m-0 mb-4">{{ question.title }}</h1>
+                <div class="flex gap-2 flex-wrap">
+                    <p-chip> {{ question.difficulty }}</p-chip>
+                    @for (topic of question.topics; track topic) {
+                        <p-chip> {{ topic }}</p-chip>
+                    }
+                </div>
             </div>
+            <p-scrollPanel [style]="{ height: '83%' }" class="h-full w-full scroll-panel overflow-auto mb-4">
+                <p class="m-0 mb-4">{{ question.description }}</p>
+            </p-scrollPanel>
         </div>
-        <p class="m-0 mb-4">{{ question.description }}</p>
-    </p-scrollPanel>
+    </div>
 </div>
