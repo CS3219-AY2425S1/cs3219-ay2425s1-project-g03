@@ -4,7 +4,6 @@
             <div class="w-full mb-4">
                 <h1 class="m-0 mb-4">{{ question.title }}</h1>
                 <div class="flex gap-2 flex-wrap">
-                    <!-- {{ question.difficulty }} -->
                     @switch (question.difficulty) {
                         @case (difficultyLevels.EASY) {
                             <p-chip class="easy-chip"> {{ question.difficulty }} </p-chip>
@@ -26,7 +25,7 @@
                 </div>
             </div>
             <p-scrollPanel [style]="{ height: '83%' }" class="h-full w-full scroll-panel overflow-auto mb-4">
-                <p class="m-0 mb-4">{{ question.description }}</p>
+                <p class="m-0 mb-4 line-height-2" style="white-space: pre-wrap">{{ question.description }}</p>
             </p-scrollPanel>
         </div>
     </div>
