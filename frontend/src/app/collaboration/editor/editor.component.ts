@@ -7,11 +7,15 @@ import { EditorView } from 'codemirror';
 import { python } from '@codemirror/lang-python';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { ButtonModule } from 'primeng/button';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ToastModule } from 'primeng/toast';
 
 @Component({
     selector: 'app-editor',
     standalone: true,
-    imports: [ScrollPanelModule, ButtonModule],
+    imports: [ScrollPanelModule, ButtonModule, ConfirmDialogModule, ToastModule],
+    providers: [ConfirmationService, MessageService],
     templateUrl: './editor.component.html',
     styleUrl: './editor.component.css',
 })
@@ -24,7 +28,13 @@ export class EditorComponent implements AfterViewInit {
 
     customTheme!: Extension;
 
-    constructor(@Inject(DOCUMENT) private document: Document) {}
+    isSubmit = false;
+
+    constructor(
+        @Inject(DOCUMENT) private document: Document,
+        private messageService: MessageService,
+        private confirmationService: ConfirmationService,
+    ) {}
 
     ngAfterViewInit() {
         this.setTheme();
@@ -77,5 +87,29 @@ export class EditorComponent implements AfterViewInit {
         });
 
         this.view.focus();
+    }
+
+    submit() {
+        this.isSubmit = true;
+
+        this.confirmationService.confirm({
+            header: 'Submit?',
+            message: 'Please confirm to submit.',
+            accept: () => {
+                console.log('Submitted');
+            },
+        });
+    }
+
+    forfeit() {
+        this.isSubmit = false;
+
+        this.confirmationService.confirm({
+            header: 'Forfeit?',
+            message: 'Please confirm to forfeit.',
+            accept: () => {
+                console.log('Forfeited');
+            },
+        });
     }
 }

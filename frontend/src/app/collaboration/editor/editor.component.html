@@ -2,15 +2,33 @@
     <div class="container flex flex-1 flex-column overflow-hidden pb-2 m-4">
         <div class="flex-1 overflow-hidden w-full p-4">
             <p class="m-0 mb-2 header">Editor</p>
-            <p-scrollPanel [style]="{ height: '90%' }" class="h-full w-full scroll-panel overflow-auto">
+            <p-scrollPanel [style]="{ height: 'calc(100% - 88px)' }" class="h-full w-full scroll-panel overflow-auto">
                 <div #editor class="editor-content"></div>
             </p-scrollPanel>
             <footer class="mt-2">
                 <div class="flex flex-row justify-content-end gap-2">
-                    <p-button label="Forfeit" severity="contrast" />
-                    <p-button label="Submit" severity="success" />
+                    <p-button label="Forfeit" severity="contrast" (onClick)="forfeit()" />
+                    <p-button label="Submit" severity="success" (onClick)="submit()" />
                 </div>
             </footer>
         </div>
     </div>
 </div>
+<p-confirmDialog #cd [style]="{ width: 'auto' }">
+    <ng-template pTemplate="headless" let-message>
+        <div class="flex flex-column p-4 surface-overlay border-round-2xl">
+            <span class="font-bold text-lg block">
+                {{ message.header }}
+            </span>
+            <p class="mb-0 text-sm">{{ message.message }}</p>
+            <div class="flex align-items-center gap-2 mt-4">
+                @if (isSubmit) {
+                    <button pButton (click)="cd.accept()" class="w-5rem text-xs py-2">Confirm</button>
+                } @else {
+                    <button pButton (click)="cd.accept()" severity="danger" class="w-5rem text-xs py-2">Confirm</button>
+                }
+                <button pButton (click)="cd.reject()" class="p-button-outlined w-5rem text-xs py-2">Cancel</button>
+            </div>
+        </div>
+    </ng-template>
+</p-confirmDialog>
