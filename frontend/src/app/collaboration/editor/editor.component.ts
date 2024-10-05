@@ -18,10 +18,41 @@ import { ButtonModule } from 'primeng/button';
 export class EditorComponent implements AfterViewInit {
     @ViewChild('editor') editor!: ElementRef;
 
+    state!: EditorState;
+
+    view!: EditorView;
+
+    customTheme!: Extension;
+
     constructor(@Inject(DOCUMENT) private document: Document) {}
 
     ngAfterViewInit() {
-        const customTheme = EditorView.theme(
+        this.setTheme();
+        this.setEditorState();
+        this.setEditorView();
+        this.setCursorPosition();
+    }
+
+    setEditorState() {
+        const myExt: Extension = [basicSetup, python(), this.customTheme, oneDark];
+
+        this.state = EditorState.create({
+            doc: '# type your code here\n',
+            extensions: myExt,
+        });
+    }
+
+    setEditorView() {
+        const editorElement = this.editor.nativeElement;
+        const state = this.state;
+        this.view = new EditorView({
+            state,
+            parent: editorElement,
+        });
+    }
+
+    setTheme() {
+        this.customTheme = EditorView.theme(
             {
                 '&': {
                     backgroundColor: 'var(--surface-section)',
@@ -32,25 +63,19 @@ export class EditorComponent implements AfterViewInit {
             },
             { dark: true },
         );
+    }
 
-        const editorElement = this.editor.nativeElement;
-        const myExt: Extension = [basicSetup, python(), customTheme, oneDark];
-        let state!: EditorState;
+    setCursorPosition() {
+        // set new cursor position
+        const cursorPosition = this.state.doc.line(2).from;
 
-        try {
-            state = EditorState.create({
-                doc: '# type your code here',
-                extensions: myExt,
-            });
-        } catch (e) {
-            console.log(e);
-        }
-
-        //console.log(state);
-
-        new EditorView({
-            state,
-            parent: editorElement,
+        this.view.dispatch({
+            selection: {
+                anchor: cursorPosition,
+                head: cursorPosition,
+            },
         });
+
+        this.view.focus();
     }
 }

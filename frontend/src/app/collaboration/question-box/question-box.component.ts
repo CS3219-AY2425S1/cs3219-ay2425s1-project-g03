@@ -34,7 +34,6 @@ export class QuestionBoxComponent implements OnInit {
     setQuestion() {
         this.questionService.getQuestionByID(this.questionId).subscribe({
             next: response => {
-                console.log(response.data);
                 this.question = response.data || [];
             },
             error: errorMessage => {
