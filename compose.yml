@@ -49,15 +49,34 @@ services:
     ports:
       - 8082:8082
     environment:
-      USER_SERVICE_CLOUD_URI: ${USER_SERVICE_CLOUD_URI}
-      USER_SERVICE_LOCAL_URI: ${USER_SERVICE_LOCAL_URI}
-      ENV: ${ENV}
+      DB_CLOUD_URI: ${USER_DB_CLOUD_URI}
+      DB_LOCAL_URI: ${USER_DB_LOCAL_URI}
+      DB_USERNAME: ${USER_DB_USERNAME}
+      DB_PASSWORD: ${USER_DB_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
+    networks:
+      - user-db-network
+    restart: always
+  
+  user-db:
+    container_name: user-db
+    image: mongo:7.0.14
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${USER_DB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${USER_DB_PASSWORD}
+    volumes:
+      - user-db:/data/db
+    networks:
+      - user-db-network
+    command: --quiet
     restart: always
 
 volumes:
   question-db:
+  user-db:
 
 networks:
   question-db-network:
+    driver: bridge
+  user-db-network:
     driver: bridge
