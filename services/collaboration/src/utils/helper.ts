@@ -1,57 +1,90 @@
 import { Response } from 'express';
 import { WebSocket } from 'ws';
 
-const WEBSOCKET_AUTH_FAILED = 4000;
-const WEBSOCKET_ROOM_CLOSED = 4001;
-
 /**
- * HTTP-specific handlers
+ * Handles bad requests and sends a 400 response with a custom message.
+ * @param res
+ * @param message
  */
+export const handleBadRequest = (client: Response | WebSocket, message = 'Bad Request') => {
+    if (client instanceof WebSocket) {
+        client.send(JSON.stringify({
+            status: 'Error',
+            message,
+        }));
+    } else {
+        client.status(400).json({
+            status: 'Error',
+            message,
+        });
+    }
+};
 
 /**
- * Handle bad request for HTTP
+ * Handles not found requests and sends a 404 response with a custom message.
+ * @param res
+ * @param message
+ */
+export const handleNotFound = (res: Response, message = 'Not Found') => {
+    res.status(404).json({
+        status: 'Error',
+        message,
+    });
+};
+
+/**
+ * Handles success responses and sends a 200 response with a custom message.
  * @param client
  * @param message
  */
-export const handleHttpBadRequest = (client: Response, message = 'Bad Request') => {
-    client.status(400).json({ status: 'Error', message });
+export const handleSuccess = (client: Response | WebSocket, message = 'Success') => {
+    if (client instanceof WebSocket) {
+        client.send(JSON.stringify({
+            status: 'Success',
+            message,
+        }));
+    } else {
+        client.status(200).json({
+            status: 'Success',
+            message,
+        });
+    }
 };
 
 /**
- * Handle not found for HTTP
- * @param client
+ * Handles internal server errors (500) and sends a response with a custom message.
+ * @param res
  * @param message
  */
-export const handleHttpNotFound = (client: Response, message = 'Not Found') => {
-    client.status(404).json({ status: 'Error', message });
+export const handleServerError = (res: Response, message = 'Internal Server Error') => {
+    res.status(500).json({
+        status: 'Error',
+        message,
+    });
 };
+
+import { RawData } from 'ws';
 
 /**
- * Handle success for HTTP
- * @param client
- * @param data
+ * Converts RawData (from WebSocket) to a Uint8Array.
+ * Handles various types like ArrayBuffer, Buffer, and arrays of Buffers.
+ *
+ * @param {RawData} message
+ * @returns {Uint8Array}
+ * @throws {Error}
  */
-export const handleHttpSuccess = (client: Response, data: string | object = 'Success') => {
-    client.status(200).json({ status: 'Success', data });
-};
+export function convertRawDataToUint8Array(message: RawData): Uint8Array {
+    let update: Uint8Array;
 
-/**
- * Handle internal server error for HTTP
- * @param client
- * @param message
- */
-export const handleHttpServerError = (client: Response, message = 'Internal Server Error') => {
-    client.status(500).json({ status: 'Error', message });
-};
+    if (message instanceof ArrayBuffer) {
+        update = new Uint8Array(message);
+    } else if (Array.isArray(message)) {
+        update = new Uint8Array(Buffer.concat(message));
+    } else if (Buffer.isBuffer(message)) {
+        update = new Uint8Array(message);
+    } else {
+        throw new Error('Unsupported message type');
+    }
 
-/**
- * WS-specific handlers
- */
-
-export const handleAuthFailed = (ws: WebSocket, message: string) => {
-    ws.close(WEBSOCKET_AUTH_FAILED, message);
-};
-
-export const handleRoomClosed = (ws: WebSocket, message = 'Room closed') => {
-    ws.close(WEBSOCKET_ROOM_CLOSED, message);
-};
+    return update;
+}

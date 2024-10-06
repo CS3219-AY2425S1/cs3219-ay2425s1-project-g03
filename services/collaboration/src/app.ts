@@ -1,27 +1,20 @@
-import express, { Express } from 'express';
-import morgan from 'morgan';
-import cors from 'cors';
-import roomRouter from './routes/roomRoutes';
-import bodyParser from 'body-parser';
-import router from './routes';
-import config from './config';
-import { verifyAccessToken } from './middleware/jwt';
+import express from 'express';
+import http from 'http';
+import { startMongoDB } from './services/mongodbService';
+import { startWebSocketServer } from './services/webSocketService';
 
-const app: Express = express();
+const app = express();
+const PORT = process.env.PORT || 8084;
 
-app.use(morgan('dev'));
-app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
 
-app.use(
-    cors({
-        origin: config.CORS_ORIGIN,
-        methods: ['GET', 'PATCH'],
-        allowedHeaders: ['Origin', 'X-Request-With', 'Content-Type', 'Accept', 'Authorization'],
-    }),
-);
+const server = http.createServer(app);
 
-app.use('/', router);
-app.use('/room', verifyAccessToken, roomRouter);
-
-export default app;
+startMongoDB().then(() => {
+    startWebSocketServer(server);
+    server.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+    });
+}).catch((error) => {
+    console.error('Failed to start services:', error);
+});
