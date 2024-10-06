@@ -1,0 +1,10 @@
+/* You can add global styles to this file, and also import other style files */
+@import "primeng/resources/themes/aura-dark-blue/theme.css";
+@import "primeng/resources/primeng.min.css";
+@import "primeflex/primeflex.min.css";
+@import "primeicons/primeicons.css";
+
+body {
+  height: 100vh;
+  margin: 0px;
+}

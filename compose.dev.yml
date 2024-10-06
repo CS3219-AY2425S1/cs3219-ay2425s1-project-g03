@@ -1,0 +1,25 @@
+services:
+  frontend:
+    volumes:
+      - /app/node_modules
+      - ./frontend:/app
+  
+  question:
+    command: npm run dev
+    volumes:
+      - /app/node_modules
+      - ./services/question:/app
+
+  question-db:
+    ports:
+      - 27017:27017
+
+  user:
+    command: npm run dev
+    volumes:
+      - /app/node_modules
+      - ./services/user:/app
+  
+  user-db:
+    ports:
+      - 27018:27017
