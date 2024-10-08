@@ -64,6 +64,7 @@ services:
     networks:
       - gateway-network
       - user-db-network
+      - match-network
     restart: always
   
   user-db:
@@ -93,6 +94,7 @@ services:
     ports:
       - 8083:8083
     networks:
+      - match-network
       - match-db-network
     restart: always
 
@@ -119,6 +121,8 @@ networks:
   question-db-network:
     driver: bridge
   user-db-network:
+    driver: bridge
+  match-network:
     driver: bridge
   match-db-network:
     driver: bridge
