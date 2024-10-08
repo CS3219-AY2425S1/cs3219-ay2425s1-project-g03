@@ -325,6 +325,45 @@ curl -X POST http://localhost:8081/questions -H "Content-Type: application/json"
 
 ---
 
+## Upload Questions
+
+This endpoint allows the uploading of new questions through uploading a `.json` file.
+
+- **HTTP Method**: `POST`
+- **Endpoint**: `/questions/upload`
+
+### Request Body:
+
+The request body must contain a `file` field containing a single JSON file uploaded as part of a `multipart/form-data` request. The JSON file should contain an array of question objects with the following fields:
+
+- `id` (Required) - The identifier of the question.
+- `title` (Required) - The title of the question.
+- `description` (Required) - A description of the question.
+- `topics` (Required) - The topics associated with the question.
+- `difficulty` (Required) - The difficulty level of the question.
+
+### Responses:
+
+| Response Code               | Explanation                                                                                    |
+|-----------------------------|------------------------------------------------------------------------------------------------|
+| 201 (Created)               | The questions were created successfully.                                                       |
+| 400 (Bad Request)           | No file was uploaded or the file was invalid.                                                  |
+| 409 (Conflict)              | Some questions were successfully created, but conflicts were detected with existing questions. |
+| 500 (Internal Server Error) | Unexpected error in the database or server.                                                    |
+
+
+### Example of Response Body for Success:
+
+```json
+{
+  "status": "Success",
+  "message": "Questions created successfully",
+  "data": null
+}
+```
+
+---
+
 ## Update Question
 
 This endpoint allows updating an existing question. Only the title, description, topics, and difficulty can be updated.

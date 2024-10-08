@@ -6,6 +6,7 @@ import {
     SingleQuestionResponse,
     QuestionResponse,
     QuestionBody,
+    UploadQuestionsResponse,
     MessageOnlyResponse,
 } from '../app/questions/question.model';
 import { TopicResponse } from '../app/questions/topic.model';
@@ -72,6 +73,12 @@ export class QuestionService {
         return this.http
             .post<SingleQuestionResponse>(this.baseUrl, question, this.httpOptions)
             .pipe(catchError(this.handleError));
+    }
+
+    uploadQuestions(file: File): Observable<UploadQuestionsResponse> {
+        const formData = new FormData();
+        formData.append('file', file);
+        return this.http.post<UploadQuestionsResponse>(this.baseUrl + '/questions/upload', formData);
     }
 
     updateQuestion(id: number, question: QuestionBody): Observable<SingleQuestionResponse> {
