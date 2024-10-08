@@ -1,58 +1,28 @@
-import { MongoClient, Collection } from 'mongodb';
-import * as Y from 'yjs';
+import { MongoClient } from 'mongodb';
+import { MongodbPersistence } from 'y-mongodb-provider';
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017';
-const DATABASE_NAME = 'collaboration-service';
+const MONGODB_URI = process.env.MONGO_URL || 'mongodb://localhost:27017/collaboration-service';
 const COLLECTION_NAME = 'yjs-documents';
 
-let client: MongoClient;
-let db: any;
+/**
+ * MongoDB persistence provider for Yjs
+ */
+export const mdb = new MongodbPersistence(MONGODB_URI, {
+    collectionName: COLLECTION_NAME,
+    flushSize: 100,
+    multipleCollections: true,
+});
 
 /**
  * Start MongoDB connection
  */
 export const startMongoDB = async () => {
-    client = new MongoClient(MONGODB_URI);
-    await client.connect();
-    db = client.db(DATABASE_NAME);
-    console.log('Connected to MongoDB');
-};
-
-/**
- * Get collection from MongoDB
- * @param collectionName
- */
-export const getCollection = (collectionName: string): Collection => {
-    return db.collection(collectionName);
-};
-
-/**
- * Save Yjs document to MongoDB
- * @param roomId
- * @param update
- */
-export const saveDocumentToDB = async (roomId: string, update: Uint8Array) => {
-    const collection = db.collection(COLLECTION_NAME);
-    await collection.updateOne(
-        { roomId },
-        { $set: { roomId, state: update, updatedAt: new Date() } },
-        { upsert: true }
-    );
-    console.log(`Document for room ${roomId} saved to MongoDB.`);
-};
-
-/**
- * Load Yjs document from MongoDB
- * @param roomId
- */
-export const loadDocumentFromMongo = async (roomId: string): Promise<Y.Doc> => {
-    const collection = db.collection(COLLECTION_NAME);
-    const doc = await collection.findOne({ roomId });
-
-    const ydoc = new Y.Doc();
-    if (doc && doc.state) {
-        const state = new Uint8Array(doc.state);
-        Y.applyUpdate(ydoc, state);
+    try {
+        const client = new MongoClient(MONGODB_URI);
+        await client.connect();
+        console.log('Connected to MongoDB');
+    } catch (error) {
+        console.error('MongoDB connection failed:', error);
+        throw error;
     }
-    return ydoc;
 };

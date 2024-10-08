@@ -1,44 +1,51 @@
 import { Server } from 'http';
-import { WebSocketServer, RawData } from 'ws';
+import { WebSocketServer } from 'ws';
 import * as Y from 'yjs';
-import { saveDocumentToDB, loadDocumentFromMongo } from './mongodbService';
-import { convertRawDataToUint8Array } from '../utils/helper';
+import { mdb } from './mongodbService';
+const { setPersistence, setupWSConnection} = require('./utils.js');
 
 /**
- * Start the WebSocket server using y-websocket with MongoDB persistence.
+ * Start the WebSocket server
  * @param server
  */
 export const startWebSocketServer = (server: Server) => {
+
     const wss = new WebSocketServer({ server });
+    wss.on('connection', setupWSConnection);
 
-    wss.on('connection', async (ws, req) => {
-        const roomId = req.url?.slice(1);
-        if (!roomId) {
-            ws.close(4000, 'Invalid room ID');
-            return;
-        }
-
-        const ydoc = await loadDocumentFromMongo(roomId);
-
-        const initialUpdate = Y.encodeStateAsUpdate(ydoc);
-        ws.send(initialUpdate);
-
-        ws.on('message', (message: RawData) => {
+    // Set up persistence to ensure documents are stored in MongoDB
+    setPersistence({
+        bindState: async (docName: string, ydoc: Y.Doc) => {
             try {
-                const update = convertRawDataToUint8Array(message);
-                Y.applyUpdate(ydoc, update);
-                saveDocumentToDB(roomId, Y.encodeStateAsUpdate(ydoc));
+                const persistedYdoc = await mdb.getYDoc(docName);
+                console.log(`Loaded persisted document for ${docName}`);
+
+                const newUpdates = Y.encodeStateAsUpdate(ydoc);
+
+                mdb.storeUpdate(docName, newUpdates);
+
+                Y.applyUpdate(ydoc, Y.encodeStateAsUpdate(persistedYdoc));
+
+                ydoc.on('update', async (update) => {
+                    console.log(`Storing update for document ${docName}`);
+                    await mdb.storeUpdate(docName, update);
+                });
+
             } catch (error) {
-                console.error('Error processing WebSocket message:', error);
+                console.error(`Error loading document ${docName}:`, error);
             }
-        });
-
-        ws.on('close', () => {
-            console.log(`WebSocket connection closed for room: ${roomId}`);
-        });
-
-        console.log(`WebSocket connection established for room: ${roomId}`);
+        },
+        writeState: async (docName: string, ydoc: Y.Doc) => {
+            return new Promise((resolve) => {
+                resolve(true);
+            });
+        },
     });
 
-    console.log('WebSocket server started with MongoDB persistence');
+    wss.on('connection', (conn, req) => {
+        console.log('New WebSocket connection established');
+        setupWSConnection(conn, req);
+    });
+
+    console.log('WebSocket server started');
 };

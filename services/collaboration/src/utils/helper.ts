@@ -51,40 +51,22 @@ export const handleSuccess = (client: Response | WebSocket, message = 'Success')
     }
 };
 
+
 /**
  * Handles internal server errors (500) and sends a response with a custom message.
- * @param res
+ * @param client
  * @param message
  */
-export const handleServerError = (res: Response, message = 'Internal Server Error') => {
-    res.status(500).json({
-        status: 'Error',
-        message,
-    });
-};
-
-import { RawData } from 'ws';
-
-/**
- * Converts RawData (from WebSocket) to a Uint8Array.
- * Handles various types like ArrayBuffer, Buffer, and arrays of Buffers.
- *
- * @param {RawData} message
- * @returns {Uint8Array}
- * @throws {Error}
- */
-export function convertRawDataToUint8Array(message: RawData): Uint8Array {
-    let update: Uint8Array;
-
-    if (message instanceof ArrayBuffer) {
-        update = new Uint8Array(message);
-    } else if (Array.isArray(message)) {
-        update = new Uint8Array(Buffer.concat(message));
-    } else if (Buffer.isBuffer(message)) {
-        update = new Uint8Array(message);
+export const handleServerError = (client: Response | WebSocket, message = 'Internal Server Error') => {
+    if (client instanceof WebSocket) {
+        client.send(JSON.stringify({
+            status: 'Error',
+            message,
+        }));
     } else {
-        throw new Error('Unsupported message type');
+        client.status(500).json({
+            status: 'Error',
+            message,
+        });
     }
-
-    return update;
-}
+};
