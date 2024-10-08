@@ -1,5 +1,5 @@
 import app from './app';
-import { connectToDB } from './models';
+import { connectToDB } from './models/repository';
 
 const port = process.env.PORT || 8083;
 
