@@ -23,3 +23,7 @@ services:
     volumes:
       - /app/node_modules
       - ./services/user:/app
+  
+  user-db:
+    ports:
+      - 27018:27017
