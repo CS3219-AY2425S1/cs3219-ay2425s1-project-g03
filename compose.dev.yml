@@ -37,3 +37,7 @@ services:
   match-db:
     ports:
       - 27019:27017
+  
+  match-broker:
+    ports:
+      - 5672:5672

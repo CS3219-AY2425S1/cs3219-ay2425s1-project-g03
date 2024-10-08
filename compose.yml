@@ -109,6 +109,13 @@ services:
     networks:
       - match-db-network
     restart: always
+  
+  match-broker:
+    container_name: match-broker
+    hostname: match-broker
+    image: rabbitmq:4.0.2
+    networks:
+      - match-db-network
 
 volumes:
   question-db:
