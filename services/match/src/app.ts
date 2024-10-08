@@ -2,7 +2,9 @@ import express, { Express } from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
 import router from './routes';
+import matchRequestRouter from './routes/matchRequestRoutes';
 import bodyParser from 'body-parser';
+import { verifyAccessToken } from './middleware/jwt';
 
 const app: Express = express();
 
@@ -21,5 +23,6 @@ app.use(
 
 // Routes
 app.use('/', router);
+app.use('/request', verifyAccessToken, matchRequestRouter);
 
 export default app;
