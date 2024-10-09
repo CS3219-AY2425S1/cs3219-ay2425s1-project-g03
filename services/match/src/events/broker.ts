@@ -40,7 +40,7 @@ class MessageBroker {
         }
     }
 
-    async consume(queue: string, onMessage: (message: string) => void): Promise<void> {
+    async consume<T>(queue: string, onMessage: (message: T) => void): Promise<void> {
         try {
             if (!this.connected) {
                 await this.connect();
@@ -53,7 +53,7 @@ class MessageBroker {
                 msg => {
                     if (!msg) return console.error('Invalid message from queue ', queue);
 
-                    onMessage(msg.content.toString());
+                    onMessage(JSON.parse(msg.content.toString()) as T);
                     this.channel.ack(msg);
                 },
                 { noAck: false },
