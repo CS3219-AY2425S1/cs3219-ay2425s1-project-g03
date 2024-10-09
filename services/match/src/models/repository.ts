@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { Difficulty, MatchRequest } from './matchRequestModel';
+import { Difficulty, MatchRequestModel } from './matchRequestModel';
 
 export async function connectToDB() {
     const mongoURI = process.env.NODE_ENV === 'production' ? process.env.DB_CLOUD_URI : process.env.DB_LOCAL_URI;
@@ -19,14 +19,18 @@ export async function connectToDB() {
     });
 }
 
-export async function createMatchRequest(userId: string, topics: string[], difficulty: Difficulty) {
-    return await new MatchRequest({ userId, topics, difficulty }).save();
+export async function createMatchRequest(userId: string, username: string, topics: string[], difficulty: Difficulty) {
+    return await new MatchRequestModel({ userId, username, topics, difficulty }).save();
 }
 
 export async function findMatchRequestAndUpdate(id: string, userId: string, topics: string[], difficulty: Difficulty) {
-    return await MatchRequest.findOneAndUpdate({ _id: id, userId }, { $set: { topics, difficulty } });
+    return await MatchRequestModel.findOneAndUpdate({ _id: id, userId }, { $set: { topics, difficulty } });
 }
 
 export async function findMatchRequestAndDelete(id: string, userId: string) {
-    return await MatchRequest.findOneAndDelete({ _id: id, userId });
+    return await MatchRequestModel.findOneAndDelete({ _id: id, userId });
+}
+
+export async function findMatchRequest(id: string, userId: string) {
+    return await MatchRequestModel.findOne({ _id: id, userId });
 }

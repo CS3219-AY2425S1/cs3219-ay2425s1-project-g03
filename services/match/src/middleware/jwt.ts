@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { handleInternalError, handleUnauthorized } from '../utils/helpers';
+import { handleInternalError, handleUnauthorized } from '../utils/responses';
 import { VerifyTokenResponse } from '../types/response';
 import axios from 'axios';
 

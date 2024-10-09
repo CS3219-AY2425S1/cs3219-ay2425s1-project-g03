@@ -1,4 +1,5 @@
-import { RequestUser } from '../models/request';
+import { MatchRequest, MatchRequestStatus } from '../models/matchRequestModel';
+import { RequestUser } from './request';
 
 export interface BaseResponse {
     status: string;
@@ -7,4 +8,8 @@ export interface BaseResponse {
 
 export interface VerifyTokenResponse extends BaseResponse {
     data: RequestUser;
+}
+
+export interface MatchRequestWithStatus extends MatchRequest {
+    status: MatchRequestStatus;
 }
