@@ -10,6 +10,10 @@ import { ButtonModule } from 'primeng/button';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
+import * as Y from 'yjs';
+import { WebsocketProvider } from 'y-websocket';
+import { yCollab } from 'y-codemirror.next'
+
 
 @Component({
     selector: 'app-editor',
@@ -30,6 +34,28 @@ export class EditorComponent implements AfterViewInit {
 
     isSubmit = false;
 
+    ydoc!: Y.Doc;
+
+    // ytext!: Y.Text;
+    ytext = new Y.Text('# type your code here\n');
+
+    yarray!: Y.Array<String>;
+
+    undoManager!: Y.UndoManager;
+
+    wsProvider!: WebsocketProvider;
+
+    usercolors = [
+        { color: '#30bced', light: '#30bced33' },
+        { color: '#6eeb83', light: '#6eeb8333' },
+        { color: '#ffbc42', light: '#ffbc4233' },
+        { color: '#ecd444', light: '#ecd44433' },
+        { color: '#ee6352', light: '#ee635233' },
+        { color: '#9ac2c9', light: '#9ac2c933' },
+        { color: '#8acb88', light: '#8acb8833' },
+        { color: '#1be7ff', light: '#1be7ff33' }
+      ]
+
     constructor(
         @Inject(DOCUMENT) private document: Document,
         private messageService: MessageService,
@@ -38,16 +64,46 @@ export class EditorComponent implements AfterViewInit {
 
     ngAfterViewInit() {
         this.setTheme();
+        this.initConnection();
+        this.setProvider();
         this.setEditorState();
         this.setEditorView();
-        this.setCursorPosition();
+        // this.setCursorPosition();
+    }
+
+    initConnection() {
+        this.ydoc = new Y.Doc();
+        // TODO: replace hardcoded connection
+        this.wsProvider = new WebsocketProvider('ws://localhost:8084', 'my-room', this.ydoc);
+        this.ytext = this.ydoc.getText('sharedArray');
+        // this.yarray = this.ydoc.getArray('sharedArray');
+        // const binding = new CodemirrorBinding(yarray, this.view, this.wsProvider.awareness);
+        // this.undoManager = new Y.UndoManager(this.yarray);
+        this.undoManager = new Y.UndoManager(this.ytext);
+    }
+
+    setProvider() {
+        this.wsProvider.awareness.setLocalStateField('user', {
+            name: 'Anonymous ' + Math.floor(Math.random() * 100),
+            color: this.usercolors[0].color,
+            colorLight: this.usercolors[0].light
+        })
     }
 
     setEditorState() {
-        const myExt: Extension = [basicSetup, python(), this.customTheme, oneDark];
+        const undoManager = this.undoManager;
+        const myExt: Extension = [
+            basicSetup,
+            python(),
+            this.customTheme,
+            oneDark,
+            yCollab(this.ytext, this.wsProvider.awareness, { undoManager })
+        ];
+
 
         this.state = EditorState.create({
-            doc: '# type your code here\n',
+            // doc: '# type your code here\n',
+            doc: this.ytext.toString(),
             extensions: myExt,
         });
     }

@@ -28,11 +28,10 @@
     "primeng": "^17.18.10",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
-    "typeface-poppins": "^1.1.13",
-    "y-codemirror.next": "^0.3.5",
+    "zone.js": "~0.14.10",
     "y-websocket": "^2.0.4",
     "yjs": "^13.6.19",
-    "zone.js": "~0.14.10"
+    "y-codemirror.next": "^0.3.5"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^18.2.2",
