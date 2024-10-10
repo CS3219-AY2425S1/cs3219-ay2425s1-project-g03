@@ -2,7 +2,9 @@ import { Server } from 'http';
 import { WebSocketServer } from 'ws';
 import * as Y from 'yjs';
 import { mdb } from './mongodbService';
-const { setPersistence, setupWSConnection} = require('./utils.js');
+import { handleServerError, handleSuccess } from '../utils/helper';
+
+const { setPersistence, setupWSConnection } = require('../utils/utils.js');
 
 /**
  * Start the WebSocket server
@@ -11,9 +13,18 @@ const { setPersistence, setupWSConnection} = require('./utils.js');
 export const startWebSocketServer = (server: Server) => {
 
     const wss = new WebSocketServer({ server });
-    wss.on('connection', setupWSConnection);
 
-    // Set up persistence to ensure documents are stored in MongoDB
+    wss.on('connection', (conn, req) => {
+        console.log('New WebSocket connection established');
+        try {
+            setupWSConnection(conn, req);
+            handleSuccess(conn, 'WebSocket connection established');
+        } catch (error) {
+            console.error('Failed to set up WebSocket connection:', error);
+            handleServerError(conn, 'Failed to establish WebSocket connection');
+        }
+    });
+
     setPersistence({
         bindState: async (docName: string, ydoc: Y.Doc) => {
             try {
@@ -21,18 +32,17 @@ export const startWebSocketServer = (server: Server) => {
                 console.log(`Loaded persisted document for ${docName}`);
 
                 const newUpdates = Y.encodeStateAsUpdate(ydoc);
-
                 mdb.storeUpdate(docName, newUpdates);
 
                 Y.applyUpdate(ydoc, Y.encodeStateAsUpdate(persistedYdoc));
 
                 ydoc.on('update', async (update) => {
-                    console.log(`Storing update for document ${docName}`);
                     await mdb.storeUpdate(docName, update);
                 });
 
             } catch (error) {
                 console.error(`Error loading document ${docName}:`, error);
+                handleServerError(undefined, `Error loading document ${docName}`);
             }
         },
         writeState: async (docName: string, ydoc: Y.Doc) => {
@@ -40,11 +50,6 @@ export const startWebSocketServer = (server: Server) => {
                 resolve(true);
             });
         },
-    });
-
-    wss.on('connection', (conn, req) => {
-        console.log('New WebSocket connection established');
-        setupWSConnection(conn, req);
     });
 
     console.log('WebSocket server started');

@@ -168,6 +168,22 @@ services:
       - collaboration-db-network
     restart: always
 
+  collaboration:
+    container_name: collaboration
+    image: collaboration
+    build:
+      context: services/collaboration
+      dockerfile: Dockerfile
+    ports:
+      - 8084:8084
+    environment:
+      MONGO_URL: ${MONGODB_URI}
+      PORT: ${PORT}
+      CORS_ORIGIN: ${CORS_ORIGIN}
+    networks:
+      - collaboration-db-network
+    restart: always
+
 volumes:
   question-db:
   user-db:
@@ -178,10 +194,6 @@ networks:
   gateway-network:
     driver: bridge
   question-db-network:
-    driver: bridge
-  user-db-network:
-    driver: bridge
-  match-db-network:
     driver: bridge
   collaboration-db-network:
     driver: bridge

@@ -23,9 +23,7 @@ docker compose down -v
 
 ---
 
-## Endpoints
-
-### Get Questions
+## Get Questions
 
 This endpoint allows the retrieval of all the questions in the database. If filter by (optional) parameters, questions
 that matches with parameters will be returned; if no parameters are provided, all questions will be returned.
@@ -450,6 +448,7 @@ This endpoint allows the deletion of multiple questions by their question IDs.
 ### Command Line Example:
 
 ```
+Delete Questions:
 curl -X POST http://localhost:8081/questions/delete -H "Content-Type: application/json" -d '{"ids": [21, 22]}'
 ```
 

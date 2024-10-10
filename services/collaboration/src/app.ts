@@ -2,7 +2,7 @@ import express from 'express';
 import http from 'http';
 import { startMongoDB } from './services/mongodbService';
 import { startWebSocketServer } from './services/webSocketService';
-import { handleNotFound } from './utils/helper';
+import { handleNotFound, handleSuccess } from './utils/helper';
 
 const app = express();
 const PORT = process.env.PORT || 8084;
@@ -15,7 +15,7 @@ app.use(express.json());
 /**
  * Health check endpoint
  */
-app.get('/health', (req, res) => res.status(200).json({ status: 'ok' }));
+app.get('/health', (req, res) => handleSuccess(res, 'Server is healthy'));
 
 /**
  * Handle 404 for undefined routes
@@ -32,7 +32,7 @@ const server = http.createServer(app);
  */
 startMongoDB()
     .then(() => {
-        startWebSocketServer(server);  // Start WebSocket server once MongoDB is ready
+        startWebSocketServer(server);
         server.listen(PORT, () => {
             console.log(`Server running on port ${PORT}`);
         });

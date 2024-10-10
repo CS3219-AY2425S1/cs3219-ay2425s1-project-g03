@@ -8,26 +8,42 @@ const map = require('lib0/map');
 
 const wsReadyStateConnecting = 0;
 const wsReadyStateOpen = 1;
-const wsReadyStateClosing = 2; // eslint-disable-line
-const wsReadyStateClosed = 3; // eslint-disable-line
+const wsReadyStateClosing = 2;
+const wsReadyStateClosed = 3;
 
 const gcEnabled = process.env.GC !== 'false' && process.env.GC !== '0';
 
 let persistence = null;
 
+/**
+ * Set persistence
+ * @param persistence_
+ */
 const setPersistence = (persistence_) => {
     persistence = persistence_;
 };
 
+/**
+ * Get persistence
+ * @returns {null}
+ */
 const getPersistence = () => persistence;
 
-// exporting docs so that others can use it
+/**
+ * Map of shared documents
+ * @type {Map<any, any>}
+ */
 const docs = new Map();
 
 const messageSync = 0;
 const messageAwareness = 1;
-// const messageAuth = 2
 
+/**
+ * Send message to all connections except the sender
+ * @param update
+ * @param origin
+ * @param doc
+ */
 const updateHandler = (update, origin, doc) => {
     const encoder = encoding.createEncoder();
     encoding.writeVarUint(encoder, messageSync);
@@ -36,6 +52,9 @@ const updateHandler = (update, origin, doc) => {
     doc.conns.forEach((_, conn) => send(doc, conn, message));
 };
 
+/**
+ * Send message to all connections
+ */
 class WSSharedDoc extends Y.Doc {
     constructor(name) {
         super({ gc: gcEnabled });
@@ -74,6 +93,12 @@ class WSSharedDoc extends Y.Doc {
     }
 }
 
+/**
+ * Get shared document by name
+ * @param docname
+ * @param gc
+ * @returns {*}
+ */
 const getYDoc = (docname, gc = true) =>
     map.setIfUndefined(docs, docname, () => {
         const doc = new WSSharedDoc(docname);
@@ -85,6 +110,12 @@ const getYDoc = (docname, gc = true) =>
         return doc;
     });
 
+/**
+ * Message listener
+ * @param conn
+ * @param doc
+ * @param message
+ */
 const messageListener = (conn, doc, message) => {
     try {
         const encoder = encoding.createEncoder();
@@ -114,6 +145,11 @@ const messageListener = (conn, doc, message) => {
     }
 };
 
+/**
+ * Close connection
+ * @param doc
+ * @param conn
+ */
 const closeConn = (doc, conn) => {
     if (doc.conns.has(conn)) {
         const controlledIds = doc.conns.get(conn);
@@ -131,6 +167,12 @@ const closeConn = (doc, conn) => {
     conn.close();
 };
 
+/**
+ * Send message
+ * @param doc
+ * @param conn
+ * @param m
+ */
 const send = (doc, conn, m) => {
     if (conn.readyState !== wsReadyStateConnecting && conn.readyState !== wsReadyStateOpen) {
         closeConn(doc, conn);
@@ -146,6 +188,13 @@ const send = (doc, conn, m) => {
 
 const pingTimeout = 30000;
 
+/**
+ * Setup WS connection
+ * @param conn
+ * @param req
+ * @param docName
+ * @param gc
+ */
 const setupWSConnection = (
     conn,
     req,
@@ -199,6 +248,10 @@ const setupWSConnection = (
     }
 };
 
+/**
+ * Export
+ * @type {{getYDoc: (function(*, boolean=): *), docs: Map<*, *>, getPersistence: (function(): null), setupWSConnection: setupWSConnection, setPersistence: setPersistence}}
+ */
 module.exports = {
     setPersistence,
     getPersistence,
