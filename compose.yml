@@ -177,8 +177,8 @@ services:
     ports:
       - 8084:8084
     environment:
-      MONGO_URL: ${MONGODB_URI}
-      PORT: ${PORT}
+      MONGO_URI: ${MONGO_URI}
+      MONGODB_URI: ${MONGODB_URI}
       CORS_ORIGIN: ${CORS_ORIGIN}
     networks:
       - collaboration-db-network
