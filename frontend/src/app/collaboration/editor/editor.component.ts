@@ -75,7 +75,7 @@ export class EditorComponent implements AfterViewInit {
         this.setProvider();
         this.setEditorState();
         this.setEditorView();
-        // this.setCursorPosition();
+        this.setCursorPosition();
     }
 
     initConnection() {
@@ -160,7 +160,7 @@ export class EditorComponent implements AfterViewInit {
 
     setCursorPosition() {
         // set new cursor position
-        const cursorPosition = this.state.doc.line(2).from;
+        const cursorPosition = this.state.doc.line(1).from;
 
         this.view.dispatch({
             selection: {
