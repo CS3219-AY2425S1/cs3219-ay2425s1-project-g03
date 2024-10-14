@@ -4,7 +4,7 @@ import { EditorState, Extension } from '@codemirror/state';
 import { basicSetup } from 'codemirror';
 import { DOCUMENT } from '@angular/common';
 import { EditorView } from 'codemirror';
-import { python } from '@codemirror/lang-python';
+import { java } from '@codemirror/lang-java';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -13,6 +13,15 @@ import { ToastModule } from 'primeng/toast';
 import * as Y from 'yjs';
 import { WebsocketProvider } from 'y-websocket';
 import { yCollab } from 'y-codemirror.next';
+import * as prettier from 'prettier';
+import * as prettierPluginEstree from 'prettier/plugins/estree';
+
+// The 'prettier-plugin-java' package does not provide TypeScript declaration files.
+// We are using '@ts-ignore' to bypass TypeScript's missing type declaration error.
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import prettierPluginJava from 'prettier-plugin-java';
 
 @Component({
     selector: 'app-editor',
@@ -35,7 +44,6 @@ export class EditorComponent implements AfterViewInit {
 
     ydoc!: Y.Doc;
 
-    // ytext!: Y.Text;
     ytext = new Y.Text('# type your code here\n');
 
     yarray!: Y.Array<string>;
@@ -75,10 +83,32 @@ export class EditorComponent implements AfterViewInit {
         // TODO: replace hardcoded connection
         this.wsProvider = new WebsocketProvider('ws://localhost:8084', 'my-room', this.ydoc);
         this.ytext = this.ydoc.getText('sharedArray');
-        // this.yarray = this.ydoc.getArray('sharedArray');
-        // const binding = new CodemirrorBinding(yarray, this.view, this.wsProvider.awareness);
-        // this.undoManager = new Y.UndoManager(this.yarray);
         this.undoManager = new Y.UndoManager(this.ytext);
+    }
+
+    async format() {
+        try {
+            const currentCode = this.view.state.doc.toString();
+
+            const formattedCode = prettier.format(currentCode, {
+                parser: 'java',
+                plugins: [prettierPluginJava, prettierPluginEstree], // Add necessary plugins
+            });
+            console.log(formattedCode);
+
+            this.view.dispatch({
+                changes: {
+                    from: 0,
+                    to: this.view.state.doc.length,
+                    insert: await formattedCode,
+                },
+            });
+
+            this.view.focus();
+        } catch (e) {
+            console.error('Error formatting code:', e);
+            this.messageService.add({ severity: 'error', summary: 'Formatting Error' });
+        }
     }
 
     setProvider() {
@@ -93,14 +123,13 @@ export class EditorComponent implements AfterViewInit {
         const undoManager = this.undoManager;
         const myExt: Extension = [
             basicSetup,
-            python(),
+            java(),
             this.customTheme,
             oneDark,
             yCollab(this.ytext, this.wsProvider.awareness, { undoManager }),
         ];
 
         this.state = EditorState.create({
-            // doc: '# type your code here\n',
             doc: this.ytext.toString(),
             extensions: myExt,
         });
