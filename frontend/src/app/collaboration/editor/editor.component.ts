@@ -12,8 +12,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
 import * as Y from 'yjs';
 import { WebsocketProvider } from 'y-websocket';
-import { yCollab } from 'y-codemirror.next'
-
+import { yCollab } from 'y-codemirror.next';
 
 @Component({
     selector: 'app-editor',
@@ -39,7 +38,7 @@ export class EditorComponent implements AfterViewInit {
     // ytext!: Y.Text;
     ytext = new Y.Text('# type your code here\n');
 
-    yarray!: Y.Array<String>;
+    yarray!: Y.Array<string>;
 
     undoManager!: Y.UndoManager;
 
@@ -53,8 +52,8 @@ export class EditorComponent implements AfterViewInit {
         { color: '#ee6352', light: '#ee635233' },
         { color: '#9ac2c9', light: '#9ac2c933' },
         { color: '#8acb88', light: '#8acb8833' },
-        { color: '#1be7ff', light: '#1be7ff33' }
-      ]
+        { color: '#1be7ff', light: '#1be7ff33' },
+    ];
 
     constructor(
         @Inject(DOCUMENT) private document: Document,
@@ -86,8 +85,8 @@ export class EditorComponent implements AfterViewInit {
         this.wsProvider.awareness.setLocalStateField('user', {
             name: 'Anonymous ' + Math.floor(Math.random() * 100),
             color: this.usercolors[0].color,
-            colorLight: this.usercolors[0].light
-        })
+            colorLight: this.usercolors[0].light,
+        });
     }
 
     setEditorState() {
@@ -97,9 +96,8 @@ export class EditorComponent implements AfterViewInit {
             python(),
             this.customTheme,
             oneDark,
-            yCollab(this.ytext, this.wsProvider.awareness, { undoManager })
+            yCollab(this.ytext, this.wsProvider.awareness, { undoManager }),
         ];
-
 
         this.state = EditorState.create({
             // doc: '# type your code here\n',
