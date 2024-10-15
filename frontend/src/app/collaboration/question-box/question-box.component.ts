@@ -28,8 +28,8 @@ export class QuestionBoxComponent implements OnInit {
     ) {}
 
     ngOnInit() {
-        // this.setQuestion();
-        this.setDummyQuestion();
+        this.setQuestion();
+        // this.setDummyQuestion();
     }
 
     setQuestion() {

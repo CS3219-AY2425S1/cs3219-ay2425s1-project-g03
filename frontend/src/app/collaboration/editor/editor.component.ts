@@ -15,6 +15,7 @@ import { WebsocketProvider } from 'y-websocket';
 import { yCollab } from 'y-codemirror.next';
 import * as prettier from 'prettier';
 import * as prettierPluginEstree from 'prettier/plugins/estree';
+import { usercolors } from './user-colors';
 
 // The 'prettier-plugin-java' package does not provide TypeScript declaration files.
 // We are using '@ts-ignore' to bypass TypeScript's missing type declaration error.
@@ -52,16 +53,7 @@ export class EditorComponent implements AfterViewInit {
 
     wsProvider!: WebsocketProvider;
 
-    usercolors = [
-        { color: '#30bced', light: '#30bced33' },
-        { color: '#6eeb83', light: '#6eeb8333' },
-        { color: '#ffbc42', light: '#ffbc4233' },
-        { color: '#ecd444', light: '#ecd44433' },
-        { color: '#ee6352', light: '#ee635233' },
-        { color: '#9ac2c9', light: '#9ac2c933' },
-        { color: '#8acb88', light: '#8acb8833' },
-        { color: '#1be7ff', light: '#1be7ff33' },
-    ];
+    // TODO: Randomise user colours
 
     constructor(
         @Inject(DOCUMENT) private document: Document,
@@ -112,10 +104,13 @@ export class EditorComponent implements AfterViewInit {
     }
 
     setProvider() {
+        const randomIndex = Math.floor(Math.random() * usercolors.length);
+
+        // TODO: Replace name with real user's username
         this.wsProvider.awareness.setLocalStateField('user', {
-            name: 'Anonymous ' + Math.floor(Math.random() * 100),
-            color: this.usercolors[0].color,
-            colorLight: this.usercolors[0].light,
+            name: 'Bob the builder ',
+            color: usercolors[randomIndex].color,
+            colorLight: usercolors[randomIndex].light,
         });
     }
 
