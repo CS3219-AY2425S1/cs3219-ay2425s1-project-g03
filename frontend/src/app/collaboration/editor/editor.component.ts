@@ -53,8 +53,6 @@ export class EditorComponent implements AfterViewInit {
 
     wsProvider!: WebsocketProvider;
 
-    // TODO: Randomise user colours
-
     constructor(
         @Inject(DOCUMENT) private document: Document,
         private messageService: MessageService,
@@ -86,7 +84,6 @@ export class EditorComponent implements AfterViewInit {
                 parser: 'java',
                 plugins: [prettierPluginJava, prettierPluginEstree], // Add necessary plugins
             });
-            console.log(formattedCode);
 
             this.view.dispatch({
                 changes: {
