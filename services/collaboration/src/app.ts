@@ -2,7 +2,7 @@ import express from 'express';
 import http from 'http';
 import { startMongoDB } from './services/mongodbService';
 import { startWebSocketServer } from './services/webSocketService';
-import { handleNotFound, handleSuccess } from './utils/helper';
+import { handleNotFound, handleSuccess } from './services/helper';
 
 const app = express();
 const PORT = process.env.PORT || 8084;
