@@ -110,7 +110,7 @@ export class MatchingComponent implements OnInit {
     }
 
     onMatch() {
-        const matchRequest: MatchRequest = {topics: this.topics, difficulty: this.difficulty}
+        const matchRequest: MatchRequest = { topics: this.topics, difficulty: this.difficulty };
         console.log(matchRequest);
         this.matchService.createMatchRequest(matchRequest).subscribe({
             next: response => {

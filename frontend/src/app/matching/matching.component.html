@@ -64,6 +64,8 @@
         (matchFailed)="onMatchFailed()"
         (dialogClose)="onMatchDialogClose()" />
     <app-retry-matching
+        [userCriteria]="{ topics: topics, difficulty: difficulty }"
+        [matchId]="matchId"
         [isVisible]="isMatchFailed"
         (retryMatch)="onRetryMatchRequest()"
         (dialogClose)="onRetryMatchDialogClose()" />
