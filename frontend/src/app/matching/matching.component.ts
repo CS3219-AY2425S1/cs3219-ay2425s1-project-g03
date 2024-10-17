@@ -2,17 +2,17 @@ import { Component, OnInit } from '@angular/core';
 import { DropdownModule } from 'primeng/dropdown';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { AccordionModule } from 'primeng/accordion';
-import { FormsModule } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { PanelModule } from 'primeng/panel';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { ChipModule } from 'primeng/chip';
 import { FindingMatchComponent } from './finding-match/finding-match.component';
-import { UserCriteria } from './user-criteria.model';
 import { RetryMatchingComponent } from './retry-matching/retry-matching.component';
 import { QuestionService } from '../../_services/question.service';
 import { MessageService } from 'primeng/api';
+import { HAS_NO_QUESTIONS, hasQuestionsValidator } from './_validators/has-questions.validator';
 
 @Component({
     selector: 'app-matching',
@@ -28,6 +28,7 @@ import { MessageService } from 'primeng/api';
         AccordionModule,
         ButtonModule,
         FormsModule,
+        ReactiveFormsModule,
         CommonModule,
     ],
     providers: [QuestionService, MessageService],
@@ -35,13 +36,8 @@ import { MessageService } from 'primeng/api';
     styleUrl: './matching.component.css',
 })
 export class MatchingComponent implements OnInit {
-    userCriteria: UserCriteria = {
-        topics: [],
-        difficulty: null,
-    };
-
-    topics: string[] = [];
-    difficulties = ['Easy', 'Medium', 'Hard'];
+    availableTopics: string[] = [];
+    availableDifficulties = ['Easy', 'Medium', 'Hard'];
 
     isLoadingTopics = true;
     isProcessingMatch = false;
@@ -52,17 +48,28 @@ export class MatchingComponent implements OnInit {
         private questionService: QuestionService,
     ) {}
 
+    matchForm!: FormGroup;
+
     ngOnInit(): void {
         this.fetchTopics();
+        this.matchForm = new FormGroup(
+            {
+                topics: new FormControl([], [Validators.minLength(1)]),
+                difficulty: new FormControl('', [Validators.required]),
+            },
+            {
+                asyncValidators: hasQuestionsValidator(this.questionService),
+            },
+        );
     }
 
     fetchTopics() {
         this.questionService.getTopics().subscribe({
             next: response => {
-                this.topics = response.data || [];
+                this.availableTopics = response.data || [];
             },
             error: () => {
-                this.topics = [];
+                this.availableTopics = [];
                 this.onErrorReceive('Failed to load topics. Please try again later.');
             },
             complete: () => {
@@ -71,12 +78,20 @@ export class MatchingComponent implements OnInit {
         });
     }
 
-    /**
-     * To reset selected topics to an empty array as PrimeNG sets it to null
-     * when clearing the input.
-     */
-    onSelectedTopicsClear() {
-        this.userCriteria.topics = [];
+    get topicControl(): AbstractControl {
+        return this.matchForm.controls['topics'];
+    }
+
+    get topics(): string[] {
+        return this.matchForm.controls['topics'].value;
+    }
+
+    get difficulty(): string {
+        return this.matchForm.controls['difficulty'].value;
+    }
+
+    get hasNoQuestions(): boolean {
+        return this.matchForm.dirty && this.matchForm.hasError(HAS_NO_QUESTIONS);
     }
 
     onErrorReceive(errorMessage: string) {
@@ -89,8 +104,8 @@ export class MatchingComponent implements OnInit {
 
     onMatch() {
         console.log({
-            topic: this.userCriteria.topics,
-            difficulty: this.userCriteria.difficulty,
+            topic: this.topics,
+            difficulty: this.difficulty,
         });
         this.isProcessingMatch = true;
         // TODO: Add API request to start matching.
@@ -115,13 +130,11 @@ export class MatchingComponent implements OnInit {
         this.isMatchFailed = false;
     }
 
-    removeTopic(index: number) {
-        if (this.userCriteria.topics == null) {
-            return;
-        }
-        this.userCriteria.topics = [
-            ...this.userCriteria.topics.slice(0, index),
-            ...this.userCriteria.topics.slice(index + 1),
-        ];
+    removeTopic(topic: string) {
+        const topicControl = this.matchForm.controls['topics'];
+        const curTopics = topicControl.value;
+        const index = curTopics.findIndex((t: string) => t === topic);
+
+        topicControl.setValue([...curTopics.slice(0, index), ...curTopics.slice(index + 1)]);
     }
 }

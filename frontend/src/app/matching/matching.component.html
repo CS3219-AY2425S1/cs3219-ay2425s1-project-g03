@@ -2,31 +2,30 @@
     <div class="form-wrapper w-full sm:w-30rem">
         <h2 class="mt-0 mb-1">Matching Criteria</h2>
         <p class="mt-0">Select any one criteria to start matching!</p>
-        <form #matchForm="ngForm" class="flex flex-column gap-3">
+        <form [formGroup]="matchForm" class="flex flex-column gap-3">
             <div class="form-field">
                 <label for="topic">Topic</label>
                 <p-multiSelect
                     name="topic"
-                    [options]="topics"
-                    [(ngModel)]="userCriteria.topics"
+                    [options]="availableTopics"
+                    formControlName="topics"
                     placeholder="No Topic Selected"
                     [loading]="isLoadingTopics"
                     [showClear]="true"
-                    (onClear)="onSelectedTopicsClear()"
+                    (onClear)="topicControl.reset([])"
                     [maxSelectedLabels]="0"
-                    selectedItemsLabel="{{ userCriteria.topics.length }} topic{{
-                        userCriteria.topics.length > 1 ? 's' : ''
-                    }} selected"
+                    selectedItemsLabel="{{ topics.length }} topic{{ topics.length > 1 ? 's' : '' }} selected"
                     class="p-fluid" />
 
-                @if (userCriteria.topics.length > 0) {
+                @if (topics) {
                     <div class="flex flex-wrap gap-2">
-                        <p-chip
-                            *ngFor="let topic of userCriteria.topics; let i = index"
-                            [label]="topic"
-                            removable="true"
-                            (onRemove)="removeTopic(i)"
-                            styleClass="text-sm" />
+                        @for (topic of topics; track topic) {
+                            <p-chip
+                                [label]="topic"
+                                removable="true"
+                                (onRemove)="removeTopic(topic)"
+                                styleClass="text-sm" />
+                        }
                     </div>
                 }
             </div>
@@ -35,18 +34,24 @@
                 <label for="difficulty">Difficulty</label>
                 <p-dropdown
                     name="difficulty"
-                    [options]="difficulties"
-                    [(ngModel)]="userCriteria.difficulty"
+                    [options]="availableDifficulties"
+                    formControlName="difficulty"
                     placeholder="No Difficulty Selected"
                     [showClear]="true"
                     class="p-fluid" />
             </div>
 
+            @if (hasNoQuestions) {
+                <small class="text-red-300">
+                    No questions were found for the selected topics and difficulty. Please change your selection.
+                </small>
+            }
+
             <p-button
                 type="submit"
                 [label]="isProcessingMatch ? '' : 'Start Matching'"
                 [loading]="isProcessingMatch"
-                [disabled]="userCriteria.topics.length === 0 && userCriteria.difficulty === null"
+                [disabled]="!matchForm.valid"
                 (click)="onMatch()"
                 styleClass="w-full justify-content-center" />
         </form>
@@ -54,7 +59,6 @@
 
     <app-finding-match
         [isVisible]="isProcessingMatch"
-        [userCriteria]="userCriteria"
         (matchFailed)="onMatchFailed()"
         (dialogClose)="onMatchDialogClose()" />
     <app-retry-matching
