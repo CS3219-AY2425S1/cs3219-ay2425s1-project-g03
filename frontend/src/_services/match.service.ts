@@ -7,7 +7,7 @@ import { MatchRequest, MatchResponse } from '../app/matching/match.model';
     providedIn: 'root',
 })
 export class MatchService extends ApiService {
-    protected apiPath = 'match';
+    protected apiPath = 'match/request';
 
     private httpOptions = {
         headers: new HttpHeaders({

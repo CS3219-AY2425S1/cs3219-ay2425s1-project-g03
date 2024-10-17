@@ -59,6 +59,7 @@
 
     <app-finding-match
         [userCriteria]="{ topics: topics, difficulty: difficulty }"
+        [matchId]="matchId"
         [isVisible]="isProcessingMatch"
         (matchFailed)="onMatchFailed()"
         (dialogClose)="onMatchDialogClose()" />
@@ -66,4 +67,6 @@
         [isVisible]="isMatchFailed"
         (retryMatch)="onRetryMatchRequest()"
         (dialogClose)="onRetryMatchDialogClose()" />
+
+    <p-toast position="bottom-right" [breakpoints]="{ '920px': { width: '90%' } }" />
 </div>
