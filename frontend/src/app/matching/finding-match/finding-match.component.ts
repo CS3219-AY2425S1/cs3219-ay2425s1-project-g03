@@ -14,7 +14,7 @@ import { CommonModule } from '@angular/common';
     styleUrl: './finding-match.component.css',
 })
 export class FindingMatchComponent {
-    @Input() userCriteria: UserCriteria = { topics: [], difficulty: null };
+    @Input() userCriteria!: UserCriteria;
     @Input() isVisible = false;
 
     @Output() dialogClose = new EventEmitter<void>();

@@ -58,6 +58,7 @@
     </div>
 
     <app-finding-match
+        [userCriteria]="{ topics: topics, difficulty: difficulty }"
         [isVisible]="isProcessingMatch"
         (matchFailed)="onMatchFailed()"
         (dialogClose)="onMatchDialogClose()" />

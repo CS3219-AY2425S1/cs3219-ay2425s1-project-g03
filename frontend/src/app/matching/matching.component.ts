@@ -13,6 +13,7 @@ import { RetryMatchingComponent } from './retry-matching/retry-matching.componen
 import { QuestionService } from '../../_services/question.service';
 import { MessageService } from 'primeng/api';
 import { HAS_NO_QUESTIONS, hasQuestionsValidator } from './_validators/has-questions.validator';
+import { Difficulty } from './user-criteria.model';
 
 @Component({
     selector: 'app-matching',
@@ -55,7 +56,7 @@ export class MatchingComponent implements OnInit {
         this.matchForm = new FormGroup(
             {
                 topics: new FormControl([], [Validators.minLength(1)]),
-                difficulty: new FormControl('', [Validators.required]),
+                difficulty: new FormControl<Difficulty | null>(null, [Validators.required]),
             },
             {
                 asyncValidators: hasQuestionsValidator(this.questionService),
@@ -86,7 +87,7 @@ export class MatchingComponent implements OnInit {
         return this.matchForm.controls['topics'].value;
     }
 
-    get difficulty(): string {
+    get difficulty(): Difficulty {
         return this.matchForm.controls['difficulty'].value;
     }
 
