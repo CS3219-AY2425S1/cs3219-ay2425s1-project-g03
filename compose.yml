@@ -78,10 +78,46 @@ services:
       - user-db-network
     command: --quiet
     restart: always
+  
+  match:
+    container_name: match
+    image: match
+    build:
+      context: services/match
+      dockerfile: Dockerfile
+    environment:
+      DB_CLOUD_URI: ${MATCH_DB_CLOUD_URI}
+      DB_LOCAL_URI: ${MATCH_DB_LOCAL_URI}
+      DB_USERNAME: ${MATCH_DB_USERNAME}
+      DB_PASSWORD: ${MATCH_DB_PASSWORD}
+    networks:
+      - gateway-network
+      - match-db-network
+    restart: always
+
+  match-db:
+    container_name: match-db
+    image: mongo:7.0.14
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MATCH_DB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MATCH_DB_PASSWORD}
+    volumes:
+      - match-db:/data/db
+    networks:
+      - match-db-network
+    restart: always
+  
+  match-broker:
+    container_name: match-broker
+    hostname: match-broker
+    image: rabbitmq:4.0.2
+    networks:
+      - match-db-network
 
 volumes:
   question-db:
   user-db:
+  match-db:
 
 networks:
   gateway-network:
@@ -89,4 +125,6 @@ networks:
   question-db-network:
     driver: bridge
   user-db-network:
+    driver: bridge
+  match-db-network:
     driver: bridge
