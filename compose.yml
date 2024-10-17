@@ -64,7 +64,6 @@ services:
     networks:
       - gateway-network
       - user-db-network
-      - match-network
     restart: always
   
   user-db:
@@ -91,10 +90,8 @@ services:
       DB_LOCAL_URI: ${MATCH_DB_LOCAL_URI}
       DB_USERNAME: ${MATCH_DB_USERNAME}
       DB_PASSWORD: ${MATCH_DB_PASSWORD}
-    ports:
-      - 8083:8083
     networks:
-      - match-network
+      - gateway-network
       - match-db-network
     restart: always
 
@@ -128,8 +125,6 @@ networks:
   question-db-network:
     driver: bridge
   user-db-network:
-    driver: bridge
-  match-network:
     driver: bridge
   match-db-network:
     driver: bridge
