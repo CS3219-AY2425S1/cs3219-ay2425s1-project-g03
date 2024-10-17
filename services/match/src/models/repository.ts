@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import { Difficulty, MatchRequestModel } from './matchRequestModel';
+import { oneMinuteAgo } from '../utils/date';
 
 export async function connectToDB() {
     const mongoURI = process.env.NODE_ENV === 'production' ? process.env.DB_CLOUD_URI : process.env.DB_LOCAL_URI;
@@ -28,7 +29,7 @@ export async function findMatchRequestAndUpdate(id: string, userId: string, topi
 }
 
 export async function findMatchRequestAndDelete(id: string, userId: string) {
-    return await MatchRequestModel.findOneAndDelete({ _id: id, userId });
+    return await MatchRequestModel.findOneAndDelete({ _id: id, userId, updatedAt: { $gte: oneMinuteAgo() } });
 }
 
 export async function findMatchRequest(id: string, userId: string) {

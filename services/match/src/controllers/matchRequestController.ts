@@ -17,7 +17,7 @@ import { getStatus } from '../models/matchRequestModel';
  * @param res
  */
 export const createMatchRequest = async (req: Request, res: Response) => {
-    const { error, value } = createMatchRequestSchema.validate(req.query);
+    const { error, value } = createMatchRequestSchema.validate(req.body);
     if (error) {
         return handleBadRequest(res, error.message);
     }
@@ -40,7 +40,7 @@ export const createMatchRequest = async (req: Request, res: Response) => {
  * @param res
  */
 export const updateMatchRequest = async (req: Request, res: Response) => {
-    const { error, value } = updateMatchRequestSchema.validate(req.query);
+    const { error, value } = updateMatchRequestSchema.validate(req.body);
     if (error) {
         return handleBadRequest(res, error.message);
     }
@@ -80,7 +80,7 @@ export const deleteMatchRequest = async (req: Request, res: Response) => {
             return handleNotFound(res, `Request ${id} not found`);
         }
 
-        handleSuccess(res, 200, 'Question deleted successfully', matchRequest);
+        handleSuccess(res, 200, 'Match request deleted successfully', matchRequest);
     } catch (error) {
         console.log('Error in deleteMatchRequest:', error);
         handleInternalError(res, 'Failed to delete match request');
