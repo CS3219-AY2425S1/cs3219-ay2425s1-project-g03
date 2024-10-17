@@ -4,7 +4,7 @@
     <form #loginForm="ngForm" (ngSubmit)="onSubmit()" class="form-container">
         <div class="form-field">
             <label for="username">Username</label>
-            <input pInputText required type="text" id="username" name="username" [(ngModel)]="user.username" />
+            <input pInputText required type="text" id="username" name="username" [(ngModel)]="userForm.username" />
         </div>
 
         <div class="form-field">
@@ -13,7 +13,7 @@
                 required
                 inputId="password"
                 name="password"
-                [(ngModel)]="user.password"
+                [(ngModel)]="userForm.password"
                 [toggleMask]="true"
                 [feedback]="false"
                 class="p-fluid" />

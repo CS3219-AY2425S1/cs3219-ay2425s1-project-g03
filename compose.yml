@@ -9,20 +9,29 @@ services:
       - 4200:4200
     restart: always
   
+  gateway:
+    container_name: gateway
+    image: nginx:1.27
+    ports:
+      - 8080:8080
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - gateway-network
+  
   question:
     container_name: question
     image: question
     build:
       context: services/question
       dockerfile: Dockerfile
-    ports:
-      - 8081:8081
     environment:
       DB_CLOUD_URI: ${QUESTION_DB_CLOUD_URI}
       DB_LOCAL_URI: ${QUESTION_DB_LOCAL_URI}
       DB_USERNAME: ${QUESTION_DB_USERNAME}
       DB_PASSWORD: ${QUESTION_DB_PASSWORD}
     networks:
+      - gateway-network
       - question-db-network
     restart: always
 
@@ -46,18 +55,38 @@ services:
     build:
       context: services/user
       dockerfile: Dockerfile
-    ports:
-      - 8082:8082
     environment:
-      USER_SERVICE_CLOUD_URI: ${USER_SERVICE_CLOUD_URI}
-      USER_SERVICE_LOCAL_URI: ${USER_SERVICE_LOCAL_URI}
-      ENV: ${ENV}
+      DB_CLOUD_URI: ${USER_DB_CLOUD_URI}
+      DB_LOCAL_URI: ${USER_DB_LOCAL_URI}
+      DB_USERNAME: ${USER_DB_USERNAME}
+      DB_PASSWORD: ${USER_DB_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
+    networks:
+      - gateway-network
+      - user-db-network
+    restart: always
+  
+  user-db:
+    container_name: user-db
+    image: mongo:7.0.14
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${USER_DB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${USER_DB_PASSWORD}
+    volumes:
+      - user-db:/data/db
+    networks:
+      - user-db-network
+    command: --quiet
     restart: always
 
 volumes:
   question-db:
+  user-db:
 
 networks:
+  gateway-network:
+    driver: bridge
   question-db-network:
+    driver: bridge
+  user-db-network:
     driver: bridge

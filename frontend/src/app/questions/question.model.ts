@@ -1,12 +1,17 @@
-export interface QuestionResponse {
+export interface BaseResponse {
     status: string;
     message: string;
+}
+
+export interface MessageOnlyResponse extends BaseResponse {
+    data: null;
+}
+
+export interface QuestionResponse extends BaseResponse {
     data?: Question[] | null;
 }
 
-export interface SingleQuestionResponse {
-    status: string;
-    message: string;
+export interface SingleQuestionResponse extends BaseResponse {
     data: Question;
 }
 

@@ -14,7 +14,6 @@ import { DropdownModule } from 'primeng/dropdown';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { Question } from './question.model';
 import { QuestionService } from '../../_services/question.service';
-import { forkJoin } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { QuestionDialogComponent } from './question-dialog.component';
 import { Column } from './column.model';
@@ -85,9 +84,7 @@ export class QuestionsComponent implements OnInit {
             message: 'Are you sure you want to delete the selected questions?',
             header: 'Delete Confirmation',
             icon: 'pi pi-exclamation-triangle',
-            accept: () => {
-                this.handleDeleteQuestionResponse();
-            },
+            accept: () => this.handleDeleteQuestionsResponse(),
         });
     }
 
@@ -101,21 +98,15 @@ export class QuestionsComponent implements OnInit {
         };
     }
 
-    handleDeleteQuestionResponse() {
-        const deleteRequests = this.selectedQuestions?.map(q => this.questionService.deleteQuestion(q.id));
-
-        forkJoin(deleteRequests!).subscribe({
+    handleDeleteQuestionsResponse() {
+        const ids = this.selectedQuestions?.map(q => q.id) || [];
+        this.questionService.deleteQuestions(ids).subscribe({
             next: () => {
-                // delete locally
-                this.questions = this.questions?.filter(val => !this.selectedQuestions?.includes(val));
+                this.questions = this.questions?.filter(q => !ids.includes(q.id));
                 this.selectedQuestions = null;
             },
-            error: (error: HttpErrorResponse) => {
-                this.onErrorReceive('Some questions could not be deleted. ' + error.error.message);
-            },
-            complete: () => {
-                this.onSuccessfulRequest('Question(s) Deleted');
-            },
+            error: (error: HttpErrorResponse) => this.onErrorReceive(error.error.message),
+            complete: () => this.onSuccessfulRequest('Question(s) Deleted'),
         });
     }
 

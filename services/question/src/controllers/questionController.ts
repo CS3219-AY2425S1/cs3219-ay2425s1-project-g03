@@ -246,3 +246,32 @@ export const deleteQuestion = async (req: Request, res: Response) => {
         handleError(res, 'Failed to delete question');
     }
 };
+
+/**
+ * This endpoint allows deletion of multiple questions by the question ID.
+ * @param req
+ * @param res
+ */
+export const deleteQuestions = async (req: Request, res: Response) => {
+    const { ids } = req.body;
+
+    if (!ids || !Array.isArray(ids)) {
+        return handleBadRequest(res, 'IDs are missing or not specified as an array');
+    }
+
+    const deletedIDs = ids.map((id: any) => parseInt(id, 10));
+    if (deletedIDs.some((id: any) => isNaN(id))) {
+        return handleBadRequest(res, 'Invalid question ID');
+    }
+
+    try {
+        const count = await Question.countDocuments({ id: { $in: deletedIDs } });
+
+        if (count !== ids.length) return handleNotFound(res, 'Question not found');
+        await Question.deleteMany({ id: { $in: deletedIDs } });
+        handleSuccess(res, 200, 'Questions deleted successfully', null);
+    } catch (error) {
+        console.log('Error in deleteQuestions:', error);
+        handleError(res, 'Failed to delete questions');
+    }
+};

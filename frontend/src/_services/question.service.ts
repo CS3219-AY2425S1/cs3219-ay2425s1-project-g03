@@ -1,15 +1,20 @@
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { API_CONFIG } from '../app/api.config';
 import { catchError, Observable, throwError } from 'rxjs';
-import { SingleQuestionResponse, QuestionResponse, QuestionBody } from '../app/questions/question.model';
+import {
+    SingleQuestionResponse,
+    QuestionResponse,
+    QuestionBody,
+    MessageOnlyResponse,
+} from '../app/questions/question.model';
 import { TopicResponse } from '../app/questions/topic.model';
+import { ApiService } from './api.service';
 
 @Injectable({
     providedIn: 'root',
 })
-export class QuestionService {
-    private baseUrl = API_CONFIG.baseUrl;
+export class QuestionService extends ApiService {
+    protected apiPath = 'question/questions';
 
     private httpOptions = {
         headers: new HttpHeaders({
@@ -17,7 +22,9 @@ export class QuestionService {
         }),
     };
 
-    constructor(private http: HttpClient) {}
+    constructor(private http: HttpClient) {
+        super();
+    }
 
     getQuestions(
         title?: string,
@@ -41,11 +48,11 @@ export class QuestionService {
         }
 
         // send request
-        return this.http.get<QuestionResponse>(this.baseUrl + '/questions', { params });
+        return this.http.get<QuestionResponse>(this.apiUrl, { params });
     }
 
     getQuestionByID(id: number): Observable<QuestionResponse> {
-        return this.http.get<QuestionResponse>(this.baseUrl + '/questions/' + id);
+        return this.http.get<QuestionResponse>(this.apiUrl + '/' + id);
     }
 
     getQuestionByParam(topics: string[], difficulty: string, limit?: number): Observable<QuestionResponse> {
@@ -56,28 +63,32 @@ export class QuestionService {
         }
         params = params.append('topics', topics.join(',')).append('difficulty', difficulty);
 
-        return this.http.get<QuestionResponse>(this.baseUrl + '/questions/search', { params });
+        return this.http.get<QuestionResponse>(this.apiUrl + '/search', { params });
     }
 
     getTopics(): Observable<TopicResponse> {
-        return this.http.get<TopicResponse>(this.baseUrl + '/questions/topics');
+        return this.http.get<TopicResponse>(this.apiUrl + '/topics');
     }
 
     addQuestion(question: QuestionBody): Observable<SingleQuestionResponse> {
         return this.http
-            .post<SingleQuestionResponse>(this.baseUrl + '/questions', question, this.httpOptions)
+            .post<SingleQuestionResponse>(this.apiUrl, question, this.httpOptions)
             .pipe(catchError(this.handleError));
     }
 
     updateQuestion(id: number, question: QuestionBody): Observable<SingleQuestionResponse> {
         return this.http
-            .put<SingleQuestionResponse>(this.baseUrl + '/questions/' + id, question, this.httpOptions)
+            .put<SingleQuestionResponse>(this.apiUrl + '/' + id, question, this.httpOptions)
             .pipe(catchError(this.handleError));
     }
 
     deleteQuestion(id: number): Observable<SingleQuestionResponse> {
+        return this.http.delete<SingleQuestionResponse>(this.apiUrl + '/' + id).pipe(catchError(this.handleError));
+    }
+
+    deleteQuestions(ids: number[]): Observable<MessageOnlyResponse> {
         return this.http
-            .delete<SingleQuestionResponse>(this.baseUrl + '/questions/' + id)
+            .post<MessageOnlyResponse>(this.apiUrl + '/delete', { ids }, this.httpOptions)
             .pipe(catchError(this.handleError));
     }
 

@@ -3,14 +3,17 @@ import 'dotenv/config';
 import { connect } from 'mongoose';
 
 export async function connectToDB() {
-    const mongoDBUri =
-        process.env.ENV === 'PROD' ? process.env.USER_SERVICE_CLOUD_URI : process.env.USER_SERVICE_LOCAL_URI;
+    const mongoUri = process.env.NODE_ENV === 'production' ? process.env.DB_CLOUD_URI : process.env.DB_LOCAL_URI;
 
-    if (!mongoDBUri) {
+    if (!mongoUri) {
         throw new Error('MongoDB URI not specified');
     }
 
-    await connect(mongoDBUri);
+    await connect(mongoUri, {
+        authSource: 'admin',
+        user: process.env.DB_USERNAME,
+        pass: process.env.DB_PASSWORD,
+    });
 }
 
 export async function createUser(username: string, email: string, password: string) {

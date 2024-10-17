@@ -7,6 +7,7 @@ import {
     addQuestion,
     deleteQuestion,
     updateQuestion,
+    deleteQuestions,
 } from '../controllers/questionController';
 
 /**
@@ -37,5 +38,10 @@ questionRouter.put('/:id', updateQuestion);
  * Delete a question from the database.
  */
 questionRouter.delete('/:id', deleteQuestion);
+
+/**
+ * Delete questions from the database.
+ */
+questionRouter.post('/delete', deleteQuestions);
 
 export default questionRouter;
