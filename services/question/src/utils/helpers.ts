@@ -37,6 +37,19 @@ export const handleNotFound = (res: Response, message = 'Not Found') => {
 };
 
 /**
+ * Handles conflict errors and sends a 409 response with a custom message.
+ * @param res
+ * @param message
+ */
+export const handleConflict = (res: Response, message = 'Conflict', data: unknown) => {
+    res.status(409).json({
+        status: 'Error',
+        message,
+        data,
+    });
+};
+
+/**
  * Handles successful responses and sends a 200 response message with the provided data.
  * @param res
  * @param data

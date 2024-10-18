@@ -1,3 +1,4 @@
+import Joi from 'joi';
 import { model, Schema } from 'mongoose';
 
 enum Difficulty {
@@ -45,3 +46,15 @@ const questionSchema = new Schema<IQuestion>(
 );
 
 export const Question = model<IQuestion>('Question', questionSchema);
+
+const questionJoiSchema = Joi.object({
+    id: Joi.number().required(),
+    title: Joi.string().required(),
+    description: Joi.string().required(),
+    topics: Joi.array().items(Joi.string()).min(1).required(),
+    difficulty: Joi.string()
+        .valid(...Object.values(Difficulty))
+        .required(),
+});
+
+export const questionsArrayJoiSchema = Joi.array().items(questionJoiSchema);

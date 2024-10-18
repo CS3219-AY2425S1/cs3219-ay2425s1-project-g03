@@ -1,0 +1,35 @@
+<p-dialog header="Upload questions" [(visible)]="isVisible" [style]="{ width: '40rem' }" draggable="false">
+    <p-fileUpload
+        #fileUpload
+        name="file[]"
+        accept=".json"
+        maxFileSize="262144"
+        (onSelect)="onSelect($event, fileUpload)"
+        (uploadHandler)="upload($event, fileUpload)"
+        customUpload="true">
+        <ng-template pTemplate="header" let-files let-uploadCallback="uploadCallback">
+            @if (files?.length) {
+                <p-button (onClick)="uploadCallback()" label="Upload" severity="primary"></p-button>
+            }
+        </ng-template>
+        <ng-template
+            pTemplate="content"
+            let-files
+            let-uploadedFiles
+            let-removeFileCallback
+            let-uploadCallback="uploadCallback">
+        </ng-template>
+
+        <ng-template pTemplate="empty">
+            <div
+                class="flex align-items-center justify-content-center flex-column"
+                style="cursor: pointer"
+                tabindex="0"
+                (click)="fileUpload.choose()"
+                (keyup.enter)="fileUpload.choose()">
+                <i class="pi pi-cloud-upload border-2 border-circle p-5 text-8xl text-blue-400 border-400"></i>
+                <p class="mt-4 mb-0">Drag and drop files here to upload.</p>
+            </div>
+        </ng-template>
+    </p-fileUpload>
+</p-dialog>

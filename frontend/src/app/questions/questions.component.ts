@@ -17,6 +17,7 @@ import { QuestionService } from '../../_services/question.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { QuestionDialogComponent } from './question-dialog.component';
 import { Column } from './column.model';
+import { QuestionUploadComponent } from './question-upload.component';
 
 @Component({
     selector: 'app-questions',
@@ -37,6 +38,7 @@ import { Column } from './column.model';
         DropdownModule,
         ProgressSpinnerModule,
         QuestionDialogComponent,
+        QuestionUploadComponent,
     ],
     providers: [QuestionService, ConfirmationService, MessageService],
     templateUrl: './questions.component.html',
@@ -127,6 +129,16 @@ export class QuestionsComponent implements OnInit {
 
     onDialogClose() {
         this.isDialogVisible = false;
+    }
+
+    onQuestionsUpsert(questions: Question[]) {
+        const questionIds = this.questions.map(q => q.id);
+
+        const updated = questions.filter(q => questionIds.includes(q.id));
+        const inserted = questions.filter(q => !questionIds.includes(q.id));
+
+        updated.forEach(q => (this.questions[this.questions.findIndex(x => x.id == q.id)] = q));
+        this.questions = this.questions.concat(inserted);
     }
 
     onQuestionUpdate(question: Question) {
