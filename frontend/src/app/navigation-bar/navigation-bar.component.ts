@@ -37,6 +37,18 @@ export class NavigationBarComponent implements OnInit {
                     style: { 'margin-left': 'auto' },
                     items: [
                         {
+                            label: 'Find Match',
+                            icon: 'pi pi-users',
+                            // route: '',
+                            class: 'p-submenu-list',
+                        },
+                        {
+                            label: 'View Questions',
+                            icon: 'pi pi-file',
+                            route: '/questions',
+                            class: 'p-submenu-list',
+                        },
+                        {
                             label: 'View Profile',
                             icon: 'pi pi-user',
                             // route: '',
