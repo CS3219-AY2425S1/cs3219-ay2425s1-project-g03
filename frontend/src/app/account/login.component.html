@@ -3,12 +3,18 @@
 
     <form #loginForm="ngForm" (ngSubmit)="onSubmit()" class="form-container">
         <div class="form-field">
-            <label for="username">Username</label>
+            <div class="flex flex-row align-items-center gap-2">
+                <i class="pi pi-user"></i>
+                <label for="username">Username</label>
+            </div>
             <input pInputText required type="text" id="username" name="username" [(ngModel)]="userForm.username" />
         </div>
 
         <div class="form-field">
-            <label for="password">Password</label>
+            <div class="flex flex-row align-items-center gap-2">
+                <i class="pi pi-lock"></i>
+                <label for="password">Password</label>
+            </div>
             <p-password
                 required
                 inputId="password"

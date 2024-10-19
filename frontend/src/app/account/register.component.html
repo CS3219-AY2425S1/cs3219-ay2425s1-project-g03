@@ -3,7 +3,10 @@
 
     <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="form-container">
         <div class="form-field">
-            <label for="username">Username</label>
+            <div class="flex flex-row align-items-center gap-2">
+                <i class="pi pi-user"></i>
+                <label for="username">Username</label>
+            </div>
             <input id="username" type="text" formControlName="username" pInputText />
             @if (isUsernameInvalid) {
                 <small class="text-red-300">
@@ -12,42 +15,89 @@
             }
         </div>
         <div class="form-field">
-            <label for="email">Email</label>
+            <div class="flex flex-row align-items-center gap-2">
+                <i class="pi pi-envelope"></i>
+                <label for="email">Email</label>
+            </div>
             <input id="email" type="email" formControlName="email" pInputText />
             @if (isEmailInvalid) {
                 <small class="text-red-300">The provided email is invalid</small>
             }
         </div>
         <div class="form-field">
-            <label for="password">Password</label>
+            <div class="flex flex-row align-items-center gap-2">
+                <i class="pi pi-lock"></i>
+                <label for="password">Password</label>
+            </div>
             <p-password
-                id="password"
+                inputId="password"
+                name="password"
                 class="p-fluid"
                 formControlName="password"
-                [strongRegex]="strongPasswordRegex"
-                [toggleMask]="true">
-                <ng-template pTemplate="footer">
-                    <p-divider />
-                    <p class="mt-1 text-sm">Your password must contain:</p>
-                    <ul class="pl-2 ml-2 mt-0 text-sm line-height-3">
-                        <li>At least one lowercase</li>
-                        <li>At least one uppercase</li>
-                        <li>At least one numeric</li>
-                        <li>At least one special character</li>
-                        <li>Minimum 8 characters</li>
-                    </ul>
-                </ng-template>
+                [toggleMask]="true"
+                [feedback]="false">
             </p-password>
             @if (isPasswordWeak) {
                 <small class="text-red-300">The provided password is too weak</small>
             } @else if (isPasswordInvalid) {
                 <small class="text-red-300">The provided password contains invalid characters</small>
             }
+            <ul class="pl-0 m-0 text-sm line-height-3">
+                <li class="flex gap-2 align-items-center">
+                    @if (isPasswordLowercase) {
+                        <i class="pi pi-times text-sm text-gray-300"></i>
+                        <p class="m-0 text-gray-300">At least one lowercase</p>
+                    } @else {
+                        <i class="pi pi-check text-sm text-green-300"></i>
+                        <p class="m-0 text-green-300">At least one lowercase</p>
+                    }
+                </li>
+                <li class="flex gap-2 align-items-center">
+                    @if (isPasswordUppercase) {
+                        <i class="pi pi-times text-sm text-gray-300"></i>
+                        <p class="m-0 text-gray-300">At least one uppercase</p>
+                    } @else {
+                        <i class="pi pi-check text-sm text-green-300"></i>
+                        <p class="m-0 text-green-300">At least one uppercase</p>
+                    }
+                </li>
+                <li class="flex gap-2 align-items-center">
+                    @if (isPasswordNumeric) {
+                        <i class="pi pi-times text-sm text-gray-300"></i>
+                        <p class="m-0 text-gray-300">At least one numeric</p>
+                    } @else {
+                        <i class="pi pi-check text-sm text-green-300"></i>
+                        <p class="m-0 text-green-300">At least one numeric</p>
+                    }
+                </li>
+                <li class="flex gap-2 align-items-center">
+                    @if (isPasswordSpecial) {
+                        <i class="pi pi-times text-sm text-gray-300"></i>
+                        <p class="m-0 text-gray-300">At least one special character</p>
+                    } @else {
+                        <i class="pi pi-check text-sm text-green-300"></i>
+                        <p class="m-0 text-green-300">At least one special character</p>
+                    }
+                </li>
+                <li class="flex gap-2 align-items-center">
+                    @if (isPasswordShort) {
+                        <i class="pi pi-times text-sm text-gray-300"></i>
+                        <p class="m-0 text-gray-300">Minimum 8 characters</p>
+                    } @else {
+                        <i class="pi pi-check text-sm text-green-300"></i>
+                        <p class="m-0 text-green-300">Minimum 8 characters</p>
+                    }
+                </li>
+            </ul>
         </div>
         <div class="form-field">
-            <label for="confirmPassword">Confirm Password</label>
+            <div class="flex flex-row align-items-center gap-2">
+                <i class="pi pi-check-square"></i>
+                <label for="confirmPassword">Confirm Password</label>
+            </div>
             <p-password
-                id="confirmPassword"
+                inputId="confirmPassword"
+                name="confirmPassword"
                 class="p-fluid"
                 formControlName="confirmPassword"
                 [toggleMask]="true"

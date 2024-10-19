@@ -8,7 +8,12 @@ import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
-import { PASSWORD_WEAK, STRONG_PASSWORD_REGEX, weakPasswordValidator } from './_validators/weak-password.validator';
+import { PASSWORD_LOWERCASE, lowercasePasswordValidator } from './_validators/lowercase-password';
+import { PASSWORD_UPPERCASE, uppercasePasswordValidator } from './_validators/uppercase-password';
+import { PASSWORD_NUMERIC, numericPasswordValidator } from './_validators/numeric-password';
+import { PASSWORD_SPECIAL, specialPasswordValidator } from './_validators/special-password';
+import { PASSWORD_SHORT, shortPasswordValidator } from './_validators/short-password';
+import { PASSWORD_WEAK, weakPasswordValidator } from './_validators/weak-password.validator';
 import { mismatchPasswordValidator, PASSWORD_MISMATCH } from './_validators/mismatch-password.validator';
 import { invalidUsernameValidator, USERNAME_INVALID } from './_validators/invalid-username.validator';
 import { invalidPasswordValidator, PASSWORD_INVALID } from './_validators/invalid-password.validator';
@@ -49,7 +54,16 @@ export class RegisterComponent {
         {
             username: new FormControl('', [Validators.required, invalidUsernameValidator()]),
             email: new FormControl('', [Validators.required, Validators.email]),
-            password: new FormControl('', [Validators.required, weakPasswordValidator(), invalidPasswordValidator()]),
+            password: new FormControl('', [
+                Validators.required,
+                invalidPasswordValidator(),
+                lowercasePasswordValidator(),
+                uppercasePasswordValidator(),
+                numericPasswordValidator(),
+                specialPasswordValidator(),
+                shortPasswordValidator(),
+                weakPasswordValidator()
+            ]),
             confirmPassword: new FormControl('', [Validators.required]),
         },
         {
@@ -57,8 +71,6 @@ export class RegisterComponent {
         },
     );
     isProcessingRegistration = false;
-
-    strongPasswordRegex = STRONG_PASSWORD_REGEX.source;
 
     get isUsernameInvalid(): boolean {
         const usernameControl = this.userForm.controls['username'];
@@ -68,6 +80,31 @@ export class RegisterComponent {
     get isEmailInvalid(): boolean {
         const emailControl = this.userForm.controls['email'];
         return emailControl.dirty && emailControl.invalid;
+    }
+
+    get isPasswordLowercase(): boolean {
+        const passwordControl = this.userForm.controls['password'];
+        return passwordControl.pristine || passwordControl.hasError(PASSWORD_LOWERCASE);
+    }
+
+    get isPasswordUppercase(): boolean {
+        const passwordControl = this.userForm.controls['password'];
+        return passwordControl.pristine || passwordControl.hasError(PASSWORD_UPPERCASE);
+    }
+
+    get isPasswordNumeric(): boolean {
+        const passwordControl = this.userForm.controls['password'];
+        return passwordControl.pristine || passwordControl.hasError(PASSWORD_NUMERIC);
+    }
+
+    get isPasswordSpecial(): boolean {
+        const passwordControl = this.userForm.controls['password'];
+        return passwordControl.pristine || passwordControl.hasError(PASSWORD_SPECIAL);
+    }
+
+    get isPasswordShort(): boolean {
+        const passwordControl = this.userForm.controls['password'];
+        return passwordControl.pristine || passwordControl.hasError(PASSWORD_SHORT);
     }
 
     get isPasswordWeak(): boolean {
@@ -113,7 +150,11 @@ export class RegisterComponent {
                         } else if (status === 500) {
                             errorMessage = 'Database Server Error';
                         }
-                        this.messageService.add({ severity: 'error', summary: 'Log In Error', detail: errorMessage });
+                        this.messageService.add({
+                            severity: 'error',
+                            summary: 'Registration Error',
+                            detail: errorMessage,
+                        });
                     },
                 });
         } else {
