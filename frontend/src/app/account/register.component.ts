@@ -28,7 +28,7 @@ import { AuthenticationService } from '../../_services/authentication.service';
         ToastModule,
         ReactiveFormsModule,
     ],
-    providers: [MessageService, AuthenticationService],
+    providers: [MessageService],
     templateUrl: './register.component.html',
     styleUrl: './account.component.css',
 })

@@ -1,5 +1,5 @@
 // Modified from https://jasonwatmore.com/post/2022/11/15/angular-14-jwt-authentication-example-tutorial#login-component-ts
-import { EventEmitter, Injectable, Output } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -21,7 +21,7 @@ export class AuthenticationService extends ApiService {
     ) {
         super();
         const userData = localStorage.getItem('user');
-        const user: User | null = userData ? JSON.parse(userData) : null
+        const user: User | null = userData ? JSON.parse(userData) : null;
         this.userSubject = new BehaviorSubject(user);
         this.user$ = this.userSubject.asObservable();
     }

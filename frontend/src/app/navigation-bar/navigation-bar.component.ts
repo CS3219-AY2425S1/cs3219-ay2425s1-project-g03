@@ -16,12 +16,12 @@ import { User } from '../../_models/user.model';
 export class NavigationBarComponent implements OnInit {
     items: MenuItem[] | undefined;
 
-    constructor(private router: Router, private authService: AuthenticationService) {}
+    constructor(
+        private router: Router,
+        private authService: AuthenticationService,
+    ) {}
 
     ngOnInit() {
-        // TODO: Subscribe to auth service to know if user is logged in.
-        //       Call setMenuItems() inside to ensure menu items are dynamically
-        //       updated according to login status.
         this.setMenuItems();
         this.authService.user$.subscribe(() => this.setMenuItems());
     }
@@ -29,33 +29,34 @@ export class NavigationBarComponent implements OnInit {
     setMenuItems() {
         if (this.authService.isLoggedIn) {
             const user = this.authService.userValue as User;
-            this.items = [{
-                label: user.username,
-                icon: 'pi pi-user',
-                route: '/profile',
-                style: { 'margin-left': 'auto' },
-                items: [
-                    {
-                        label: 'View Profile',
-                        icon: 'pi pi-user',
-                        // route: '',
-                        class: 'p-submenu-list',
-                    },
-                    {
-                        label: 'View Match History',
-                        icon: 'pi pi-trophy',
-                        // route: '',
-                        class: 'p-submenu-list',
-                    },
-                    {
-                        label: 'Logout',
-                        icon: 'pi pi-sign-out',
-                        route: 'account/login',
-                        class: 'p-submenu-list',
-                        command: () => this.authService.logout(),
-                    },
-                ],
-            }]
+            this.items = [
+                {
+                    label: user.username,
+                    icon: 'pi pi-user',
+                    // route: '/profile',
+                    style: { 'margin-left': 'auto' },
+                    items: [
+                        {
+                            label: 'View Profile',
+                            icon: 'pi pi-user',
+                            // route: '',
+                            class: 'p-submenu-list',
+                        },
+                        {
+                            label: 'View Match History',
+                            icon: 'pi pi-trophy',
+                            // route: '',
+                            class: 'p-submenu-list',
+                        },
+                        {
+                            label: 'Logout',
+                            icon: 'pi pi-sign-out',
+                            class: 'p-submenu-list',
+                            command: () => this.authService.logout(),
+                        },
+                    ],
+                },
+            ];
         } else {
             this.items = [
                 {
@@ -72,9 +73,5 @@ export class NavigationBarComponent implements OnInit {
                 },
             ];
         }
-    }
-
-    navigateHome() {
-        this.router.navigate(['/account/login']);
     }
 }
