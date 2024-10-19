@@ -20,7 +20,7 @@ import { AuthenticationService } from '../../_services/authentication.service';
 export class LoginComponent {
     constructor(
         private messageService: MessageService,
-        public authenticationService: AuthenticationService,
+        private authenticationService: AuthenticationService,
         private router: Router,
         private route: ActivatedRoute,
     ) {
