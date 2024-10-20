@@ -55,7 +55,10 @@
                     [outlined]="true"
                     (click)="closeDialog()" />
             } @else {
-                <p class="mb-0 font-medium text-blue-300">Redirecting you to the workspace...</p>
+                <div class="flex flex-column w-full align-items-center justify-content-center gap-2">
+                    <p-progressSpinner styleClass="w-2rem h-2rem mt-2" strokeWidth="6" />
+                    <p class="mb-0 mt-0 font-medium text-blue-300">Redirecting you to the workspace...</p>
+                </div>
             }
         </div>
     </ng-template>
