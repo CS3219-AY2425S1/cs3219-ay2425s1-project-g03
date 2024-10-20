@@ -32,8 +32,8 @@ services:
       context: services/question
       dockerfile: Dockerfile
     environment:
-      DB_CLOUD_URI: ${QUESTION_DB_CLOUD_URI}
-      DB_LOCAL_URI: ${QUESTION_DB_LOCAL_URI}
+      QUESTION_DB_CLOUD_URI: ${QUESTION_DB_CLOUD_URI}
+      QUESTION_DB_LOCAL_URI: ${QUESTION_DB_LOCAL_URI}
       DB_USERNAME: ${QUESTION_DB_USERNAME}
       DB_PASSWORD: ${QUESTION_DB_PASSWORD}
       BROKER_URL: ${BROKER_URL}
@@ -177,8 +177,8 @@ services:
     ports:
       - 8084:8084
     environment:
-      MONGO_URI: ${MONGO_URI}
-      MONGODB_URI: ${MONGODB_URI}
+      COLLAB_CLOUD_MONGO_URI: ${COLLAB_CLOUD_MONGO_URI}
+      COLLAB_LOCAL_MONGO_URI: ${COLLAB_LOCAL_MONGO_URI}
       CORS_ORIGIN: ${CORS_ORIGIN}
     networks:
       - collaboration-db-network

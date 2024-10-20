@@ -1,7 +1,7 @@
 import { MongoClient } from 'mongodb';
 import { MongodbPersistence } from 'y-mongodb-provider';
 
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/collaboration-service';
+const MONGO_URI = process.env.COLLAB_CLOUD_MONGO_URI || 'mongodb://localhost:27017/collaboration-service';
 const COLLECTION_NAME = 'yjs-documents';
 
 /**
