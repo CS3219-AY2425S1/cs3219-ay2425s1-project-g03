@@ -2,9 +2,9 @@ import { Server } from 'http';
 import { WebSocketServer } from 'ws';
 import * as Y from 'yjs';
 import { mdb } from './mongodbService';
-import { handleServerError, handleSuccess } from './helper';
+import { handleServerError, handleSuccess } from '../utils/helper';
 
-const { setPersistence, setupWSConnection } = require('./utility.js');
+const { setPersistence, setupWSConnection } = require('../utils/utility.js');
 
 /**
  * Start the WebSocket server
