@@ -18,5 +18,6 @@ export const routes: Routes = [
     {
         path: 'matching',
         component: MatchingComponent,
+        canActivate: [AuthGuardService],
     },
 ];
