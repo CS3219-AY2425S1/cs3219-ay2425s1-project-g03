@@ -20,6 +20,12 @@
     left: unset;
 }
 
+::ng-deep .p-button {
+    background: transparent;
+    border: transparent;
+    color: white;
+}
+
 a.fill-div {
     display: block;
     height: 100%;
