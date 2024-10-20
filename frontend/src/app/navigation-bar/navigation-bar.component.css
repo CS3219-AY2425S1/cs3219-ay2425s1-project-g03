@@ -1,4 +1,4 @@
-::ng-deep .p-menubar {
+:host ::ng-deep .p-menubar {
     border-radius: 0;
     border-style: none;
     position: sticky;
@@ -15,12 +15,12 @@
     width: 100%;
 }
 
-::ng-deep .p-submenu-list {
+:host ::ng-deep .p-submenu-list {
     right: 0%;
     left: unset;
 }
 
-::ng-deep .p-button {
+:host ::ng-deep .p-button {
     background: transparent;
     border: transparent;
     color: white;
