@@ -1,7 +1,9 @@
 import { Request, Response } from 'express';
-import { handleError, handleNotFound, handleBadRequest, handleSuccess } from '../utils/helpers';
-import { Question } from '../models/questionModel';
-import { getNextSequenceValue } from '../utils/sequence';
+import { handleError, handleNotFound, handleBadRequest, handleSuccess, handleConflict } from '../utils/helpers';
+import { IQuestion, Question, questionsArrayJoiSchema } from '../models/questionModel';
+import { getMaxQuestionId, getNextSequenceValue, initializeCounter } from '../utils/sequence';
+import { AnyBulkWriteOperation } from 'mongoose';
+import { MongoBulkWriteError } from 'mongodb';
 
 /**
  * This endpoint allows the retrieval of all the questions in the database (or can filter by optional parameters).
@@ -248,6 +250,61 @@ export const deleteQuestion = async (req: Request, res: Response) => {
 };
 
 /**
+ * This endpoint allows uploading multiple questions into the database
+ * @param req
+ * @param res
+ */
+export const uploadQuestions = async (req: Request, res: Response) => {
+    const file = req.file;
+    if (!file) {
+        return handleBadRequest(res, 'No file provided');
+    }
+
+    // Validation
+    const questions: IQuestion[] = [];
+    try {
+        const jsonData = JSON.parse(file.buffer.toString());
+        const { error } = questionsArrayJoiSchema.validate(jsonData);
+        if (error) {
+            return handleBadRequest(res, 'Invalid JSON file provided');
+        }
+        questions.push(...jsonData);
+    } catch {
+        return handleBadRequest(res, 'Invalid JSON file provided');
+    }
+
+    try {
+        // Ensure counter is updated accordingly
+        const maxCurId = await getMaxQuestionId();
+        const maxId = Math.max(maxCurId, ...questions.map(q => q.id));
+        await initializeCounter(maxId);
+
+        const ops: AnyBulkWriteOperation[] = questions.map(item => ({
+            updateOne: {
+                filter: { id: item.id },
+                update: { $set: item },
+                upsert: true,
+            },
+        }));
+
+        await Question.bulkWrite(ops, { ordered: false });
+        const data = await Question.find({ id: { $in: questions.map(q => q.id) } });
+        handleSuccess(res, 201, 'Questions created successfully', data);
+    } catch (error) {
+        if (!(error instanceof MongoBulkWriteError)) {
+            return handleError(res, 'Failed to add questions');
+        }
+
+        try {
+            const data = await Question.find({ id: { $in: questions.map(q => q.id) } });
+            handleConflict(res, 'Failed to add some questions!', data);
+        } catch {
+            handleError(res, 'Failed to add questions');
+        }
+    }
+};
+
+/*
  * This endpoint allows deletion of multiple questions by the question ID.
  * @param req
  * @param res

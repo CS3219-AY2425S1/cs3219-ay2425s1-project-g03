@@ -20,8 +20,14 @@
                     icon="pi pi-trash"
                     severity="danger"
                     label="Delete"
+                    class="mr-2"
                     (onClick)="deleteSelectedQuestions()"
-                    [disabled]="!selectedQuestions || !selectedQuestions.length" />
+                    [disabled]="!selectedQuestions?.length" />
+                <p-button
+                    icon="pi pi-file-arrow-up"
+                    severity="success"
+                    label="Upload"
+                    (onClick)="uploadDialog.isVisible = true" />
             </div>
         </p-toolbar>
         <p-table
@@ -84,5 +90,6 @@
         (errorReceive)="onErrorReceive($event)"
         (successfulRequest)="onSuccessfulRequest($event)">
     </app-question-dialog>
+    <app-question-upload #uploadDialog (questionsUpsert)="onQuestionsUpsert($event)"></app-question-upload>
     <p-confirmDialog [style]="{ width: '450px' }" />
 </div>

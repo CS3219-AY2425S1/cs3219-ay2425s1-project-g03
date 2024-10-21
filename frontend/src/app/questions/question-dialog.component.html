@@ -4,7 +4,8 @@
     (onShow)="show()"
     [(visible)]="isDialogVisible"
     [modal]="true"
-    [style]="{ width: '25rem' }">
+    [style]="{ width: '25rem' }"
+    draggable="false">
     <ng-template pTemplate="header">
         <div class="inline-flex align-items-center justify-content-center gap-2">
             <span class="font-bold white-space-nowrap"> {{ headerMessage }}</span>
