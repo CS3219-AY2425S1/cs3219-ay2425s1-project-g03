@@ -6,7 +6,7 @@ export const PASSWORD_SPECIAL = 'passwordSpecial';
 
 export function specialPasswordValidator(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
-        const missingSpecial = !SPECIAL_PASSWORD_REGEX.test(control.value)
+        const missingSpecial = !SPECIAL_PASSWORD_REGEX.test(control.value);
         return missingSpecial ? { [PASSWORD_SPECIAL]: true } : null;
     };
 }
