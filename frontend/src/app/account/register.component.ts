@@ -62,7 +62,7 @@ export class RegisterComponent {
                 numericPasswordValidator(),
                 specialPasswordValidator(),
                 shortPasswordValidator(),
-                weakPasswordValidator()
+                weakPasswordValidator(),
             ]),
             confirmPassword: new FormControl('', [Validators.required]),
         },
