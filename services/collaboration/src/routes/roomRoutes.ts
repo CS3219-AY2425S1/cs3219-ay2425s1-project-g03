@@ -1,6 +1,9 @@
 import { Router } from 'express';
 import { getRoomByUserIdController } from '../controllers/roomController';
 
+/**
+ * Router for room endpoints.
+ */
 const router = Router();
 
 /**

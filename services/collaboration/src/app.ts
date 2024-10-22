@@ -2,10 +2,13 @@ import express, { Express } from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
 import roomRouter from './routes/roomRoutes';
+import bodyParser from 'body-parser';
+import router from './routes';
 
 const app: Express = express();
 
 app.use(morgan('dev'));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
 
 app.use(
@@ -16,6 +19,7 @@ app.use(
     }),
 );
 
+app.use('/', router);
 app.use('/room', roomRouter);
 
 export default app;
