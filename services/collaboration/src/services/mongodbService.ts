@@ -88,11 +88,28 @@ export const createYjsDocument = async (roomId: string) => {
 };
 
 /**
- * Find a room by user ID
+ * Find rooms by user ID
  * @param userId - Any one of the two user IDs in the room
  */
-export const findRoomByUserId = async (userId: string) => {
+export const findRoomsByUserId = async (userId: string) => {
+    try {
+        const db = await connectToRoomDB();
+        console.log(`Querying for rooms with user ID: ${userId}`);
+        const rooms = await db.collection('rooms').find({ users: { $elemMatch: { id: userId } } }).toArray();
+        console.log('Rooms found:', rooms);
+        return rooms;
+    } catch (error) {
+        console.error('Error querying rooms:', error);
+        throw error;
+    }
+};
+
+/**
+ * Find a room by room ID (room_id)
+ * @param roomId - The room ID
+ */
+export const findRoomByRoomId = async (roomId: string) => {
     const db = await connectToRoomDB();
-    const room = await db.collection('rooms').findOne({ users: { $elemMatch: { id: userId } } });
+    const room = await db.collection('rooms').findOne({ _id: new ObjectId(roomId) });
     return room;
 };

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getRoomByUserIdController } from '../controllers/roomController';
+import { getRoomIdsByUserIdController, getRoomByRoomIdController } from '../controllers/roomController';
 
 /**
  * Router for room endpoints.
@@ -7,8 +7,16 @@ import { getRoomByUserIdController } from '../controllers/roomController';
 const router = Router();
 
 /**
- * Get room by user id
+ * Get room IDs by user ID
  */
-router.get('/user/:userId', getRoomByUserIdController);
+router.get('/user/:userId', (req, res, next) => {
+    console.log('Router hit for user ID:', req.params.userId);
+    next();
+}, getRoomIdsByUserIdController);
+
+/**
+ * Get room by room ID
+ */
+router.get('/:roomId', getRoomByRoomIdController);
 
 export default router;

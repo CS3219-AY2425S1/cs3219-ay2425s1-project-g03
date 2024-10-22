@@ -152,6 +152,7 @@ services:
       dockerfile: Dockerfile
     ports:
       - 8084:8084
+      - 8087:8087
     environment:
       COLLAB_CLOUD_MONGO_URI: ${COLLAB_CLOUD_MONGO_URI}
       COLLAB_LOCAL_MONGO_URI: ${COLLAB_LOCAL_MONGO_URI}
@@ -160,6 +161,8 @@ services:
       CORS_ORIGIN: ${CORS_ORIGIN}
       RABBITMQ_URL: ${RABBITMQ_URL}
       QUESTION_SERVICE_URL: ${QUESTION_SERVICE_URL}
+      WS_PORT: 8084
+      HTTP_PORT: 8087
     depends_on:
       match-broker:
         condition: service_healthy
