@@ -37,59 +37,30 @@
                 [toggleMask]="true"
                 [feedback]="false">
             </p-password>
-            @if (isPasswordWeak) {
-                <small class="text-red-300">The provided password is too weak</small>
-            } @else if (isPasswordInvalid) {
+
+            @if (isPasswordInvalid) {
                 <small class="text-red-300">The provided password contains invalid characters</small>
             }
-            <ul class="pl-0 m-0 text-sm line-height-3">
-                <li class="flex gap-2 align-items-center">
-                    @if (isPasswordLowercase) {
-                        <i class="pi pi-times text-sm text-gray-300"></i>
-                        <p class="m-0 text-gray-300">At least one lowercase</p>
-                    } @else {
-                        <i class="pi pi-check text-sm text-green-300"></i>
-                        <p class="m-0 text-green-300">At least one lowercase</p>
+
+            @if (isPasswordControlDirty) {
+                <ul class="pl-0 m-0 text-sm line-height-3">
+                    @if (isPasswordWeak) {
+                        @for (req of passwordRequirements; track $index) {
+                            <li class="flex gap-2 align-items-center">
+                                <i class="pi text-sm" [ngClass]="req.check() ? 'pi-times text-gray-300' : 'pi-check text-green-300'"></i>
+                                <p class="m-0" [ngClass]="req.check() ? 'text-gray-300' : 'text-green-300'">{{ req.msg }}</p>
+                            </li>
+                        }
+                    } @else if (isPasswordStrong) {
+                        <li class="flex gap-2 align-items-center">
+                            <i class="pi pi-check text-sm text-green-300"></i>
+                            <p class="m-0 text-sm text-green-300">Your password is strong enough!</p>
+                        </li>
                     }
-                </li>
-                <li class="flex gap-2 align-items-center">
-                    @if (isPasswordUppercase) {
-                        <i class="pi pi-times text-sm text-gray-300"></i>
-                        <p class="m-0 text-gray-300">At least one uppercase</p>
-                    } @else {
-                        <i class="pi pi-check text-sm text-green-300"></i>
-                        <p class="m-0 text-green-300">At least one uppercase</p>
-                    }
-                </li>
-                <li class="flex gap-2 align-items-center">
-                    @if (isPasswordNumeric) {
-                        <i class="pi pi-times text-sm text-gray-300"></i>
-                        <p class="m-0 text-gray-300">At least one numeric</p>
-                    } @else {
-                        <i class="pi pi-check text-sm text-green-300"></i>
-                        <p class="m-0 text-green-300">At least one numeric</p>
-                    }
-                </li>
-                <li class="flex gap-2 align-items-center">
-                    @if (isPasswordSpecial) {
-                        <i class="pi pi-times text-sm text-gray-300"></i>
-                        <p class="m-0 text-gray-300">At least one special character</p>
-                    } @else {
-                        <i class="pi pi-check text-sm text-green-300"></i>
-                        <p class="m-0 text-green-300">At least one special character</p>
-                    }
-                </li>
-                <li class="flex gap-2 align-items-center">
-                    @if (isPasswordShort) {
-                        <i class="pi pi-times text-sm text-gray-300"></i>
-                        <p class="m-0 text-gray-300">Minimum 8 characters</p>
-                    } @else {
-                        <i class="pi pi-check text-sm text-green-300"></i>
-                        <p class="m-0 text-green-300">Minimum 8 characters</p>
-                    }
-                </li>
-            </ul>
+                </ul>
+            }
         </div>
+
         <div class="form-field">
             <div class="flex flex-row align-items-center gap-2">
                 <i class="pi pi-check-square"></i>

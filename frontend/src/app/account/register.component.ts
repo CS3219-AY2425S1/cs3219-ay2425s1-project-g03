@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink, Router, ActivatedRoute } from '@angular/router';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { InputTextModule } from 'primeng/inputtext';
@@ -23,6 +24,7 @@ import { AuthenticationService } from '../../_services/authentication.service';
     selector: 'app-register',
     standalone: true,
     imports: [
+        CommonModule,
         RouterLink,
         FormsModule,
         InputTextModule,
@@ -70,6 +72,15 @@ export class RegisterComponent {
             validators: mismatchPasswordValidator('password', 'confirmPassword'),
         },
     );
+
+    passwordRequirements = [
+        { msg: 'At least one lowercase', check: () => this.passwordHasNoLowercase },
+        { msg: 'At least one uppercase', check: () => this.passwordHasNoUppercase },
+        { msg: 'At least one numeric', check: () => this.passwordHasNoNumeric },
+        { msg: 'At least one special character', check: () => this.passwordHasNoSpecial },
+        { msg: 'Minimum 8 characters', check: () => this.isPasswordShort }
+    ];
+
     isProcessingRegistration = false;
 
     get isUsernameInvalid(): boolean {
@@ -82,45 +93,49 @@ export class RegisterComponent {
         return emailControl.dirty && emailControl.invalid;
     }
 
-    get isPasswordLowercase(): boolean {
-        const passwordControl = this.userForm.controls['password'];
-        return passwordControl.pristine || passwordControl.hasError(PASSWORD_LOWERCASE);
+    get passwordControl(): AbstractControl {
+        return this.userForm.controls['password'];
     }
 
-    get isPasswordUppercase(): boolean {
-        const passwordControl = this.userForm.controls['password'];
-        return passwordControl.pristine || passwordControl.hasError(PASSWORD_UPPERCASE);
+    get isPasswordControlDirty(): boolean {
+        return this.passwordControl.dirty;
     }
 
-    get isPasswordNumeric(): boolean {
-        const passwordControl = this.userForm.controls['password'];
-        return passwordControl.pristine || passwordControl.hasError(PASSWORD_NUMERIC);
+    get passwordHasNoLowercase(): boolean {
+        return this.passwordControl.pristine || this.passwordControl.hasError(PASSWORD_LOWERCASE);
     }
 
-    get isPasswordSpecial(): boolean {
-        const passwordControl = this.userForm.controls['password'];
-        return passwordControl.pristine || passwordControl.hasError(PASSWORD_SPECIAL);
+    get passwordHasNoUppercase(): boolean {
+        return this.passwordControl.pristine || this.passwordControl.hasError(PASSWORD_UPPERCASE);
+    }
+
+    get passwordHasNoNumeric(): boolean {
+        return this.passwordControl.pristine || this.passwordControl.hasError(PASSWORD_NUMERIC);
+    }
+
+    get passwordHasNoSpecial(): boolean {
+        return this.passwordControl.pristine || this.passwordControl.hasError(PASSWORD_SPECIAL);
     }
 
     get isPasswordShort(): boolean {
-        const passwordControl = this.userForm.controls['password'];
-        return passwordControl.pristine || passwordControl.hasError(PASSWORD_SHORT);
+        return this.passwordControl.pristine || this.passwordControl.hasError(PASSWORD_SHORT);
     }
 
     get isPasswordWeak(): boolean {
-        const passwordControl = this.userForm.controls['password'];
-        return passwordControl.dirty && passwordControl.hasError(PASSWORD_WEAK);
+        return this.passwordControl.dirty && this.passwordControl.hasError(PASSWORD_WEAK);
+    }
+
+    get isPasswordStrong(): boolean {
+        return this.passwordControl.dirty && !this.passwordControl.hasError(PASSWORD_WEAK);
     }
 
     get isPasswordInvalid(): boolean {
-        const passwordControl = this.userForm.controls['password'];
-        return passwordControl.dirty && passwordControl.hasError(PASSWORD_INVALID);
+        return this.passwordControl.dirty && this.passwordControl.hasError(PASSWORD_INVALID);
     }
 
     get hasPasswordMismatch(): boolean {
-        const passwordControl = this.userForm.controls['password'];
         const confirmPasswordControl = this.userForm.controls['confirmPassword'];
-        return passwordControl.valid && confirmPasswordControl.dirty && this.userForm.hasError(PASSWORD_MISMATCH);
+        return this.passwordControl.valid && confirmPasswordControl.dirty && this.userForm.hasError(PASSWORD_MISMATCH);
     }
 
     showError() {
