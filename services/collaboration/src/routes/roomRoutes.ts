@@ -1,11 +1,11 @@
 import { Router } from 'express';
-import { getRoomByIdController } from '../controllers/roomController';
+import { getRoomByUserIdController } from '../controllers/roomController';
 
 const router = Router();
 
 /**
- * Get room by id
+ * Get room by user id
  */
-router.get('/:roomId', getRoomByIdController);
+router.get('/user/:userId', getRoomByUserIdController);
 
 export default router;

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { createRoomInDB, findRoomById, createYjsDocument } from '../services/mongodbService';
+import { createRoomInDB, findRoomByUserId, createYjsDocument } from '../services/mongodbService';
 import axios from 'axios';
 
 /**
@@ -42,18 +42,18 @@ export const createRoomWithQuestion = async (user1: any, user2: any, topics: str
 };
 
 /**
- * Controller function to get room details by room ID
+ * Controller function to get room details by user ID
  * @param req
  * @param res
  */
-export const getRoomByIdController = async (req: Request, res: Response) => {
+export const getRoomByUserIdController = async (req: Request, res: Response) => {
     try {
-        const roomId = req.params.roomId;
+        const userId = req.params.userId;
 
-        const room = await findRoomById(roomId);
+        const room = await findRoomByUserId(userId);
 
         if (!room) {
-            return res.status(404).json({ error: 'Room not found' });
+            return res.status(404).json({ error: 'Room not found for the given user' });
         }
 
         return res.status(200).json({
@@ -63,7 +63,7 @@ export const getRoomByIdController = async (req: Request, res: Response) => {
             createdAt: room.createdAt,
         });
     } catch (error) {
-        console.error('Error fetching room:', error);
-        return res.status(500).json({ error: 'Failed to retrieve room' });
+        console.error('Error fetching room by user ID:', error);
+        return res.status(500).json({ error: 'Failed to retrieve room by user ID' });
     }
 };
