@@ -1,26 +1,30 @@
 import { Queues } from './queues';
-import messageBroker from './broker';
+import { getChannel } from './broker';
 import { createRoomWithQuestion } from '../controllers/roomController';
-import { QuestionFoundEvent } from '../types/event';
-import { produceCollabCreated, produceCollabCreateFailedEvent } from './producer';
 
-async function consumeQuestionFound(message: QuestionFoundEvent) {
-    console.log('Attempting to create room:', message);
-    const { user1, user2, question } = message;
+/**
+ * Function to initialize the room consumer
+ */
+export async function initializeRoomConsumer() {
+    const channel = await getChannel();
 
-    const { requestId: requestId1 } = user1;
-    const { requestId: requestId2 } = user2;
+    channel.assertQueue(Queues.MATCH_FOUND, { durable: true });
 
-    const roomId = await createRoomWithQuestion(user1, user2, question);
-    if (roomId) {
-        console.log('Room created with ID:', message, roomId);
-        await produceCollabCreated(requestId1, requestId2, roomId, question);
-    } else {
-        console.log('Failed to create room:', message);
-        await produceCollabCreateFailedEvent(requestId1, requestId2);
-    }
-}
+    channel.consume(Queues.MATCH_FOUND, async (msg: any) => {
+        if (msg) {
+            const content = JSON.parse(msg.content.toString());
 
-export async function initializeConsumers() {
-    messageBroker.consume(Queues.QUESTION_FOUND, consumeQuestionFound);
+            const { user1, user2, topics, difficulty } = content;
+
+            const roomId = await createRoomWithQuestion(user1, user2, topics, difficulty);
+
+            if (roomId) {
+                console.log(`Room created successfully with ID: ${roomId}`);
+            } else {
+                console.log('Failed to create room.');
+            }
+
+            channel.ack(msg);
+        }
+    });
 }

@@ -1,42 +1,21 @@
-import express from 'express';
-import http from 'http';
-import { startMongoDB } from './services/mongodbService';
-import { startWebSocketServer } from './services/webSocketService';
-import { handleNotFound, handleSuccess } from './utils/helper';
+import express, { Express } from 'express';
+import morgan from 'morgan';
+import cors from 'cors';
+import roomRouter from './routes/roomRoutes';
 
-const app = express();
-const PORT = process.env.PORT || 8084;
+const app: Express = express();
 
-/**
- * Middleware to parse JSON bodies
- */
+app.use(morgan('dev'));
 app.use(express.json());
 
-/**
- * Health check endpoint
- */
-app.get('/health', (req, res) => handleSuccess(res, 'Server is healthy'));
+app.use(
+    cors({
+        origin: process.env.CORS_ORIGIN ?? true,
+        methods: ['GET'],
+        allowedHeaders: ['Origin', 'X-Request-With', 'Content-Type', 'Accept', 'Authorization'],
+    }),
+);
 
-/**
- * Handle 404 for undefined routes
- */
-app.use((req, res) => handleNotFound(res, 'Route not found'));
+app.use('/room', roomRouter);
 
-/**
- * Create HTTP server
- */
-const server = http.createServer(app);
-
-/**
- * Start the server after MongoDB is initialized
- */
-startMongoDB()
-    .then(() => {
-        startWebSocketServer(server);
-        server.listen(PORT, () => {
-            console.log(`Server running on port ${PORT}`);
-        });
-    })
-    .catch((error) => {
-        console.error('Failed to start services:', error);
-    });
+export default app;
