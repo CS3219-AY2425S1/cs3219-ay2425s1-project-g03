@@ -47,8 +47,12 @@
                     @if (isPasswordWeak) {
                         @for (req of passwordRequirements; track $index) {
                             <li class="flex gap-2 align-items-center">
-                                <i class="pi text-sm" [ngClass]="req.check() ? 'pi-times text-gray-300' : 'pi-check text-green-300'"></i>
-                                <p class="m-0" [ngClass]="req.check() ? 'text-gray-300' : 'text-green-300'">{{ req.msg }}</p>
+                                <i
+                                    class="pi text-sm"
+                                    [ngClass]="req.check() ? 'pi-times text-gray-300' : 'pi-check text-green-300'"></i>
+                                <p class="m-0" [ngClass]="req.check() ? 'text-gray-300' : 'text-green-300'">
+                                    {{ req.msg }}
+                                </p>
                             </li>
                         }
                     } @else if (isPasswordStrong) {

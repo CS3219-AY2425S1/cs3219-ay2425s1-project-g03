@@ -78,7 +78,7 @@ export class RegisterComponent {
         { msg: 'At least one uppercase', check: () => this.passwordHasNoUppercase },
         { msg: 'At least one numeric', check: () => this.passwordHasNoNumeric },
         { msg: 'At least one special character', check: () => this.passwordHasNoSpecial },
-        { msg: 'Minimum 8 characters', check: () => this.isPasswordShort }
+        { msg: 'Minimum 8 characters', check: () => this.isPasswordShort },
     ];
 
     isProcessingRegistration = false;
