@@ -25,16 +25,33 @@ docker compose down -v
 
 ## Overview
 
-The Collaboration Service provides real-time document collaboration using WebSocket and MongoDB for persistence. It
-uses [Yjs](https://github.com/yjs/yjs) to sync document states between clients
-and [y-websocket](https://github.com/yjs/y-websocket) as the WebSocket provider, with MongoDB persistence
-via [y-mongodb-provider](https://github.com/fadiquader/y-mongodb).
+The `Collaboration Service` manages the lifecycle of collaboration sessions, including room creation, retrieval, and
+closure. When
+a room is created, it is assigned to two users, a Yjs document is initialized for real-time collaboration, and the
+room’s status is set to `open`. Rooms are used to group users working together on a shared task, such as collaborative
+coding, and are identified by a unique `room_id`. The room’s status can be updated to `closed` when users leave
+or forfeit the session, which also removes the Yjs document and its data from MongoDB to free resources.
+
+### Useful Links
+
+- [Yjs](https://github.com/yjs/yjs) to sync document states between clients.
+- [y-websocket](https://github.com/yjs/y-websocket) as the WebSocket provider.
+- [y-mongodb-provider](https://github.com/MaxNoetzold/y-mongodb-provider) using MongoDB to provide data persistence.
 
 ### Key Features
 
-- **Real-time Collaboration**: Synchronize changes between clients in real time.
-- **WebSocket-based communication**: Uses WebSocket connections to synchronize Yjs documents.
-- **MongoDB Persistence**: Yjs document updates are stored in MongoDB, providing fault tolerance and persistence.
+- `Real-time Collaboration`: Synchronize changes between clients in real-time using Yjs, ensuring that users always have
+  the latest document state.
+- `Room Management`: Handle the creation, retrieval, and closure of rooms, allowing two users to work together in a
+  shared environment.
+- `Room Status Tracking`: Rooms are automatically created with an `open` status and can be `closed` when users leave,
+  ensuring active collaboration sessions are properly managed.
+- `WebSocket-based Communication`: Uses WebSocket connections to handle real-time synchronization of Yjs documents
+  between users.
+- `MongoDB Persistence`: Yjs document updates and room data are persisted in MongoDB, ensuring fault tolerance and the
+  ability to resume sessions after interruptions.
+- `Automatic Cleanup`: When a room is closed, the corresponding Yjs document is removed from MongoDB, ensuring efficient
+  use of resources.
 
 ---
 
@@ -42,85 +59,221 @@ via [y-mongodb-provider](https://github.com/fadiquader/y-mongodb).
 
 Here are the key environment variables used in the `.env` file:
 
-| Variable      | Description                                                  |
-|---------------|--------------------------------------------------------------|
-| `MONGO_URI`   | URI for connecting to the MongoDB Atlas database             |
-| `MONGODB_URI` | URI for connecting to the local MongoDB database             |
-| `DB_USERNAME` | Username for the local MongoDB database                      |
-| `DB_PASSWORD` | Password for the local MongoDB database                      |
-| `CORS_ORIGIN` | Allowed origins for CORS (default: `*` to allow all origins) |
-| `PORT`        | Port for the WebSocket server (default: 8084)                |
-| `NODE_ENV`    | Environment setting (`development` or `production`)          |
+| Variable                 | Description                                                                           |
+|--------------------------|---------------------------------------------------------------------------------------|
+| `COLLAB_CLOUD_MONGO_URI` | URI for connecting to the MongoDB Atlas database for the collaboration service (room) |
+| `COLLAB_LOCAL_MONGO_URI` | URI for connecting to the local MongoDB database for the collaboration service (room) |
+| `YJS_CLOUD_MONGO_URI`    | URI for connecting to the MongoDB Atlas database for Yjs document persistence         |
+| `YJS_LOCAL_MONGO_URI`    | URI for connecting to the local MongoDB database for Yjs document persistence         |
+| `DB_USERNAME`            | Username for the MongoDB databases (for both cloud and local environments)            |
+| `DB_PASSWORD`            | Password for the MongoDB databases (for both cloud and local environments)            |
+| `QUESTION_SERVICE_URL`   | URL for connecting to the Question Service API                                        |
+| `CORS_ORIGIN`            | Allowed origins for CORS (default: * to allow all origins)                            |
+| `WS_PORT`                | Port for the WebSocket server (default: 8084)                                         |
+| `HTTP_PORT`              | Port for the HTTP server (default: 8087)                                              |
+| `NODE_ENV`               | Environment setting (`development` or `production`)                                   |
 
 ---
 
-## API Documentation
+## Documentation on API Endpoints
 
-### WebSocket Connection
+The `Collaboration Service` provides HTTP API endpoints to manage and retrieve details about rooms used in the real-time
+collaboration service. It enables creating rooms, retrieving room details, and managing room statuses.
 
-Clients connect via WebSocket to the server to collaborate in real-time. The connection is established with the `ws`
-module.
+---
 
-Example client code:
+## Get Room IDs by User ID
 
-```js
-import * as Y from 'yjs'
-import { WebsocketProvider } from 'y-websocket'
+This endpoint retrieves all room IDs for a given user, but only if the room is still active (`room_status` is `true`). One
+user can have multiple rooms, and each room is identified by a unique `room_id`.
 
-const doc = new Y.Doc()
-const wsProvider = new WebsocketProvider('ws://localhost:8084', 'room-id', doc)
+- **HTTP Method**: `GET`
+- **Endpoint**: `/room/user/{userId}`
 
-wsProvider.on('status', event => {
-    console.log(event.status)
-})
+### Parameters:
+
+- `userId` (Required) - The ID of the user whose room IDs are to be retrieved.
+
+### Responses:
+
+| Response Code               | Explanation                                 |
+|-----------------------------|---------------------------------------------|
+| 200 (OK)                    | Success, room IDs retrieved.                |
+| 404 (Not Found)             | No rooms found for the user.                |
+| 500 (Internal Server Error) | Unexpected error in the server or database. |
+
+### Command Line Example:
+
+```bash
+Retrieve Room IDs by User ID: curl -X GET http://localhost:8087/room/user/6718b0070e24954ac125e5e1
 ```
 
-### MongoDB Persistence
+### Example of Response Body for Success:
 
-The service uses `y-mongodb-provider` to persist document updates in MongoDB. This ensures that document changes are
-stored and can be retrieved even after disconnection or server restarts.
-
-To configure MongoDB persistence, ensure the `MONGO_URI` or `MONGODB_URI` in the `.env` file points to your MongoDB instance.
-
-Example configuration in the service:
-
-```js
-import { MongoClient } from 'mongodb';
-import { MongodbPersistence } from 'y-mongodb-provider';
-
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/collaboration-service';
-const COLLECTION_NAME = 'yjs-documents';
-
-export const mdb = new MongodbPersistence(MONGO_URI, {
-    collectionName: COLLECTION_NAME,
-    flushSize: 100,
-    multipleCollections: true,
-});
+```json
+{
+  "status": "Success",
+  "data": [
+    "6718b027b4624a70311bc0ed",
+    "6718b058b4624a70311bc0ee"
+  ]
+}
 ```
 
-### WebSocket Server with Persistence
+---
 
-Document updates are synchronized across all connected clients. MongoDB is used to store updates, ensuring the document
-state can be restored even after disconnections.
+## Get Room by Room ID
 
-```js
-setPersistence({
-    bindState: async (docName, ydoc) => {
-        const persistedYdoc = await mdb.getYDoc(docName)
-        const newUpdates = Y.encodeStateAsUpdate(ydoc)
-        mdb.storeUpdate(docName, newUpdates)
-        Y.applyUpdate(ydoc, Y.encodeStateAsUpdate(persistedYdoc))
+This endpoint retrieves the details of a room by its room ID.
 
-        ydoc.on('update', async (update) => {
-            await mdb.storeUpdate(docName, update)
-        })
-    },
-    writeState: async (docName, ydoc) => {
-        return new Promise((resolve) => {
-            resolve(true)
-        })
-    }
-})
+- **HTTP Method**: `GET`
+- **Endpoint**: `/room/{roomId}`
+
+### Parameters:
+
+- `roomId` (Required) - The ID of the room to retrieve.
+
+### Responses:
+
+| Response Code               | Explanation                                 |
+|-----------------------------|---------------------------------------------|
+| 200 (OK)                    | Success, room details returned.             |
+| 404 (Not Found)             | Room not found.                             |
+| 500 (Internal Server Error) | Unexpected error in the server or database. |
+
+### Command Line Example:
+
+```bash
+Retrieve Room by Room ID: curl -X GET http://localhost:8087/room/6718b027b4624a70311bc0ed
+```
+
+### Example of Response Body for Success:
+
+```json
+{
+  "status": "Success",
+  "data": {
+    "room_id": "6718b027b4624a70311bc0ed",
+    "users": [
+      {
+        "id": "6718b0050e24954ac125e5dd",
+        "username": "Testing",
+        "requestId": "6718b027a8144e99bbee17ce"
+      },
+      {
+        "id": "6718b0070e24954ac125e5e1",
+        "username": "Testing1",
+        "requestId": "6718b026a8144e99bbee17c8"
+      }
+    ],
+    "question_id": 2,
+    "createdAt": "2024-10-23T08:13:27.886Z",
+    "room_status": true
+  }
+}
+```
+
+---
+
+## Close Room
+
+This endpoint allows a user to close a room (change `room_status` to `false`) and delete the associated Yjs document.
+
+- **HTTP Method**: `PATCH`
+- **Endpoint**: `/room/{roomId}/close`
+
+### Parameters:
+
+- `roomId` (Required) - The ID of the room to close.
+
+### Responses:
+
+| Response Code               | Explanation                                    |
+|-----------------------------|------------------------------------------------|
+| 200 (OK)                    | Success, room closed and Yjs document removed. |
+| 404 (Not Found)             | Room not found or already closed.              |
+| 500 (Internal Server Error) | Unexpected error in the server or database.    |
+
+### Command Line Example:
+
+```bash
+Close Room: curl -X PATCH http://localhost:8087/room/6718b027b4624a70311bc0ed/close
+```
+
+### Example of Response Body for Success:
+
+```json
+{
+  "status": "Success",
+  "data": "Room 6718b027b4624a70311bc0ed successfully closed"
+}
+```
+
+---
+
+## Documentation on Queue (RabbitMQ)
+
+The collaboration service uses RabbitMQ as a message broker to facilitate communication between microservices (such as
+the `matching service` and `collaboration service`) in an asynchronous manner. The system consists of a consumer and a
+producer:
+
+### Queues Used
+
+- `MATCH_FOUND`: Handles messages related to matching users and creating collaboration rooms.
+- `COLLAB_CREATED`: Sends messages indicating that a collaboration room has been successfully created.
+
+---
+
+## Producer
+
+The producer will send a message to the `COLLAB_CREATED` queue when a collaboration room is successfully created.
+
+- **Queue**: `COLLAB_CREATED`
+- **Data in the Message**:
+    - `requestId1` (Required) - The request ID of the first user.
+    - `requestId2` (Required) - The request ID of the second user.
+    - `collabId` (Required) - The ID of the collaboration room.
+
+```json
+{
+  "requestId1": "user1-request-id",
+  "requestId2": "user2-request-id",
+  "collabId": "generated-room-id"
+}
+```
+
+---
+
+## Consumer
+
+The consumer will listen for messages on the `MATCH_FOUND` queue and create a collaboration room when two users are
+matched.
+
+- **Queue**: `MATCH_FOUND`
+- **Data in the Message**:
+    - `user1` (Required) - The details of the first user.
+    - `user2` (Required) - The details of the second user.
+    - `topics` (Required) - The topics selected by the users.
+    - `difficulty` (Required) - The difficulty level selected by the users.
+
+```json
+{
+  "user1": {
+    "id": "user1-id",
+    "username": "user1-username",
+    "requestId": "user1-request-id"
+  },
+  "user2": {
+    "id": "user2-id",
+    "username": "user2-username",
+    "requestId": "user2-request-id"
+  },
+  "topics": [
+    "topic1",
+    "topic2"
+  ],
+  "difficulty": "Medium"
+}
 ```
 
 ---
