@@ -40,6 +40,7 @@ export const startWebSocketServer = (server: Server) => {
         });
       } catch (error) {
         console.error(`Error loading document ${docName}:`, error);
+        // No WebSocket client here, so use `undefined`
         handleServerError(undefined, `Error loading document ${docName}`);
       }
     },

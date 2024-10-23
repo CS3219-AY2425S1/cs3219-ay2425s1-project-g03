@@ -161,8 +161,8 @@ services:
       CORS_ORIGIN: ${CORS_ORIGIN}
       RABBITMQ_URL: ${RABBITMQ_URL}
       QUESTION_SERVICE_URL: ${QUESTION_SERVICE_URL}
-      WS_PORT: 8084
-      HTTP_PORT: 8087
+      WS_PORT: ${WS_PORT}
+      HTTP_PORT: ${HTTP_PORT}
     depends_on:
       match-broker:
         condition: service_healthy

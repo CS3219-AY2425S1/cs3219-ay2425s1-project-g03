@@ -76,7 +76,6 @@ class WSSharedDoc extends Y.Doc {
                     });
                 }
             }
-            // broadcast awareness update
             const encoder = encoding.createEncoder();
             encoding.writeVarUint(encoder, messageAwareness);
             encoding.writeVarUint8Array(

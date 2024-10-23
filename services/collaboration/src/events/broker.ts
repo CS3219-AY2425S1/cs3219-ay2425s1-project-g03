@@ -7,25 +7,33 @@ let channel: Channel | null = null;
  */
 export const getChannel = async (): Promise<Channel> => {
   if (!channel) {
-    await new Promise<void>((resolve, reject) => {
-      amqp.connect(
-        process.env.RABBITMQ_URL!,
-        (err: Error | null, connection: Connection) => {
-          if (err) {
-            console.error("RabbitMQ connection error:", err);
-            reject(err);
-          }
-          connection.createChannel((err: Error | null, ch: Channel) => {
+    try {
+      await new Promise<void>((resolve, reject) => {
+        amqp.connect(
+          process.env.RABBITMQ_URL!,
+          (err: Error | null, connection: Connection) => {
             if (err) {
-              console.error("RabbitMQ channel creation error:", err);
+              console.error("RabbitMQ connection error:", err);
               reject(err);
             }
-            channel = ch;
-            resolve();
-          });
-        },
+            connection.createChannel((err: Error | null, ch: Channel) => {
+              if (err) {
+                console.error("RabbitMQ channel creation error:", err);
+                reject(err);
+              }
+              channel = ch;
+              resolve();
+            });
+          },
+        );
+      });
+    } catch (error) {
+      console.error(
+        "Error during RabbitMQ connection or channel creation:",
+        error,
       );
-    });
+      throw error;
+    }
   }
 
   if (!channel) {
@@ -37,21 +45,29 @@ export const getChannel = async (): Promise<Channel> => {
 
 /**
  * Function to consume a message from a RabbitMQ queue
- * @param queue - The queue to consume from
- * @param onMessage - Callback function to handle the message
+ * @param queue
+ * @param onMessage
  */
 export const consumeMessageFromQueue = async (
   queue: string,
   onMessage: (msg: Message) => void,
 ) => {
-  const ch = await getChannel();
-  ch.assertQueue(queue, { durable: true });
-  ch.consume(queue, (msg: Message | null) => {
-    if (msg) {
-      onMessage(msg);
-      ch.ack(msg);
-    } else {
-      console.error(`No message found in queue ${queue}`);
-    }
-  });
+  try {
+    const ch = await getChannel();
+    ch.assertQueue(queue, { durable: true });
+    ch.consume(queue, (msg: Message | null) => {
+      if (msg) {
+        try {
+          onMessage(msg);
+          ch.ack(msg);
+        } catch (messageHandlingError) {
+          console.error("Error handling the message:", messageHandlingError);
+        }
+      } else {
+        console.error(`No message found in queue ${queue}`);
+      }
+    });
+  } catch (error) {
+    console.error(`Error consuming message from queue ${queue}:`, error);
+  }
 };

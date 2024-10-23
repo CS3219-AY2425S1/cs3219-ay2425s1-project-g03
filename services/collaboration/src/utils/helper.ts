@@ -58,26 +58,26 @@ export const handleNotFound = (
 };
 
 /**
- * Handles success responses and sends a 200 response with a custom message.
+ * Handles success responses and sends a 200 response with a custom message or object.
  * @param client
- * @param message
+ * @param data - Can be either a message (string) or an object.
  */
 export const handleSuccess = (
   client: Response | WebSocket,
-  message = "Success",
+  data: string | object = "Success",
 ) => {
   try {
     if (client instanceof WebSocket) {
       client.send(
         JSON.stringify({
           status: "Success",
-          message,
+          data,
         }),
       );
     } else {
       client.status(200).json({
         status: "Success",
-        message,
+        data,
       });
     }
   } catch (error) {

@@ -2,18 +2,25 @@ import { Request, Response } from "express";
 import {
   createRoomInDB,
   createYjsDocument,
-  findRoomByRoomId,
+  deleteYjsDocument,
+  findRoomById,
   findRoomsByUserId,
+  closeRoomById,
 } from "../services/mongodbService";
 import axios from "axios";
+import {
+  handleNotFound,
+  handleSuccess,
+  handleServerError,
+} from "../utils/helper";
 
 /**
  * Create a room with users, question details, and Yjs document
- * @param user1 - First user details
- * @param user2 - Second user details
- * @param topics - List of topics
- * @param difficulty - Difficulty level
- * @returns roomId - The created room ID or null if creation fails
+ * @param user1
+ * @param user2
+ * @param topics
+ * @param difficulty
+ * @returns roomId
  */
 export const createRoomWithQuestion = async (
   user1: any,
@@ -70,19 +77,15 @@ export const getRoomIdsByUserIdController = async (
     const rooms = await findRoomsByUserId(userId);
 
     if (!rooms || rooms.length === 0) {
-      return res
-        .status(404)
-        .json({ error: "No rooms found for the given user" });
+      return handleNotFound(res, "No rooms found for the given user");
     }
 
     const roomIds = rooms.map((room: { _id: any }) => room._id);
 
-    return res.status(200).json(roomIds);
+    return handleSuccess(res, roomIds);
   } catch (error) {
     console.error("Error fetching rooms by user ID:", error);
-    return res
-      .status(500)
-      .json({ error: "Failed to retrieve room IDs by user ID" });
+    return handleServerError(res, "Failed to retrieve room IDs by user ID");
   }
 };
 
@@ -98,22 +101,45 @@ export const getRoomByRoomIdController = async (
   try {
     const roomId = req.params.roomId;
 
-    const room = await findRoomByRoomId(roomId);
+    const room = await findRoomById(roomId);
 
     if (!room) {
-      return res.status(404).json({ error: "Room not found" });
+      return handleNotFound(res, "Room not found");
     }
 
-    return res.status(200).json({
+    return handleSuccess(res, {
       room_id: room._id,
       users: room.users,
       question_id: room.question_id,
       createdAt: room.createdAt,
+      room_status: room.room_status,
     });
   } catch (error) {
     console.error("Error fetching room by room ID:", error);
-    return res
-      .status(500)
-      .json({ error: "Failed to retrieve room by room ID" });
+    return handleServerError(res, "Failed to retrieve room by room ID");
+  }
+};
+
+/**
+ * Controller function to close a room and delete its Yjs document
+ * @param req
+ * @param res
+ */
+export const closeRoomController = async (req: Request, res: Response) => {
+  try {
+    const roomId = req.params.roomId;
+
+    const result = await closeRoomById(roomId);
+    if (result.modifiedCount === 0) {
+      return handleNotFound(res, "Room not found or already closed");
+    }
+
+    await deleteYjsDocument(roomId);
+    console.log(`Room ${roomId} closed and Yjs document removed`);
+
+    return handleSuccess(res, `Room ${roomId} successfully closed`);
+  } catch (error) {
+    console.error("Error closing room:", error);
+    return handleServerError(res, "Failed to close room");
   }
 };

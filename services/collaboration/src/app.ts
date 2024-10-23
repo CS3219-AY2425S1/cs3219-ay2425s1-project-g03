@@ -19,7 +19,7 @@ app.use((req, res, next) => {
 app.use(
   cors({
     origin: process.env.CORS_ORIGIN ?? true,
-    methods: ["GET"],
+    methods: ["GET", "PATCH"],
     allowedHeaders: [
       "Origin",
       "X-Request-With",
