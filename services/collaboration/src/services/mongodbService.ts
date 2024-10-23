@@ -1,9 +1,12 @@
-import { MongoClient, ObjectId } from 'mongodb';
-import { MongodbPersistence } from 'y-mongodb-provider';
-import * as Y from 'yjs';
+import { MongoClient, ObjectId } from "mongodb";
+import { MongodbPersistence } from "y-mongodb-provider";
+import * as Y from "yjs";
 
-const ROOM_DB_URI = process.env.COLLAB_CLOUD_MONGO_URI || 'mongodb://localhost:27017/collaboration-service';
-const YJS_DB_URI = process.env.YJS_CLOUD_MONGO_URI || 'mongodb://localhost:27017/yjs-documents';
+const ROOM_DB_URI =
+  process.env.COLLAB_CLOUD_MONGO_URI ||
+  "mongodb://localhost:27017/collaboration-service";
+const YJS_DB_URI =
+  process.env.YJS_CLOUD_MONGO_URI || "mongodb://localhost:27017/yjs-documents";
 
 let roomDb: any;
 
@@ -11,34 +14,34 @@ let roomDb: any;
  * Yjs MongoDB persistence provider for Yjs documents
  */
 export const mdb = new MongodbPersistence(YJS_DB_URI, {
-    flushSize: 100,
-    multipleCollections: true,
+  flushSize: 100,
+  multipleCollections: true,
 });
 
 /**
  * Connect to the room database
  */
 const connectToRoomDB = async () => {
-    if (!roomDb) {
-        const client = new MongoClient(ROOM_DB_URI);
-        await client.connect();
-        roomDb = client.db('rooms');
-        console.log('Connected to the room database');
-    }
-    return roomDb;
+  if (!roomDb) {
+    const client = new MongoClient(ROOM_DB_URI);
+    await client.connect();
+    roomDb = client.db("rooms");
+    console.log("Connected to the room database");
+  }
+  return roomDb;
 };
 
 /**
  * Start MongoDB connection for rooms and Yjs
  */
 export const startMongoDB = async () => {
-    try {
-        await connectToRoomDB();
-        console.log('Connected to Room MongoDB');
-    } catch (error) {
-        console.error('MongoDB connection failed:', error);
-        throw error;
-    }
+  try {
+    await connectToRoomDB();
+    console.log("Connected to Room MongoDB");
+  } catch (error) {
+    console.error("MongoDB connection failed:", error);
+    throw error;
+  }
 };
 
 /**
@@ -47,14 +50,14 @@ export const startMongoDB = async () => {
  * @returns roomId - The generated room ID
  */
 export const createRoomInDB = async (roomData: any) => {
-    const db = await connectToRoomDB();
-    const result = await db.collection('rooms').insertOne(roomData);
-    const roomId = result.insertedId.toString();
+  const db = await connectToRoomDB();
+  const result = await db.collection("rooms").insertOne(roomData);
+  const roomId = result.insertedId.toString();
 
-    // Initialize a Yjs document after the room is created
-    await createYjsDocument(roomId);
+  // Initialize a Yjs document after the room is created
+  await createYjsDocument(roomId);
 
-    return roomId;
+  return roomId;
 };
 
 /**
@@ -63,9 +66,11 @@ export const createRoomInDB = async (roomData: any) => {
  * @returns The room document
  */
 export const findRoomById = async (roomId: string) => {
-    const db = await connectToRoomDB();
-    const room = await db.collection('rooms').findOne({ _id: new ObjectId(roomId) });
-    return room;
+  const db = await connectToRoomDB();
+  const room = await db
+    .collection("rooms")
+    .findOne({ _id: new ObjectId(roomId) });
+  return room;
 };
 
 /**
@@ -74,17 +79,17 @@ export const findRoomById = async (roomId: string) => {
  * @returns Yjs document instance
  */
 export const createYjsDocument = async (roomId: string) => {
-    try {
-        const yjsDoc = await mdb.getYDoc(roomId);
-        console.log(`Yjs document created for room: ${roomId}`);
-        const initialSync = Y.encodeStateAsUpdate(yjsDoc);
-        await mdb.storeUpdate(roomId, initialSync);
+  try {
+    const yjsDoc = await mdb.getYDoc(roomId);
+    console.log(`Yjs document created for room: ${roomId}`);
+    const initialSync = Y.encodeStateAsUpdate(yjsDoc);
+    await mdb.storeUpdate(roomId, initialSync);
 
-        return yjsDoc;
-    } catch (error) {
-        console.error(`Failed to create Yjs document for room ${roomId}:`, error);
-        throw error;
-    }
+    return yjsDoc;
+  } catch (error) {
+    console.error(`Failed to create Yjs document for room ${roomId}:`, error);
+    throw error;
+  }
 };
 
 /**
@@ -92,16 +97,19 @@ export const createYjsDocument = async (roomId: string) => {
  * @param userId - Any one of the two user IDs in the room
  */
 export const findRoomsByUserId = async (userId: string) => {
-    try {
-        const db = await connectToRoomDB();
-        console.log(`Querying for rooms with user ID: ${userId}`);
-        const rooms = await db.collection('rooms').find({ users: { $elemMatch: { id: userId } } }).toArray();
-        console.log('Rooms found:', rooms);
-        return rooms;
-    } catch (error) {
-        console.error('Error querying rooms:', error);
-        throw error;
-    }
+  try {
+    const db = await connectToRoomDB();
+    console.log(`Querying for rooms with user ID: ${userId}`);
+    const rooms = await db
+      .collection("rooms")
+      .find({ users: { $elemMatch: { id: userId } } })
+      .toArray();
+    console.log("Rooms found:", rooms);
+    return rooms;
+  } catch (error) {
+    console.error("Error querying rooms:", error);
+    throw error;
+  }
 };
 
 /**
@@ -109,7 +117,9 @@ export const findRoomsByUserId = async (userId: string) => {
  * @param roomId - The room ID
  */
 export const findRoomByRoomId = async (roomId: string) => {
-    const db = await connectToRoomDB();
-    const room = await db.collection('rooms').findOne({ _id: new ObjectId(roomId) });
-    return room;
+  const db = await connectToRoomDB();
+  const room = await db
+    .collection("rooms")
+    .findOne({ _id: new ObjectId(roomId) });
+  return room;
 };
