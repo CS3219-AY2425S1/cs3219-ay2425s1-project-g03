@@ -4,9 +4,13 @@ import * as Y from "yjs";
 
 const ROOM_DB_URI =
   process.env.COLLAB_CLOUD_MONGO_URI ||
-  "mongodb://localhost:27017/collaboration-service";
+  "mongodb://collaboration-db:27017/collaboration-service";
 const YJS_DB_URI =
-  process.env.YJS_CLOUD_MONGO_URI || "mongodb://localhost:27017/yjs-documents";
+  process.env.YJS_CLOUD_MONGO_URI ||
+  "mongodb://collaboration-db:27017/yjs-documents";
+
+console.log("Room DB URI:", ROOM_DB_URI);
+console.log("YJS DB URI:", YJS_DB_URI);
 
 let roomDb: Db | null = null;
 let yjsDb: Db | null = null;
