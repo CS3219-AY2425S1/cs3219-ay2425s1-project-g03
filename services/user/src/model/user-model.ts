@@ -2,6 +2,11 @@ import mongoose, { Types } from 'mongoose';
 
 const Schema = mongoose.Schema;
 
+export enum Role {
+    Admin = 'admin',
+    User = 'user',
+}
+
 export interface User {
     id: Types.ObjectId;
     username: string;

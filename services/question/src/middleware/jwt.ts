@@ -1,8 +1,8 @@
 import jwt from 'jsonwebtoken';
 import { NextFunction, Request, Response } from 'express';
-import { handleUnauthorized } from '../utils/responses';
 import config from '../config';
-import { userSchema } from '../types/request';
+import { Role, userSchema } from '../types/request';
+import { handleForbidden, handleUnauthorized } from '../utils/helpers';
 
 export async function verifyAccessToken(req: Request, res: Response, next: NextFunction) {
     const authHeader = req.headers['authorization'];
@@ -23,4 +23,12 @@ export async function verifyAccessToken(req: Request, res: Response, next: NextF
         req.user = result.data;
         next();
     });
+}
+
+export function verifyIsAdmin(req: Request, res: Response, next: NextFunction) {
+    if (req.user.role === Role.Admin) {
+        next();
+        return;
+    }
+    handleForbidden(res, 'Not authorized to access this resource');
 }

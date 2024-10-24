@@ -1,18 +1,13 @@
 import UserModel from './user-model';
 import 'dotenv/config';
 import { connect } from 'mongoose';
+import config from '../config';
 
 export async function connectToDB() {
-    const mongoUri = process.env.NODE_ENV === 'production' ? process.env.DB_CLOUD_URI : process.env.DB_LOCAL_URI;
-
-    if (!mongoUri) {
-        throw new Error('MongoDB URI not specified');
-    }
-
-    await connect(mongoUri, {
+    await connect(config.DB_URI, {
         authSource: 'admin',
-        user: process.env.DB_USERNAME,
-        pass: process.env.DB_PASSWORD,
+        user: config.DB_USERNAME,
+        pass: config.DB_PASSWORD,
     });
 }
 

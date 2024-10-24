@@ -1,7 +1,8 @@
 import jwt from 'jsonwebtoken';
 import { findUserById as _findUserById } from '../model/repository';
 import { NextFunction, Request, Response } from 'express';
-import { handleForbidden, handleInternalError, handleUnauthorized } from '../utils/helper';
+import { handleForbidden, handleUnauthorized } from '../utils/helper';
+import config from '../config';
 
 export function verifyAccessToken(req: Request, res: Response, next: NextFunction) {
     const authHeader = req.headers['authorization'];
@@ -13,12 +14,7 @@ export function verifyAccessToken(req: Request, res: Response, next: NextFunctio
     // request auth header: `Authorization: Bearer + <access_token>`
     const token = authHeader.split(' ')[1];
 
-    if (!process.env.JWT_SECRET) {
-        handleInternalError(res, 'JWT Secret not provided');
-        return;
-    }
-
-    jwt.verify(token, process.env.JWT_SECRET, async (err, user) => {
+    jwt.verify(token, config.JWT_SECRET, async (err, user) => {
         if (err || typeof user !== 'object' || !user?.id) {
             handleUnauthorized(res, 'Authentication failed');
             return;

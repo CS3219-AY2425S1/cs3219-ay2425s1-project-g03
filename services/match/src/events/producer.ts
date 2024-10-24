@@ -1,11 +1,12 @@
 import { Difficulty } from '../models/matchRequestModel';
 import { MatchUpdatedEvent, MatchFoundEvent } from '../types/event';
+import { IdType } from '../types/request';
 import messageBroker from './broker';
 import { Queues } from './queues';
 
 export async function produceMatchUpdatedRequest(
-    requestId: string,
-    userId: string,
+    requestId: IdType,
+    userId: IdType,
     username: string,
     topics: string[],
     difficulty: Difficulty,

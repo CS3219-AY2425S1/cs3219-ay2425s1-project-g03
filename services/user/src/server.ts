@@ -2,8 +2,9 @@ import http from 'http';
 import index from './index';
 import 'dotenv/config';
 import { connectToDB } from './model/repository';
+import config from './config';
 
-const port = process.env.PORT || 8082;
+const port = config.PORT;
 
 const server = http.createServer(index);
 

@@ -1,9 +1,10 @@
 import app from './app';
+import config from './config';
 import messageBroker from './events/broker';
 import { initializeConsumers } from './events/consumer';
 import { connectToDB } from './models/repository';
 
-const port = process.env.PORT || 8083;
+const port = config.PORT;
 
 connectToDB()
     .then(() => console.log('MongoDB connected successfully'))

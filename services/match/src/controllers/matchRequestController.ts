@@ -10,6 +10,7 @@ import {
 } from '../models/repository';
 import { produceMatchUpdatedRequest } from '../events/producer';
 import { getStatus } from '../models/matchRequestModel';
+import { fromError } from 'zod-validation-error';
 
 /**
  * Creates a match request.
@@ -17,13 +18,15 @@ import { getStatus } from '../models/matchRequestModel';
  * @param res
  */
 export const createMatchRequest = async (req: Request, res: Response) => {
-    const { error, value } = createMatchRequestSchema.validate(req.body);
-    if (error) {
-        return handleBadRequest(res, error.message);
+    const result = createMatchRequestSchema.safeParse(req.body);
+
+    if (!result.success) {
+        const formattedError = fromError(result.error).toString();
+        return handleBadRequest(res, formattedError);
     }
 
     const { id: userId, username } = req.user;
-    const { topics, difficulty } = value;
+    const { topics, difficulty } = result.data;
     try {
         const matchRequest = await _createMatchRequest(userId, username, topics, difficulty);
         await produceMatchUpdatedRequest(matchRequest.id, userId, username, topics, difficulty);

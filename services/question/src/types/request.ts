@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 export type IdType = string | Types.ObjectId;
 
-enum Role {
+export enum Role {
     Admin = 'admin',
     User = 'user',
 }
