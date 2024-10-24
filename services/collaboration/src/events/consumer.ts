@@ -64,9 +64,7 @@ export async function initializeRoomConsumer() {
             "Error processing message from MATCH_FOUND queue:",
             error,
           );
-          // Can consider nack the message here if you want to requeue it for further processing
-          // Or return to queue a message that was not processed successfully
-          // channel.nack(msg);
+          channel.nack(msg);
         }
       }
     });
