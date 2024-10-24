@@ -16,7 +16,12 @@ class MessageBroker {
         }
 
         try {
-            this.connection = await client.connect(config.BROKER_URL);
+            const brokerUrl = process.env.BROKER_URL;
+            if (!brokerUrl) {
+                throw new Error('Broker URL not specified');
+            }
+
+            this.connection = await client.connect(brokerUrl);
             console.log('Connected to RabbitMQ');
             this.channel = await this.connection.createChannel();
             this.connected = true;

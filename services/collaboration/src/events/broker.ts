@@ -10,8 +10,12 @@ export const getChannel = async (): Promise<Channel> => {
   if (!channel) {
     try {
       await new Promise<void>((resolve, reject) => {
-        // Connect to the RabbitMQ broker at RABBITMQ_URL
-        amqp.connect(process.env.RABBITMQ_URL!, (err, conn) => {
+        const brokerUrl = process.env.BROKER_URL;
+        if (!brokerUrl) {
+          throw new Error("Broker URL not specified");
+        }
+
+        amqp.connect(brokerUrl, (err, conn) => {
           if (err) {
             console.error("RabbitMQ connection error:", err);
             return reject(err);

@@ -104,7 +104,6 @@ services:
       DB_LOCAL_URI: ${MATCH_DB_LOCAL_URI}
       DB_USERNAME: ${MATCH_DB_USERNAME}
       DB_PASSWORD: ${MATCH_DB_PASSWORD}
-      JWT_SECRET: ${JWT_SECRET}
       BROKER_URL: ${BROKER_URL}
     depends_on:
       broker:
@@ -158,11 +157,10 @@ services:
       COLLAB_LOCAL_MONGO_URI: ${COLLAB_LOCAL_MONGO_URI}
       YJS_CLOUD_MONGO_URI: ${YJS_CLOUD_MONGO_URI}
       YJS_LOCAL_MONGO_URI: ${YJS_LOCAL_MONGO_URI}
-      CORS_ORIGIN: ${CORS_ORIGIN}
-      RABBITMQ_URL: ${RABBITMQ_URL}
+      BROKER_URL: ${BROKER_URL}
       QUESTION_SERVICE_URL: ${QUESTION_SERVICE_URL}
-      WS_PORT: ${WS_PORT}
-      HTTP_PORT: ${HTTP_PORT}
+      WS_PORT: ${COLLAB_WS_PORT}
+      HTTP_PORT: ${COLLAB_HTTP_PORT}
     depends_on:
       match-broker:
         condition: service_healthy

@@ -3,25 +3,25 @@ import { MongodbPersistence } from "y-mongodb-provider";
 import * as Y from "yjs";
 
 const ROOM_DB_URI =
-  process.env.COLLAB_CLOUD_MONGO_URI ||
-  "mongodb://collaboration-db:27017/collaboration-service";
+  process.env.NODE_ENV === "production"
+    ? process.env.COLLAB_CLOUD_MONGO_URI
+    : process.env.COLLAB_LOCAL_MONGO_URI;
 const YJS_DB_URI =
-  process.env.YJS_CLOUD_MONGO_URI ||
-  "mongodb://collaboration-db:27017/yjs-documents";
+  process.env.NODE_ENV === "production"
+    ? process.env.YJS_CLOUD_MONGO_URI
+    : process.env.YJS_LOCAL_MONGO_URI;
+
+if (!YJS_DB_URI) {
+  throw new Error("YJS MongoDB URI not specified");
+}
 
 console.log("Room DB URI:", ROOM_DB_URI);
 console.log("YJS DB URI:", YJS_DB_URI);
 
 let roomDb: Db | null = null;
 let yjsDb: Db | null = null;
-
-/**
- * Yjs MongoDB persistence provider for Yjs documents
- */
-export const mdb = new MongodbPersistence(YJS_DB_URI, {
-  flushSize: 100,
-  multipleCollections: true,
-});
+/** Yjs MongoDB persistence provider for Yjs documents */
+export let mdb!: MongodbPersistence;
 
 /**
  * Connect to the room database
@@ -29,6 +29,10 @@ export const mdb = new MongodbPersistence(YJS_DB_URI, {
 const connectToRoomDB = async (): Promise<Db> => {
   try {
     if (!roomDb) {
+      if (!ROOM_DB_URI) {
+        throw new Error("Room MongoDB URI not specified");
+      }
+
       const client = new MongoClient(ROOM_DB_URI);
       await client.connect();
       roomDb = client.db("collaboration-service");
@@ -47,6 +51,15 @@ const connectToRoomDB = async (): Promise<Db> => {
 const connectToYJSDB = async (): Promise<Db> => {
   try {
     if (!yjsDb) {
+      if (!YJS_DB_URI) {
+        throw new Error("Room MongoDB URI not specified");
+      }
+
+      mdb = new MongodbPersistence(YJS_DB_URI, {
+        flushSize: 100,
+        multipleCollections: true,
+      });
+
       const client = new MongoClient(YJS_DB_URI);
       await client.connect();
       yjsDb = client.db("yjs-documents");
