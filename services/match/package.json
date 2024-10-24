@@ -20,7 +20,8 @@
     "express": "^4.21.0",
     "joi": "^17.13.3",
     "mongoose": "^8.7.0",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@eslint/js": "^9.10.0",
