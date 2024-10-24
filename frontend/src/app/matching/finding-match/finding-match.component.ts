@@ -73,23 +73,16 @@ export class FindingMatchComponent {
                 console.log(response);
                 const status: MatchStatus = response.data.status || MatchStatus.PENDING;
                 switch (status) {
-                    case MatchStatus.MATCH_FAILED:
-                        this.stopPolling$.next(false);
-                        this.onMatchFailed();
-                        break;
                     case MatchStatus.MATCH_FOUND:
                         this.onMatchSuccess();
                         break;
                     case MatchStatus.COLLAB_CREATED:
                         this.onMatchSuccess();
-                        setTimeout(() => {
-                            this.redirectToCollab(response.data.collabId!);
-                            this.matchPoll.unsubscribe();
-                        }, 2000);
+                        // TODO: Redirect to collab URL
                         break;
                     case MatchStatus.TIME_OUT:
                         this.stopPolling$.next(false);
-                        this.onMatchTimeout();
+                        this.onMatchFailed();
                         break;
                 }
             }),
