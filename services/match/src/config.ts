@@ -11,27 +11,25 @@ const envSchema = z
         CORS_ORIGIN: z.union([z.string().url(), z.literal('*')]).default('*'),
         PORT: z.coerce.number().min(1024).default(8083),
     })
-    .refine(
-        data => {
-            const isUrl = z.string().url();
-
-            if (data.NODE_ENV === 'production') {
-                return isUrl.safeParse(data.DB_CLOUD_URI).success;
-            } else {
-                return isUrl.safeParse(data.DB_LOCAL_URI).success;
-            }
-        },
-        {
-            message: 'Database URI must be provided',
-            path: ['DB_CLOUD_URI', 'DB_LOCAL_URI'],
-        },
-    );
+    .superRefine((data, ctx) => {
+        const isUrl = z.string().url();
+        const cloudRes = isUrl.safeParse(data.DB_CLOUD_URI);
+        const localRes = isUrl.safeParse(data.DB_LOCAL_URI);
+        if (data.NODE_ENV === 'production') {
+            cloudRes.error?.issues.forEach(i => ctx.addIssue({ ...i, path: ['DB_CLOUD_URI'] }));
+        } else if (data.NODE_ENV === 'development') {
+            localRes.error?.issues.forEach(i => ctx.addIssue({ ...i, path: ['DB_LOCAL_URI'] }));
+        }
+    });
 
 const result = envSchema.safeParse(process.env);
 if (!result.success) {
     console.error('There is an error with the environment variables:', result.error.issues);
     process.exit(1);
 }
-const config = result.data;
+
+const { NODE_ENV, DB_CLOUD_URI, DB_LOCAL_URI } = result.data;
+const DB_URI = (NODE_ENV === 'production' ? DB_CLOUD_URI : DB_LOCAL_URI) as string;
+const config = { ...result.data, DB_URI };
 
 export default config;

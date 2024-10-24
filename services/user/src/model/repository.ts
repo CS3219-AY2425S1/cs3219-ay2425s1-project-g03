@@ -4,13 +4,7 @@ import { connect } from 'mongoose';
 import config from '../config';
 
 export async function connectToDB() {
-    const mongoUri = config.NODE_ENV === 'production' ? config.DB_CLOUD_URI : config.DB_LOCAL_URI;
-
-    if (!mongoUri) {
-        throw new Error('MongoDB URI not specified');
-    }
-
-    await connect(mongoUri, {
+    await connect(config.DB_URI, {
         authSource: 'admin',
         user: config.DB_USERNAME,
         pass: config.DB_PASSWORD,
