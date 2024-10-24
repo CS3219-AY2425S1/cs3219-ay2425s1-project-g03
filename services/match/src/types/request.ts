@@ -1,8 +1,21 @@
 import { Types } from 'mongoose';
+import { z } from 'zod';
+
+export type IdType = string | Types.ObjectId;
+
+enum Role {
+    Admin = 'admin',
+    User = 'user',
+}
 
 export interface RequestUser {
-    id: Types.ObjectId | string;
+    id: IdType;
     username: string;
-    email: string;
-    isAdmin: boolean;
+    role: Role;
 }
+
+export const userSchema = z.object({
+    id: z.string(),
+    username: z.string(),
+    role: z.nativeEnum(Role),
+});

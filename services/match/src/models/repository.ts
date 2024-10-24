@@ -1,9 +1,8 @@
-import mongoose, { Types } from 'mongoose';
+import mongoose from 'mongoose';
 import { Difficulty, MatchRequestModel } from './matchRequestModel';
 import { oneMinuteAgo } from '../utils/date';
 import config from '../config';
-
-type IdType = string | Types.ObjectId;
+import { IdType } from '../types/request';
 
 export async function connectToDB() {
     await mongoose.connect(config.DB_URI, {

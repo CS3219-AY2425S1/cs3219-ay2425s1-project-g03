@@ -1,6 +1,6 @@
 // https://blog.logrocket.com/extend-express-request-object-typescript/
 
-import { RequestUser } from '../custom';
+import { RequestUser } from './request';
 
 export {};
 

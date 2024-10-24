@@ -1,7 +1,8 @@
+import jwt from 'jsonwebtoken';
 import { NextFunction, Request, Response } from 'express';
-import { handleInternalError, handleUnauthorized } from '../utils/responses';
-import { VerifyTokenResponse } from '../types/response';
-import axios from 'axios';
+import { handleUnauthorized } from '../utils/responses';
+import config from '../config';
+import { userSchema } from '../types/request';
 
 export async function verifyAccessToken(req: Request, res: Response, next: NextFunction) {
     const authHeader = req.headers['authorization'];
@@ -9,20 +10,17 @@ export async function verifyAccessToken(req: Request, res: Response, next: NextF
         handleUnauthorized(res, 'Authenticated failed');
         return;
     }
-    try {
-        const response = await axios.get<VerifyTokenResponse>('http://user:8082/auth/verify-token', {
-            headers: { authorization: authHeader },
-        });
-        req.user = response.data.data;
-        next();
-    } catch (error: any) {
-        if (error?.response?.status == 401) {
-            handleUnauthorized(res);
+
+    const token = authHeader.split(' ')[1];
+
+    jwt.verify(token, config.JWT_SECRET, async (err, user) => {
+        const result = userSchema.safeParse(user);
+        if (err || result.error) {
+            handleUnauthorized(res, 'Authentication failed');
             return;
         }
 
-        console.error(error);
-        handleInternalError(res);
-        return;
-    }
+        req.user = result.data;
+        next();
+    });
 }

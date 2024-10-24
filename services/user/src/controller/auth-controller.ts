@@ -5,6 +5,7 @@ import { formatUserResponse } from './user-controller';
 import { Request, Response } from 'express';
 import { handleBadRequest, handleInternalError, handleSuccess, handleUnauthorized } from '../utils/helper';
 import config from '../config';
+import { Role } from '../model/user-model';
 
 export async function handleLogin(req: Request, res: Response) {
     const { username, password } = req.body;
@@ -26,9 +27,14 @@ export async function handleLogin(req: Request, res: Response) {
             return;
         }
 
+        const role = user.isAdmin ? Role.Admin : Role.User;
+        console.log({ id: user.id, username: user.username, role });
+
         const accessToken = jwt.sign(
             {
                 id: user.id,
+                username: user.username,
+                role,
             },
             config.JWT_SECRET,
             {
