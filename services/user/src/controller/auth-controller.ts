@@ -4,6 +4,7 @@ import { findUserByUsername as _findUserByUsername } from '../model/repository';
 import { formatUserResponse } from './user-controller';
 import { Request, Response } from 'express';
 import { handleBadRequest, handleInternalError, handleSuccess, handleUnauthorized } from '../utils/helper';
+import config from '../config';
 
 export async function handleLogin(req: Request, res: Response) {
     const { username, password } = req.body;
@@ -25,16 +26,11 @@ export async function handleLogin(req: Request, res: Response) {
             return;
         }
 
-        if (!process.env.JWT_SECRET) {
-            handleInternalError(res, 'JWT secret not specified');
-            return;
-        }
-
         const accessToken = jwt.sign(
             {
                 id: user.id,
             },
-            process.env.JWT_SECRET,
+            config.JWT_SECRET,
             {
                 expiresIn: '1d',
             },
