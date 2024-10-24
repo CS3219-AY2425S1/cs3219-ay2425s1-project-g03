@@ -1,9 +1,7 @@
-import Joi from 'joi';
+import { z } from 'zod';
 import { Difficulty } from '../models/matchRequestModel';
 
-export const createMatchRequestSchema = Joi.object({
-    topics: Joi.array().items(Joi.string()).min(1).required(),
-    difficulty: Joi.string()
-        .valid(...Object.values(Difficulty))
-        .required(),
+export const createMatchRequestSchema = z.object({
+    topics: z.array(z.string().min(1)).min(1),
+    difficulty: z.nativeEnum(Difficulty),
 });
