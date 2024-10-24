@@ -9,6 +9,7 @@ import {
     updateQuestion,
     deleteQuestions,
 } from '../controllers/questionController';
+import { verifyAccessToken, verifyIsAdmin } from '../middleware/jwt';
 
 /**
  * Router for question endpoints.
@@ -27,21 +28,21 @@ questionRouter.get('/:id', getQuestionById);
 /**
  * Add a new question to the database.
  */
-questionRouter.post('/', addQuestion);
+questionRouter.post('/', verifyAccessToken, verifyIsAdmin, addQuestion);
 
 /**
  * Update a question in the database.
  */
-questionRouter.put('/:id', updateQuestion);
+questionRouter.put('/:id', verifyAccessToken, verifyIsAdmin, updateQuestion);
 
 /**
  * Delete a question from the database.
  */
-questionRouter.delete('/:id', deleteQuestion);
+questionRouter.delete('/:id', verifyAccessToken, verifyIsAdmin, deleteQuestion);
 
 /**
  * Delete questions from the database.
  */
-questionRouter.post('/delete', deleteQuestions);
+questionRouter.post('/delete', verifyAccessToken, verifyIsAdmin, deleteQuestions);
 
 export default questionRouter;

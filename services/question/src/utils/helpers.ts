@@ -25,6 +25,30 @@ export const handleBadRequest = (res: Response, message = 'Bad Request') => {
 };
 
 /**
+ * Handles unauthorized requests and sends a 401 response with a custom message.
+ * @param res
+ * @param message
+ */
+export const handleUnauthorized = (res: Response, message = 'Unauthorized Request') => {
+    res.status(401).json({
+        status: 'Error',
+        message,
+    });
+};
+
+/**
+ * Handles forbidden requests and sends a 403 response with a custom message.
+ * @param res
+ * @param message
+ */
+export const handleForbidden = (res: Response, message = 'Forbidden Request') => {
+    res.status(403).json({
+        status: 'Error',
+        message,
+    });
+};
+
+/**
  * Handles not found errors and sends a 404 response with a custom message.
  * @param res
  * @param message

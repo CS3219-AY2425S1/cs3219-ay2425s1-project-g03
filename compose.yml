@@ -34,6 +34,7 @@ services:
       DB_LOCAL_URI: ${QUESTION_DB_LOCAL_URI}
       DB_USERNAME: ${QUESTION_DB_USERNAME}
       DB_PASSWORD: ${QUESTION_DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
     networks:
       - gateway-network
       - question-db-network
