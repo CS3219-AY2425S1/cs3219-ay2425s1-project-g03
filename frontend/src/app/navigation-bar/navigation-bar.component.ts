@@ -15,6 +15,7 @@ import { ButtonModule } from 'primeng/button';
     styleUrl: './navigation-bar.component.css',
 })
 export class NavigationBarComponent implements OnInit {
+    @ViewChild('menu') menu!: Menu;
     items: MenuItem[] | undefined;
     user: User | null = null;
 
@@ -28,7 +29,6 @@ export class NavigationBarComponent implements OnInit {
         });
     }
 
-    @ViewChild('menu') menu: Menu | undefined;
     @HostListener('window:scroll', [])
     hideMenuOnScroll() {
         if (this.menu && this.menu.overlayVisible) {
