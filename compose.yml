@@ -96,7 +96,7 @@ services:
       DB_PASSWORD: ${MATCH_DB_PASSWORD}
       BROKER_URL: ${BROKER_URL}
     depends_on:
-      match-broker:
+      broker:
         condition: service_healthy
     networks:
       - gateway-network
@@ -115,13 +115,13 @@ services:
       - match-db-network
     restart: always
   
-  match-broker:
-    container_name: match-broker
-    hostname: match-broker
+  broker:
+    container_name: broker
+    hostname: broker
     image: rabbitmq:4.0.2
     user: rabbitmq
     networks:
-      - match-db-network
+      - gateway-network
     healthcheck:
       test: rabbitmq-diagnostics check_port_connectivity
       interval: 30s

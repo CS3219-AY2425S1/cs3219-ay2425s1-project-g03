@@ -40,7 +40,7 @@ services:
     ports:
       - 27019:27017
   
-  match-broker:
+  broker:
     ports:
       - 5672:5672
 
