@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink, Router, ActivatedRoute } from '@angular/router';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { InputTextModule } from 'primeng/inputtext';
@@ -8,7 +9,12 @@ import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
-import { PASSWORD_WEAK, STRONG_PASSWORD_REGEX, weakPasswordValidator } from './_validators/weak-password.validator';
+import { PASSWORD_LOWERCASE, lowercasePasswordValidator } from './_validators/lowercase-password';
+import { PASSWORD_UPPERCASE, uppercasePasswordValidator } from './_validators/uppercase-password';
+import { PASSWORD_NUMERIC, numericPasswordValidator } from './_validators/numeric-password';
+import { PASSWORD_SPECIAL, specialPasswordValidator } from './_validators/special-password';
+import { PASSWORD_SHORT, shortPasswordValidator } from './_validators/short-password';
+import { PASSWORD_WEAK, weakPasswordValidator } from './_validators/weak-password.validator';
 import { mismatchPasswordValidator, PASSWORD_MISMATCH } from './_validators/mismatch-password.validator';
 import { invalidUsernameValidator, USERNAME_INVALID } from './_validators/invalid-username.validator';
 import { invalidPasswordValidator, PASSWORD_INVALID } from './_validators/invalid-password.validator';
@@ -18,6 +24,7 @@ import { AuthenticationService } from '../../_services/authentication.service';
     selector: 'app-register',
     standalone: true,
     imports: [
+        CommonModule,
         RouterLink,
         FormsModule,
         InputTextModule,
@@ -49,16 +56,32 @@ export class RegisterComponent {
         {
             username: new FormControl('', [Validators.required, invalidUsernameValidator()]),
             email: new FormControl('', [Validators.required, Validators.email]),
-            password: new FormControl('', [Validators.required, weakPasswordValidator(), invalidPasswordValidator()]),
+            password: new FormControl('', [
+                Validators.required,
+                invalidPasswordValidator(),
+                lowercasePasswordValidator(),
+                uppercasePasswordValidator(),
+                numericPasswordValidator(),
+                specialPasswordValidator(),
+                shortPasswordValidator(),
+                weakPasswordValidator(),
+            ]),
             confirmPassword: new FormControl('', [Validators.required]),
         },
         {
             validators: mismatchPasswordValidator('password', 'confirmPassword'),
         },
     );
-    isProcessingRegistration = false;
 
-    strongPasswordRegex = STRONG_PASSWORD_REGEX.source;
+    passwordRequirements = [
+        { msg: 'At least one lowercase', check: () => this.passwordHasNoLowercase },
+        { msg: 'At least one uppercase', check: () => this.passwordHasNoUppercase },
+        { msg: 'At least one numeric', check: () => this.passwordHasNoNumeric },
+        { msg: 'At least one special character', check: () => this.passwordHasNoSpecial },
+        { msg: 'Minimum 8 characters', check: () => this.isPasswordShort },
+    ];
+
+    isProcessingRegistration = false;
 
     get isUsernameInvalid(): boolean {
         const usernameControl = this.userForm.controls['username'];
@@ -70,20 +93,49 @@ export class RegisterComponent {
         return emailControl.dirty && emailControl.invalid;
     }
 
+    get passwordControl(): AbstractControl {
+        return this.userForm.controls['password'];
+    }
+
+    get isPasswordControlDirty(): boolean {
+        return this.passwordControl.dirty;
+    }
+
+    get passwordHasNoLowercase(): boolean {
+        return this.passwordControl.pristine || this.passwordControl.hasError(PASSWORD_LOWERCASE);
+    }
+
+    get passwordHasNoUppercase(): boolean {
+        return this.passwordControl.pristine || this.passwordControl.hasError(PASSWORD_UPPERCASE);
+    }
+
+    get passwordHasNoNumeric(): boolean {
+        return this.passwordControl.pristine || this.passwordControl.hasError(PASSWORD_NUMERIC);
+    }
+
+    get passwordHasNoSpecial(): boolean {
+        return this.passwordControl.pristine || this.passwordControl.hasError(PASSWORD_SPECIAL);
+    }
+
+    get isPasswordShort(): boolean {
+        return this.passwordControl.pristine || this.passwordControl.hasError(PASSWORD_SHORT);
+    }
+
     get isPasswordWeak(): boolean {
-        const passwordControl = this.userForm.controls['password'];
-        return passwordControl.dirty && passwordControl.hasError(PASSWORD_WEAK);
+        return this.passwordControl.dirty && this.passwordControl.hasError(PASSWORD_WEAK);
+    }
+
+    get isPasswordStrong(): boolean {
+        return this.passwordControl.dirty && !this.passwordControl.hasError(PASSWORD_WEAK);
     }
 
     get isPasswordInvalid(): boolean {
-        const passwordControl = this.userForm.controls['password'];
-        return passwordControl.dirty && passwordControl.hasError(PASSWORD_INVALID);
+        return this.passwordControl.dirty && this.passwordControl.hasError(PASSWORD_INVALID);
     }
 
     get hasPasswordMismatch(): boolean {
-        const passwordControl = this.userForm.controls['password'];
         const confirmPasswordControl = this.userForm.controls['confirmPassword'];
-        return passwordControl.valid && confirmPasswordControl.dirty && this.userForm.hasError(PASSWORD_MISMATCH);
+        return this.passwordControl.valid && confirmPasswordControl.dirty && this.userForm.hasError(PASSWORD_MISMATCH);
     }
 
     showError() {
@@ -113,7 +165,11 @@ export class RegisterComponent {
                         } else if (status === 500) {
                             errorMessage = 'Database Server Error';
                         }
-                        this.messageService.add({ severity: 'error', summary: 'Log In Error', detail: errorMessage });
+                        this.messageService.add({
+                            severity: 'error',
+                            summary: 'Registration Error',
+                            detail: errorMessage,
+                        });
                     },
                 });
         } else {

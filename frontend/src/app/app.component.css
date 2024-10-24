@@ -1,21 +1,4 @@
 main {
   width: 100%;
   min-height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 1rem;
-  box-sizing: inherit;
-  position: relative;
-  flex-direction: column;
-}
-
-.content {
-  display: flex;
-  flex-direction: column;
-  width: auto;
-  margin-bottom: 1rem;
-  padding: 2rem;
-  background-color: var(--surface-section);
-  border-radius: 0.75rem;
 }

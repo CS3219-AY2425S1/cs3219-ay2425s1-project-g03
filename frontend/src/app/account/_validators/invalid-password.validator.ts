@@ -6,7 +6,8 @@ export const PASSWORD_INVALID = 'passwordInvalid';
 
 export function invalidPasswordValidator(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
-        const weak = !PASSWORD_REGEX.test(control.value);
+        const password = control.value;
+        const weak = password && !PASSWORD_REGEX.test(password);
         return weak ? { [PASSWORD_INVALID]: true } : null;
     };
 }

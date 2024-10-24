@@ -7,7 +7,7 @@
     </ng-template>
     <ng-template pTemplate="end">
         @if (user) {
-            <p-menu #menu [model]="items" [popup]="true"></p-menu>
+            <p-menu #menu [model]="items" [popup]="true" appendTo="body"></p-menu>
             <p-button
                 [label]="user.username"
                 (onClick)="menu.toggle($event)"
