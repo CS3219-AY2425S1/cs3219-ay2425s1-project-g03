@@ -43,3 +43,10 @@ services:
   match-broker:
     ports:
       - 5672:5672
+
+  dozzle:
+    image: amir20/dozzle:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 8000:8080
