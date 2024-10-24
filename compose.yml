@@ -1,0 +1,144 @@
+services:
+  frontend:
+    container_name: frontend
+    image: frontend
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    ports:
+      - 4200:4200
+    restart: always
+  
+  gateway:
+    container_name: gateway
+    image: nginx:1.27
+    ports:
+      - 8080:8080
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - question
+      - user
+      - match
+    networks:
+      - gateway-network
+  
+  question:
+    container_name: question
+    image: question
+    build:
+      context: services/question
+      dockerfile: Dockerfile
+    environment:
+      DB_CLOUD_URI: ${QUESTION_DB_CLOUD_URI}
+      DB_LOCAL_URI: ${QUESTION_DB_LOCAL_URI}
+      DB_USERNAME: ${QUESTION_DB_USERNAME}
+      DB_PASSWORD: ${QUESTION_DB_PASSWORD}
+    networks:
+      - gateway-network
+      - question-db-network
+    restart: always
+
+  question-db:
+    container_name: question-db
+    image: mongo:7.0.14
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${QUESTION_DB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${QUESTION_DB_PASSWORD}
+    volumes:
+      - question-db:/data/db
+      - ./services/question/init-mongo/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js
+    networks:
+      - question-db-network
+    command: --quiet
+    restart: always
+
+  user:
+    container_name: user
+    image: user
+    build:
+      context: services/user
+      dockerfile: Dockerfile
+    environment:
+      DB_CLOUD_URI: ${USER_DB_CLOUD_URI}
+      DB_LOCAL_URI: ${USER_DB_LOCAL_URI}
+      DB_USERNAME: ${USER_DB_USERNAME}
+      DB_PASSWORD: ${USER_DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+    networks:
+      - gateway-network
+      - user-db-network
+    restart: always
+  
+  user-db:
+    container_name: user-db
+    image: mongo:7.0.14
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${USER_DB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${USER_DB_PASSWORD}
+    volumes:
+      - user-db:/data/db
+    networks:
+      - user-db-network
+    command: --quiet
+    restart: always
+  
+  match:
+    container_name: match
+    image: match
+    build:
+      context: services/match
+      dockerfile: Dockerfile
+    environment:
+      DB_CLOUD_URI: ${MATCH_DB_CLOUD_URI}
+      DB_LOCAL_URI: ${MATCH_DB_LOCAL_URI}
+      DB_USERNAME: ${MATCH_DB_USERNAME}
+      DB_PASSWORD: ${MATCH_DB_PASSWORD}
+    depends_on:
+      match-broker:
+        condition: service_healthy
+    networks:
+      - gateway-network
+      - match-db-network
+    restart: always
+
+  match-db:
+    container_name: match-db
+    image: mongo:7.0.14
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MATCH_DB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MATCH_DB_PASSWORD}
+    volumes:
+      - match-db:/data/db
+    networks:
+      - match-db-network
+    restart: always
+  
+  match-broker:
+    container_name: match-broker
+    hostname: match-broker
+    image: rabbitmq:4.0.2
+    user: rabbitmq
+    networks:
+      - match-db-network
+    healthcheck:
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 30s
+      timeout: 30s
+      retries: 10
+      start_period: 30s
+
+volumes:
+  question-db:
+  user-db:
+  match-db:
+
+networks:
+  gateway-network:
+    driver: bridge
+  question-db-network:
+    driver: bridge
+  user-db-network:
+    driver: bridge
+  match-db-network:
+    driver: bridge

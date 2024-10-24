@@ -1,0 +1,7 @@
+.p-sortable-column {
+    background-color: #181818 !important;
+}
+
+.p-sortable-column:not(.p-highlight):hover {
+    background-color: #181818 !important;
+}
