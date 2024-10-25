@@ -165,6 +165,7 @@ services:
       match-broker:
         condition: service_healthy
     networks:
+      - gateway-network
       - collaboration-db-network
       - match-db-network
       - collaboration-network

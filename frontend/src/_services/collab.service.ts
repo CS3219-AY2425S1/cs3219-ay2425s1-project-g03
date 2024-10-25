@@ -24,8 +24,8 @@ export class CollabService extends ApiService {
      * active (room_status is true). One user can have multiple rooms,
      * and each room is identified by a unique room_id.
      */
-    getRooms() {
-        return this.http.get<RoomsResponse>(this.apiUrl + 'user/rooms');
+    getRooms(userId: string) {
+        return this.http.get<RoomsResponse>(this.apiUrl + '/user/' + userId);
     }
 
     /**
@@ -40,17 +40,5 @@ export class CollabService extends ApiService {
      */
     closeRoom(roomId: string) {
         return this.http.patch<CloseRoomResponse>(this.apiUrl + '/' + roomId + '/close', {}, this.httpOptions);
-    }
-
-    /**
-     * updates the isForfeit status of a specified user in a particular room. Each user in a room has a
-     * isForfeit field that tracks whether the user has left the room through forfeiting or is still active.
-     */
-    forfeit(roomId: string) {
-        return this.http.patch<RoomResponse>(
-            this.apiUrl + '/' + roomId + '/user/isForfeit',
-            { isForfeit: true },
-            this.httpOptions,
-        );
     }
 }
