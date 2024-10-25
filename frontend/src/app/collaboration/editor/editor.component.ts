@@ -18,7 +18,7 @@ import * as prettierPluginEstree from 'prettier/plugins/estree';
 import { usercolors } from './user-colors';
 import { WEBSOCKET_CONFIG } from '../../api.config';
 import { AuthenticationService } from '../../../_services/authentication.service';
-import { ActivatedRoute } from '@angular/router';
+import { RoomService } from '../room.service';
 // The 'prettier-plugin-java' package does not provide TypeScript declaration files.
 // We are using '@ts-ignore' to bypass TypeScript's missing type declaration error.
 
@@ -62,11 +62,11 @@ export class EditorComponent implements AfterViewInit {
         private messageService: MessageService,
         private confirmationService: ConfirmationService,
         private authService: AuthenticationService,
-        private route: ActivatedRoute,
+        private roomService: RoomService,
     ) {}
 
     ngAfterViewInit() {
-        this.getRoomId();
+        this.initRoomId();
         this.setTheme();
         this.initConnection();
         this.setProvider();
@@ -78,14 +78,13 @@ export class EditorComponent implements AfterViewInit {
     initConnection() {
         this.ydoc = new Y.Doc();
         this.wsProvider = new WebsocketProvider(WEBSOCKET_CONFIG.baseUrl, this.roomId, this.ydoc);
-        console.log('Entering room: ' + this.roomId);
         this.ytext = this.ydoc.getText('sharedArray');
         this.undoManager = new Y.UndoManager(this.ytext);
     }
 
-    getRoomId() {
-        this.route.queryParams.subscribe(params => {
-            this.roomId = params['roomId'];
+    initRoomId() {
+        this.roomService.getRoomId().subscribe(id => {
+            this.roomId = id!;
         });
     }
 
@@ -116,7 +115,6 @@ export class EditorComponent implements AfterViewInit {
     setProvider() {
         const randomIndex = Math.floor(Math.random() * usercolors.length);
 
-        // TODO: Replace name with real user's username
         this.wsProvider.awareness.setLocalStateField('user', {
             name: this.authService.userValue?.username,
             color: usercolors[randomIndex].color,
