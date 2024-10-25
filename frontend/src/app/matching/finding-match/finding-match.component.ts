@@ -81,7 +81,9 @@ export class FindingMatchComponent {
                         break;
                     case MatchStatus.COLLAB_CREATED:
                         this.onMatchSuccess();
-                        this.redirectToCollab(response.data.collabId!);
+                        setTimeout(() => {
+                            this.redirectToCollab(response.data.collabId!);
+                        }, 2000);
                         break;
                     case MatchStatus.TIME_OUT:
                         this.stopPolling$.next(false);
