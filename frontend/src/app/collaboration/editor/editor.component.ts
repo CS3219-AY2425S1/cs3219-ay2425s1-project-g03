@@ -18,6 +18,7 @@ import * as prettierPluginEstree from 'prettier/plugins/estree';
 import { usercolors } from './user-colors';
 import { WEBSOCKET_CONFIG } from '../../api.config';
 import { AuthenticationService } from '../../../_services/authentication.service';
+import { ActivatedRoute } from '@angular/router';
 // The 'prettier-plugin-java' package does not provide TypeScript declaration files.
 // We are using '@ts-ignore' to bypass TypeScript's missing type declaration error.
 
@@ -54,14 +55,18 @@ export class EditorComponent implements AfterViewInit {
 
     wsProvider!: WebsocketProvider;
 
+    roomId!: string;
+
     constructor(
         @Inject(DOCUMENT) private document: Document,
         private messageService: MessageService,
         private confirmationService: ConfirmationService,
         private authService: AuthenticationService,
+        private route: ActivatedRoute,
     ) {}
 
     ngAfterViewInit() {
+        this.getRoomId();
         this.setTheme();
         this.initConnection();
         this.setProvider();
@@ -71,12 +76,17 @@ export class EditorComponent implements AfterViewInit {
     }
 
     initConnection() {
-        const roomId = history.state.roomId;
-
         this.ydoc = new Y.Doc();
-        this.wsProvider = new WebsocketProvider(WEBSOCKET_CONFIG.baseUrl, roomId, this.ydoc);
+        this.wsProvider = new WebsocketProvider(WEBSOCKET_CONFIG.baseUrl, this.roomId, this.ydoc);
+        console.log('Entering room: ' + this.roomId);
         this.ytext = this.ydoc.getText('sharedArray');
         this.undoManager = new Y.UndoManager(this.ytext);
+    }
+
+    getRoomId() {
+        this.route.queryParams.subscribe(params => {
+            this.roomId = params['roomId'];
+        });
     }
 
     async format() {
