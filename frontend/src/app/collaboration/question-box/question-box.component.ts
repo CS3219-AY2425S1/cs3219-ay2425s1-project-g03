@@ -5,6 +5,7 @@ import { ChipModule } from 'primeng/chip';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { DifficultyLevels } from '../../questions/difficulty-levels.enum';
 import { MessageService } from 'primeng/api';
+import { CollabService } from '../../../_services/collab.service';
 
 @Component({
     selector: 'app-question-box',
@@ -16,24 +17,38 @@ import { MessageService } from 'primeng/api';
 })
 export class QuestionBoxComponent implements OnInit {
     question!: Question;
-
-    // TODO: Retrieve questionId from session after player gets a match
-    questionId = 1;
-
     difficultyLevels = DifficultyLevels;
 
     constructor(
         private questionService: QuestionService,
+        private collabService: CollabService,
         private messageService: MessageService,
     ) {}
 
     ngOnInit() {
-        this.setQuestion();
-        // this.setDummyQuestion();
+        this.initQuestion();
     }
 
-    setQuestion() {
-        this.questionService.getQuestionByID(this.questionId).subscribe({
+    initQuestion() {
+        this.collabService.getRoomDetails(history.state.roomId).subscribe({
+            next: response => {
+                const questionId = response.data.question_id;
+                this.setQuestion(questionId);
+            },
+            error: () => {
+                this.question = {} as Question;
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: 'Failed to retrieve room details',
+                    life: 3000,
+                });
+            },
+        });
+    }
+
+    setQuestion(questionId: number) {
+        this.questionService.getQuestionByID(questionId).subscribe({
             next: response => {
                 // @ts-ignore
               this.question = response.data || [];
