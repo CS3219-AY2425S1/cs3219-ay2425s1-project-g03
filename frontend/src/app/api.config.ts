@@ -3,5 +3,5 @@ export const API_CONFIG = {
 };
 
 export const WEBSOCKET_CONFIG = {
-    baseUrl: 'ws://localhost:8080/api/',
+    baseUrl: 'ws://localhost:8084',
 };

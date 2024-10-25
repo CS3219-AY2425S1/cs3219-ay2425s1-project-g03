@@ -16,6 +16,7 @@ import { yCollab } from 'y-codemirror.next';
 import * as prettier from 'prettier';
 import * as prettierPluginEstree from 'prettier/plugins/estree';
 import { usercolors } from './user-colors';
+import { WEBSOCKET_CONFIG } from '../../api.config';
 
 // The 'prettier-plugin-java' package does not provide TypeScript declaration files.
 // We are using '@ts-ignore' to bypass TypeScript's missing type declaration error.
@@ -69,9 +70,10 @@ export class EditorComponent implements AfterViewInit {
     }
 
     initConnection() {
+        const roomId = history.state.roomId;
+
         this.ydoc = new Y.Doc();
-        // TODO: replace hardcoded connection
-        this.wsProvider = new WebsocketProvider('ws://localhost:8084', 'my-room', this.ydoc);
+        this.wsProvider = new WebsocketProvider(WEBSOCKET_CONFIG.baseUrl, roomId, this.ydoc);
         this.ytext = this.ydoc.getText('sharedArray');
         this.undoManager = new Y.UndoManager(this.ytext);
     }
