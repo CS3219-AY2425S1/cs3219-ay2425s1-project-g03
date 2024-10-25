@@ -17,7 +17,7 @@ import * as prettier from 'prettier';
 import * as prettierPluginEstree from 'prettier/plugins/estree';
 import { usercolors } from './user-colors';
 import { WEBSOCKET_CONFIG } from '../../api.config';
-
+import { AuthenticationService } from '../../../_services/authentication.service';
 // The 'prettier-plugin-java' package does not provide TypeScript declaration files.
 // We are using '@ts-ignore' to bypass TypeScript's missing type declaration error.
 
@@ -58,6 +58,7 @@ export class EditorComponent implements AfterViewInit {
         @Inject(DOCUMENT) private document: Document,
         private messageService: MessageService,
         private confirmationService: ConfirmationService,
+        private authService: AuthenticationService,
     ) {}
 
     ngAfterViewInit() {
@@ -107,7 +108,7 @@ export class EditorComponent implements AfterViewInit {
 
         // TODO: Replace name with real user's username
         this.wsProvider.awareness.setLocalStateField('user', {
-            name: 'Bob the builder ',
+            name: this.authService.userValue?.username,
             color: usercolors[randomIndex].color,
             colorLight: usercolors[randomIndex].light,
         });

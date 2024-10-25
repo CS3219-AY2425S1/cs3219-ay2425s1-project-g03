@@ -56,6 +56,9 @@ export class FindingMatchComponent {
     onMatchSuccess() {
         this.stopTimer();
         this.isFindingMatch = false;
+        this.matchSuccess.emit();
+        this.matchPoll.unsubscribe();
+        // Possible to handle routing to workspace here.
     }
 
     onDialogShow() {
@@ -133,9 +136,8 @@ export class FindingMatchComponent {
 
     redirectToCollab(collabId: string) {
         this.router.navigate(['/start'], {
-            state: {
+            queryParams: {
                 roomId: collabId,
-                label: 'roomId',
             },
         });
     }

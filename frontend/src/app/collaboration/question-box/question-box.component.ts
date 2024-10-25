@@ -6,6 +6,7 @@ import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { DifficultyLevels } from '../../questions/difficulty-levels.enum';
 import { MessageService } from 'primeng/api';
 import { CollabService } from '../../../_services/collab.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
     selector: 'app-question-box',
@@ -18,19 +19,28 @@ import { CollabService } from '../../../_services/collab.service';
 export class QuestionBoxComponent implements OnInit {
     question!: Question;
     difficultyLevels = DifficultyLevels;
+    roomId!: string;
 
     constructor(
         private questionService: QuestionService,
         private collabService: CollabService,
         private messageService: MessageService,
+        private route: ActivatedRoute,
     ) {}
 
     ngOnInit() {
+        this.getRoomId();
         this.initQuestion();
     }
 
+    getRoomId() {
+        this.route.queryParams.subscribe(params => {
+            this.roomId = params['roomId'];
+        });
+    }
+
     initQuestion() {
-        this.collabService.getRoomDetails(history.state.roomId).subscribe({
+        this.collabService.getRoomDetails(this.roomId).subscribe({
             next: response => {
                 const questionId = response.data.question_id;
                 this.setQuestion(questionId);
