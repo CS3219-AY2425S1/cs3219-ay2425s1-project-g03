@@ -19,3 +19,7 @@
     align-items: center;
     margin-top: 1rem;
 }
+
+::ng-deep .b1 {
+    height: calc(100% - 80px);
+}
