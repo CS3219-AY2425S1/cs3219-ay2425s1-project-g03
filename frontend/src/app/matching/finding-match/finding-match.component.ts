@@ -78,7 +78,7 @@ export class FindingMatchComponent {
                         break;
                     case MatchStatus.COLLAB_CREATED:
                         this.onMatchSuccess();
-                        // TODO: Redirect to collab URL
+                        this.redirectToCollab(response.data.collabId!);
                         break;
                     case MatchStatus.TIME_OUT:
                         this.stopPolling$.next(false);
@@ -132,9 +132,10 @@ export class FindingMatchComponent {
     }
 
     redirectToCollab(collabId: string) {
-        this.router.navigate(['/collab'], {
-            queryParams: {
+        this.router.navigate(['/start'], {
+            state: {
                 roomId: collabId,
+                label: 'roomId',
             },
         });
     }
