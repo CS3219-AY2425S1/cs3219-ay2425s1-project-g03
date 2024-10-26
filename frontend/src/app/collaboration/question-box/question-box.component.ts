@@ -17,7 +17,7 @@ import { RoomService } from '../room.service';
     styleUrl: './question-box.component.css',
 })
 export class QuestionBoxComponent implements OnInit {
-    question!: Question;
+    question = {} as Question;
     difficultyLevels = DifficultyLevels;
     roomId!: string;
 

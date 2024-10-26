@@ -47,29 +47,18 @@ export class EditorComponent implements AfterViewInit, OnInit {
     @ViewChild('editor') editor!: ElementRef;
 
     state!: EditorState;
-
     view!: EditorView;
-
-    customTheme!: Extension;
-
-    isSubmit = false;
-
-    isForfeitClick = false;
-
     ydoc!: Y.Doc;
-
     yeditorText = new Y.Text('');
-
     ysubmit = new Y.Map<boolean>();
-
     yforfeit = new Y.Map<boolean>();
-
-    isInitiator = false;
-
     undoManager!: Y.UndoManager;
-
+    customTheme!: Extension;
     wsProvider!: WebsocketProvider;
 
+    isSubmit = false;
+    isInitiator = false;
+    isForfeitClick = false;
     roomId!: string;
 
     constructor(
