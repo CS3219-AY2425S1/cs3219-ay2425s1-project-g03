@@ -16,21 +16,15 @@ import * as Y from 'yjs';
     styleUrl: './submit-dialog.component.css',
 })
 export class SubmitDialogComponent implements AfterViewInit {
+    @Input() ysubmit!: Y.Map<boolean>;
     @Input() isVisible = false;
-    @Input() isInitiator = false;
+    @Input() isInitiator!: boolean;
     @Input() roomId!: string;
-    @Input() numUniqueUsers!: number;
-    @Input() ydoc!: Y.Doc;
 
-    @Output() dialogClose = new EventEmitter<number>();
-    @Output() successfulSubmit = new EventEmitter<void>();
+    @Output() dialogClose = new EventEmitter<void>();
 
+    MAX_NUM_OF_USERS = 2;
     message!: string;
-    numForfeit = 0;
-    yshow!: Y.Map<boolean>;
-    ysubmit!: Y.Map<boolean>;
-    yforfeit!: Y.Map<boolean>;
-    userId!: string;
 
     constructor(
         @Inject(DOCUMENT) private document: Document,
@@ -40,67 +34,41 @@ export class SubmitDialogComponent implements AfterViewInit {
     ) {}
 
     ngAfterViewInit() {
-        this.getUserId();
-        this.initDoc();
         this.initDocListener();
     }
 
-    initDoc() {
-        this.ysubmit = this.ydoc.getMap('submit');
-        this.yforfeit = this.ydoc.getMap('forfeit');
-        this.yshow = this.ydoc.getMap('cancel');
-    }
-
-    getUserId() {
-        this.userId = this.authService.userValue?.id || '';
-    }
-
     initDocListener() {
+        let firstLoad = true;
         this.ysubmit.observe(() => {
-            const firstEntry = this.ysubmit.entries().next().value;
-
-            if (firstEntry && firstEntry[0] !== undefined) {
-                this.isInitiator = firstEntry[0] === this.userId;
-            }
-
             const counter = this.ysubmit.size;
-            if (this.ysubmit.size > 0) {
+            if (firstLoad) {
+                firstLoad = false;
+                return;
+            }
+            if (counter > 0) {
                 this.showSubmitDialog();
                 this.checkVoteOutcome(counter);
-            }
-        });
-
-        this.yforfeit.observe(() => {
-            this.numForfeit = this.yforfeit.size;
-        });
-
-        this.yshow.observe(() => {
-            const isShow = this.yshow.get('show');
-
-            if (isShow) {
-                this.isVisible = true;
             } else {
-                this.dialogClose.emit(this.numForfeit);
+                this.dialogClose.emit();
                 this.isVisible = false;
-                this.ysubmit.clear();
+                this.isInitiator = false;
             }
         });
     }
 
     onDialogShow() {
-        this.yshow.set('show', true);
         if (this.isInitiator) {
-            if (this.numForfeit == 0 && this.numUniqueUsers == 2) {
-                this.message = "Waiting for the other user's decision...";
-                this.ysubmit.set(this.userId!, true);
-            } else if (this.numForfeit == 0 && this.numUniqueUsers == 1) {
-                this.message =
-                    'Are you sure you want to submit?\n\n If you submit now, while your peer is disconnected, both of your submissions will be finalised.';
-            } else {
-                this.message = 'Are you sure you want to submit?';
-            }
+            this.initiateSubmit();
+            this.message = "Waiting for the other user's decision...";
         } else {
-            this.message = 'Your peer has initiated a submission.\n\nDo you agree?';
+            this.message = `Your peer has initiated a submission.\n\nDo you agree?`;
+        }
+    }
+
+    initiateSubmit() {
+        const userId = this.authService.userValue?.id;
+        if (userId) {
+            this.ysubmit.set(userId, true);
         }
     }
 
@@ -112,32 +80,20 @@ export class SubmitDialogComponent implements AfterViewInit {
     }
 
     checkVoteOutcome(counter: number) {
-        const isConsent = counter == this.numUniqueUsers;
-
-        if (!isConsent) {
-            return;
-        }
-
-        this.successfulSubmit.emit();
-
-        if (this.isInitiator) {
+        if (counter == this.MAX_NUM_OF_USERS) {
             this.collabService.closeRoom(this.roomId).subscribe({
                 next: () => {
+                    // TODO handle successful submit
                     this.message = 'Successfully submitted. \n\n Redirecting you to homepage...';
                     setTimeout(() => {
                         this.router.navigate(['/matching']);
-                    }, 1500);
+                    }, 1000);
                 },
             });
         }
-
-        setTimeout(() => {
-            this.router.navigate(['/matching']);
-        }, 1500);
     }
 
-    cancel() {
-        this.yshow.set('show', false);
+    closeVoting() {
         this.ysubmit.clear();
     }
 

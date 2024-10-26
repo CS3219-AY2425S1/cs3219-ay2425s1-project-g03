@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, Inject, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Inject, ViewChild, OnInit } from '@angular/core';
 import { oneDark } from '@codemirror/theme-one-dark';
 import { EditorState, Extension } from '@codemirror/state';
 import { basicSetup } from 'codemirror';
@@ -25,16 +25,25 @@ import { RoomService } from '../room.service';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import prettierPluginJava from 'prettier-plugin-java';
+import { SubmitDialogComponent } from '../submit-dialog/submit-dialog.component';
+import { ForfeitDialogComponent } from '../forfeit-dialog/forfeit-dialog.component';
 
 @Component({
     selector: 'app-editor',
     standalone: true,
-    imports: [ScrollPanelModule, ButtonModule, ConfirmDialogModule, ToastModule],
+    imports: [
+        ScrollPanelModule,
+        ButtonModule,
+        ConfirmDialogModule,
+        ToastModule,
+        SubmitDialogComponent,
+        ForfeitDialogComponent,
+    ],
     providers: [ConfirmationService, MessageService],
     templateUrl: './editor.component.html',
     styleUrl: './editor.component.css',
 })
-export class EditorComponent implements AfterViewInit {
+export class EditorComponent implements AfterViewInit, OnInit {
     @ViewChild('editor') editor!: ElementRef;
 
     state!: EditorState;
@@ -47,9 +56,11 @@ export class EditorComponent implements AfterViewInit {
 
     ydoc!: Y.Doc;
 
-    ytext = new Y.Text('# type your code here\n');
+    yeditorText = new Y.Text('');
 
-    yarray!: Y.Array<string>;
+    ysubmit = new Y.Map<boolean>();
+
+    isInitiator = false;
 
     undoManager!: Y.UndoManager;
 
@@ -65,10 +76,13 @@ export class EditorComponent implements AfterViewInit {
         private roomService: RoomService,
     ) {}
 
+    ngOnInit() {
+        this.initConnection();
+    }
+
     ngAfterViewInit() {
         this.initRoomId();
         this.setTheme();
-        this.initConnection();
         this.setProvider();
         this.setEditorState();
         this.setEditorView();
@@ -78,8 +92,14 @@ export class EditorComponent implements AfterViewInit {
     initConnection() {
         this.ydoc = new Y.Doc();
         this.wsProvider = new WebsocketProvider(WEBSOCKET_CONFIG.baseUrl, this.roomId, this.ydoc);
-        this.ytext = this.ydoc.getText('sharedArray');
-        this.undoManager = new Y.UndoManager(this.ytext);
+        this.yeditorText = this.ydoc.getText('editorText');
+        this.ysubmit = this.ydoc.getMap('submit');
+        this.undoManager = new Y.UndoManager(this.yeditorText);
+    }
+
+    showTest() {
+        this.isSubmit = true;
+        this.isInitiator = true;
     }
 
     initRoomId() {
@@ -129,11 +149,11 @@ export class EditorComponent implements AfterViewInit {
             java(),
             this.customTheme,
             oneDark,
-            yCollab(this.ytext, this.wsProvider.awareness, { undoManager }),
+            yCollab(this.yeditorText, this.wsProvider.awareness, { undoManager }),
         ];
 
         this.state = EditorState.create({
-            doc: this.ytext.toString(),
+            doc: this.yeditorText.toString(),
             extensions: myExt,
         });
     }
@@ -175,16 +195,14 @@ export class EditorComponent implements AfterViewInit {
         this.view.focus();
     }
 
-    submit() {
-        this.isSubmit = true;
-
-        this.confirmationService.confirm({
-            header: 'Submit?',
-            message: 'Please confirm to submit.',
-            accept: () => {
-                console.log('Submitted');
-            },
+    onSubmitDialogClose() {
+        this.messageService.add({
+            severity: 'error',
+            summary: 'Fail',
+            detail: 'Submission failed: Not all participants agreed. Please try again.',
         });
+        this.isSubmit = false;
+        this.isInitiator = false;
     }
 
     forfeit() {
