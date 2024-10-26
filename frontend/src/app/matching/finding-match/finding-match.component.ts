@@ -57,7 +57,6 @@ export class FindingMatchComponent {
         this.stopTimer();
         this.isFindingMatch = false;
         this.matchSuccess.emit();
-        this.matchPoll.unsubscribe();
         // Possible to handle routing to workspace here.
     }
 
@@ -83,6 +82,7 @@ export class FindingMatchComponent {
                         this.onMatchSuccess();
                         setTimeout(() => {
                             this.redirectToCollab(response.data.collabId!);
+                            this.matchPoll.unsubscribe();
                         }, 2000);
                         break;
                     case MatchStatus.TIME_OUT:
