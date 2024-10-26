@@ -8,7 +8,10 @@
     z-index: 100;
     backdrop-filter: blur(10px);
     justify-content: center;
+    align-items: center;
     height: 80px;
+    width: 100%;
+    overflow: hidden;
 }
 
 :host ::ng-deep p-menubarsub {
@@ -24,6 +27,8 @@
     background: transparent;
     border: transparent;
     color: white;
+    padding: 5px;
+    border-radius: 0.5rem;
 }
 
 a.fill-div {
@@ -38,14 +43,14 @@ a.fill-div {
     font-family: "Poppins", sans-serif;
     font-weight: 100;
     font-style: normal;
-  }
+}
   
-  .poppins-bold {
+.poppins-bold {
     font-family: "Poppins", sans-serif;
     font-weight: 700;
     font-style: normal;
-  }
+}
 
 p.logo-font-size {
-    font-size: 28px;
+    font-size: 1.5rem;
 }
