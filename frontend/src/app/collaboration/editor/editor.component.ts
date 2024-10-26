@@ -91,7 +91,11 @@ export class EditorComponent implements AfterViewInit, OnInit {
 
     initConnection() {
         this.ydoc = new Y.Doc();
-        this.wsProvider = new WebsocketProvider(WEBSOCKET_CONFIG.baseUrl, this.roomId, this.ydoc);
+        this.wsProvider = new WebsocketProvider(WEBSOCKET_CONFIG.baseUrl, this.roomId, this.ydoc, {
+            params: {
+                userId: this.authService.userValue?.id as string,
+            },
+        });
         this.yeditorText = this.ydoc.getText('editorText');
         this.ysubmit = this.ydoc.getMap('submit');
         this.undoManager = new Y.UndoManager(this.yeditorText);
