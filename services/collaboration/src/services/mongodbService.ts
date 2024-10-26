@@ -204,3 +204,42 @@ export const closeRoomById = async (roomId: string) => {
     throw error;
   }
 };
+
+/**
+ * Update the status of a user in a room
+ * @param roomId
+ * @param userId
+ * @param statusExist
+ */
+export const updateRoomUserStatus = async (
+  roomId: string,
+  userId: string,
+  isForfeit: boolean,
+) => {
+  try {
+    const db = await connectToRoomDB();
+    const result = await db
+      .collection("rooms")
+      .findOneAndUpdate(
+        { _id: new ObjectId(roomId), "users.id": userId },
+        { $set: { "users.$.isForfeit": isForfeit } },
+        { returnDocument: "after" },
+      );
+
+    if (!result.value) {
+      console.error(`User with ID ${userId} not found in room ${roomId}`);
+      return null;
+    }
+
+    console.log(
+      `User isForfeit status updated successfully for user ID: ${userId} in room ID: ${roomId}`,
+    );
+    return result.value;
+  } catch (error) {
+    console.error(
+      `Error updating user isForfeit status for user ID ${userId} in room ${roomId}:`,
+      error,
+    );
+    throw error;
+  }
+};

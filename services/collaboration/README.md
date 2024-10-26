@@ -69,9 +69,9 @@ Here are the key environment variables used in the `.env` file:
 | `DB_PASSWORD`            | Password for the MongoDB databases (for both cloud and local environments)            |
 | `QUESTION_SERVICE_URL`   | URL for connecting to the Question Service API                                        |
 | `CORS_ORIGIN`            | Allowed origins for CORS (default: * to allow all origins)                            |
-| `WS_PORT`                | Port for the WebSocket server (default: 8084)                                         |
-| `HTTP_PORT`              | Port for the HTTP server (default: 8087)                                              |
-| `NODE_ENV`               | Environment setting (`development` or `production`)                                   |
+| `COLLAB_WS_PORT`         | Port for the WebSocket server (default: 8084)                                         |
+| `COLLAB_HTTP_PORT`       | Port for the HTTP server (default: 8087)                                              |
+| `ENV`                    | Environment setting (`development` or `production`)                                   |
 
 ---
 
@@ -84,8 +84,8 @@ collaboration service. It enables creating rooms, retrieving room details, and m
 
 ## Get Room IDs by User ID
 
-This endpoint retrieves all room IDs for a given user, but only if the room is still active (`room_status` is `true`). One
-user can have multiple rooms, and each room is identified by a unique `room_id`.
+This endpoint retrieves all room IDs for a given user, but only if the room is still active (`room_status` is `true`).
+One user can have multiple rooms, and each room is identified by a unique `room_id`.
 
 - **HTTP Method**: `GET`
 - **Endpoint**: `/room/user/{userId}`
@@ -158,17 +158,79 @@ Retrieve Room by Room ID: curl -X GET http://localhost:8087/room/6718b027b4624a7
       {
         "id": "6718b0050e24954ac125e5dd",
         "username": "Testing",
-        "requestId": "6718b027a8144e99bbee17ce"
+        "requestId": "6718b027a8144e99bbee17ce",
+        "isForfeit": false
       },
       {
         "id": "6718b0070e24954ac125e5e1",
         "username": "Testing1",
-        "requestId": "6718b026a8144e99bbee17c8"
+        "requestId": "6718b026a8144e99bbee17c8",
+        "isForfeit": false
       }
     ],
     "question_id": 2,
     "createdAt": "2024-10-23T08:13:27.886Z",
     "room_status": true
+  }
+}
+```
+
+---
+
+## Update User Forfeit Status in Room
+
+This endpoint updates the `isForfeit` status of a specified user in a particular room. Each user in a room has
+a
+`isForfeit` field that tracks whether the user has left the room through forfeiting or is still active.
+
+- **HTTP Method**: `PATCH`
+- **Endpoint**: `/room/{roomId}/user/{userId}/isForfeit`
+
+### Parameters:
+
+- `roomId` (Required) - The ID of the room to update.
+- `userId` (Required) - The ID of the user to update.
+
+### Responses:
+
+| Response Code               | Explanation                                   |
+|-----------------------------|-----------------------------------------------|
+| 200 (OK)                    | Success, user status updated successfully.    |
+| 404 (Not Found)             | Room or user not found in the specified room. |
+| 400 (Bad Request)           | Invalid or missing `statusExist` parameter.   |
+| 500 (Internal Server Error) | Unexpected error in the server or database.   |
+
+### Command Line Example:
+
+```bash
+Update User Status: curl -X PATCH http://localhost:8087/room/roomToEdit/6718b027b4624a70311bc0ed/user/6718b0070e24954ac125e5e1/isForfeit -H "Content-Type: application/json" -d '{"isForfeit": true}'
+```
+
+```json
+{
+  "status": "Success",
+  "data": {
+    "message": "User status updated successfully",
+    "room": {
+      "room_id": "6718b027b4624a70311bc0ed",
+      "users": [
+        {
+          "id": "6718b0050e24954ac125e5dd",
+          "username": "Testing",
+          "requestId": "6718b027a8144e99bbee17ce",
+          "isForfeit": false
+        },
+        {
+          "id": "6718b0070e24954ac125e5e1",
+          "username": "Testing1",
+          "requestId": "6718b026a8144e99bbee17c8",
+          "isForfeit": true
+        }
+      ],
+      "question_id": 2,
+      "createdAt": "2024-10-23T08:13:27.886Z",
+      "room_status": true
+    }
   }
 }
 ```

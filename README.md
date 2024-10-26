@@ -54,16 +54,17 @@ reloading and exposes the ports for all microservices.
 docker compose -f compose.yml -f compose.dev.yml up -d
 ```
 
-| Service                      | Port |
-|------------------------------|------|
-| Frontend                     | 4200 |
-| API Gateway                  | 8080 |
-| Question Service             | 8081 |
-| User Service                 | 8082 |
-| Match Service                | 8083 |
-| Collaboration & Room Service | 8084 |
-| Chat Service                 | 8085 |
-| History Service              | 8086 |
+| Service               | Port |
+|-----------------------|------|
+| Frontend              | 4200 |
+| API Gateway           | 8080 |
+| Question Service      | 8081 |
+| User Service          | 8082 |
+| Match Service         | 8083 |
+| Collaboration Service | 8084 |
+| Chat Service          | 8085 |
+| History Service       | 8086 |
+| Room Service          | 8087 |
 
 **Step 4: Stop the Docker containers**
 

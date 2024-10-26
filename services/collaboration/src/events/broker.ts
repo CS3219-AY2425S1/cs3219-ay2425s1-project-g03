@@ -23,7 +23,6 @@ export const getChannel = async (): Promise<Channel> => {
 
           connection = conn;
 
-          // Retrieve the channel from the existing connection
           conn.createChannel((err, ch) => {
             if (err) {
               console.error("RabbitMQ channel creation error:", err);
