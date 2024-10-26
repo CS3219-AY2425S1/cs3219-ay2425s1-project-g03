@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, HostListener } from '@angular/core';
+import { Component, OnInit, ViewChild, HostListener, Renderer2 } from '@angular/core';
 import { MenuItem } from 'primeng/api';
 import { CommonModule, NgFor } from '@angular/common';
 import { MenubarModule } from 'primeng/menubar';
@@ -19,7 +19,10 @@ export class NavigationBarComponent implements OnInit {
     items: MenuItem[] | undefined;
     user: User | null = null;
 
-    constructor(private authService: AuthenticationService) {}
+    constructor(
+        private authService: AuthenticationService,
+        private renderer: Renderer2,
+    ) {}
 
     ngOnInit() {
         this.setMenuItems();
@@ -33,12 +36,8 @@ export class NavigationBarComponent implements OnInit {
     hideMenuOnScroll() {
         if (this.menu && this.menu.overlayVisible) {
             this.menu.hide();
-        }
-
-        // This makes hiding instant
-        const overlay = document.querySelector('.p-menu-overlay');
-        if (overlay) {
-            (overlay as HTMLElement).style.display = 'none';
+            // This makes hiding instant
+            this.renderer.setStyle(this.menu.container, 'display', 'none');
         }
     }
 
