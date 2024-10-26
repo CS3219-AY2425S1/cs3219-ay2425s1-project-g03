@@ -1,9 +1,10 @@
 import app from './app';
+import config from './config';
 import { connectToDB, upsertManyQuestions } from './models';
 import { getDemoQuestions } from './utils/data';
 import { initializeCounter } from './utils/sequence';
 
-const port = process.env.PORT || 8081;
+const port = config.PORT;
 
 connectToDB()
     .then(async () => {

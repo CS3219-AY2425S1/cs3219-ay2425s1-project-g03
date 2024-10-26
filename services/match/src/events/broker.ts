@@ -1,4 +1,5 @@
 import client, { Channel, Connection } from 'amqplib';
+import config from '../config';
 
 // TODO: Add authentication
 
@@ -17,7 +18,7 @@ class MessageBroker {
         }
 
         try {
-            this.connection = await client.connect('amqp://match-broker');
+            this.connection = await client.connect(config.BROKER_URL);
             console.log('Connected to RabbitMQ');
             this.channel = await this.connection.createChannel();
             this.connected = true;
