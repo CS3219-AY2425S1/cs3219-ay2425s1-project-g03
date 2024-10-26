@@ -23,6 +23,7 @@
 
 <app-submit-dialog
     (dialogClose)="onSubmitDialogClose()"
+    (successfulSubmit)="onSuccess()"
     [ysubmit]="ysubmit"
     [roomId]="roomId"
     [isVisible]="isSubmit"

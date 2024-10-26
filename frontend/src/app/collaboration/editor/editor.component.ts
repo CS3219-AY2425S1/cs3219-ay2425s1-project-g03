@@ -209,6 +209,16 @@ export class EditorComponent implements AfterViewInit, OnInit {
         this.isInitiator = false;
     }
 
+    onSuccess() {
+        this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'You have successfully submitted!',
+        });
+        this.isSubmit = false;
+        this.isInitiator = false;
+    }
+
     forfeit() {
         this.isSubmit = false;
 

@@ -22,6 +22,7 @@ export class SubmitDialogComponent implements AfterViewInit {
     @Input() roomId!: string;
 
     @Output() dialogClose = new EventEmitter<void>();
+    @Output() successfulSubmit = new EventEmitter<void>();
 
     MAX_NUM_OF_USERS = 2;
     message!: string;
@@ -38,13 +39,8 @@ export class SubmitDialogComponent implements AfterViewInit {
     }
 
     initDocListener() {
-        let firstLoad = true;
         this.ysubmit.observe(() => {
             const counter = this.ysubmit.size;
-            if (firstLoad) {
-                firstLoad = false;
-                return;
-            }
             if (counter > 0) {
                 this.showSubmitDialog();
                 this.checkVoteOutcome(counter);
@@ -80,10 +76,16 @@ export class SubmitDialogComponent implements AfterViewInit {
     }
 
     checkVoteOutcome(counter: number) {
-        if (counter == this.MAX_NUM_OF_USERS) {
+        console.log(counter);
+        if (counter != this.MAX_NUM_OF_USERS) {
+            return;
+        }
+
+        this.successfulSubmit.emit();
+
+        if (this.isInitiator) {
             this.collabService.closeRoom(this.roomId).subscribe({
                 next: () => {
-                    // TODO handle successful submit
                     this.message = 'Successfully submitted. \n\n Redirecting you to homepage...';
                     setTimeout(() => {
                         this.router.navigate(['/matching']);
@@ -91,6 +93,10 @@ export class SubmitDialogComponent implements AfterViewInit {
                 },
             });
         }
+
+        setTimeout(() => {
+            this.router.navigate(['/matching']);
+        }, 1000);
     }
 
     closeVoting() {
