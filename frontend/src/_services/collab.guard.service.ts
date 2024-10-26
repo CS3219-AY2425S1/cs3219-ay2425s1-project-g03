@@ -31,7 +31,9 @@ export class CollabGuardService implements CanActivate {
                     map(response => {
                         const isFound = response.data.users.some(roomUser => roomUser?.id === user.id);
                         const isOpen = response.data.room_status;
-                        if (!isFound || !isOpen) {
+                        const isForfeit = response.data.users.find(roomUser => roomUser?.id === user.id)?.isForfeit;
+
+                        if (!isFound || !isOpen || isForfeit) {
                             this.router.navigate(['/matching']);
                             return false;
                         }

@@ -17,6 +17,7 @@ import * as Y from 'yjs';
 })
 export class SubmitDialogComponent implements AfterViewInit {
     @Input() ysubmit!: Y.Map<boolean>;
+    @Input() yforfeit!: Y.Map<boolean>;
     @Input() isVisible = false;
     @Input() isInitiator!: boolean;
     @Input() roomId!: string;
@@ -26,6 +27,7 @@ export class SubmitDialogComponent implements AfterViewInit {
 
     MAX_NUM_OF_USERS = 2;
     message!: string;
+    remainingUsers = this.MAX_NUM_OF_USERS;
 
     constructor(
         @Inject(DOCUMENT) private document: Document,
@@ -49,6 +51,10 @@ export class SubmitDialogComponent implements AfterViewInit {
                 this.isVisible = false;
                 this.isInitiator = false;
             }
+        });
+
+        this.yforfeit.observe(() => {
+            this.remainingUsers -= this.yforfeit.size;
         });
     }
 
@@ -77,7 +83,7 @@ export class SubmitDialogComponent implements AfterViewInit {
 
     checkVoteOutcome(counter: number) {
         console.log(counter);
-        if (counter != this.MAX_NUM_OF_USERS) {
+        if (counter != this.remainingUsers) {
             return;
         }
 

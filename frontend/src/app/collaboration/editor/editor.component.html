@@ -25,7 +25,12 @@
     (dialogClose)="onSubmitDialogClose()"
     (successfulSubmit)="onSuccess()"
     [ysubmit]="ysubmit"
+    [yforfeit]="yforfeit"
     [roomId]="roomId"
     [isVisible]="isSubmit"
     [isInitiator]="isInitiator" />
-<app-forfeit-dialog />
+<app-forfeit-dialog
+    (dialogClose)="onForfeitDialogClose()"
+    [yforfeit]="yforfeit"
+    [roomId]="roomId"
+    [isVisible]="isForfeitClick" />

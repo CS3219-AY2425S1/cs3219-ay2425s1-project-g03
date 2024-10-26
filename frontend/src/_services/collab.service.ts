@@ -41,4 +41,16 @@ export class CollabService extends ApiService {
     closeRoom(roomId: string) {
         return this.http.patch<CloseRoomResponse>(this.apiUrl + '/' + roomId + '/close', {}, this.httpOptions);
     }
+
+    /**
+     * updates the isForfeit status of a specified user in a particular room. Each user in a room has a
+     * isForfeit field that tracks whether the user has left the room through forfeiting or is still active.
+     */
+    forfeit(roomId: string, userId: string) {
+        return this.http.patch<RoomResponse>(
+            this.apiUrl + '/roomToEdit/' + roomId + '/user/' + userId + '/isForfeit',
+            { isForfeit: true },
+            this.httpOptions,
+        );
+    }
 }

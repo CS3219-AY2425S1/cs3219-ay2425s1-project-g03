@@ -54,11 +54,15 @@ export class EditorComponent implements AfterViewInit, OnInit {
 
     isSubmit = false;
 
+    isForfeitClick = false;
+
     ydoc!: Y.Doc;
 
     yeditorText = new Y.Text('');
 
     ysubmit = new Y.Map<boolean>();
+
+    yforfeit = new Y.Map<boolean>();
 
     isInitiator = false;
 
@@ -98,6 +102,7 @@ export class EditorComponent implements AfterViewInit, OnInit {
         });
         this.yeditorText = this.ydoc.getText('editorText');
         this.ysubmit = this.ydoc.getMap('submit');
+        this.yforfeit = this.ydoc.getMap('forfeit');
         this.undoManager = new Y.UndoManager(this.yeditorText);
     }
 
@@ -220,14 +225,10 @@ export class EditorComponent implements AfterViewInit, OnInit {
     }
 
     forfeit() {
-        this.isSubmit = false;
+        this.isForfeitClick = true;
+    }
 
-        this.confirmationService.confirm({
-            header: 'Forfeit?',
-            message: 'Please confirm to forfeit.',
-            accept: () => {
-                console.log('Forfeited');
-            },
-        });
+    onForfeitDialogClose() {
+        this.isForfeitClick = false;
     }
 }

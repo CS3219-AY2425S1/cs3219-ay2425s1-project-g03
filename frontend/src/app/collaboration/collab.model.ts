@@ -13,15 +13,16 @@ export interface RoomsResponse {
     data: string[];
 }
 
-interface User {
+export interface CollabUser {
     id: string;
     username: string;
     requestId: string;
+    isForfeit: boolean;
 }
 
 interface RoomData {
     room_id: string;
-    users: User[];
+    users: CollabUser[];
     question_id: number;
     createdAt: string;
     room_status: boolean;
