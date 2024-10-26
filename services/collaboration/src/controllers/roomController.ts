@@ -140,9 +140,19 @@ export const closeRoomController = async (req: Request, res: Response) => {
   try {
     const roomId = req.params.roomId;
 
+    const room = await findRoomById(roomId);
+    if (!room) {
+      return handleNotFound(res, "Room not found");
+    }
+
+    if (!room.room_status) {
+      console.log(`Room ${roomId} is already closed.`);
+      return handleSuccess(res, `Room ${roomId} is already closed`);
+    }
+
     const result = await closeRoomById(roomId);
     if (result.modifiedCount === 0) {
-      return handleNotFound(res, "Room not found or already closed");
+      return handleNotFound(res, "Room not found");
     }
 
     await deleteYjsDocument(roomId);

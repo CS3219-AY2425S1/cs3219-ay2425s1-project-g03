@@ -250,11 +250,11 @@ This endpoint allows a user to close a room (change `room_status` to `false`) an
 
 ### Responses:
 
-| Response Code               | Explanation                                    |
-|-----------------------------|------------------------------------------------|
-| 200 (OK)                    | Success, room closed and Yjs document removed. |
-| 404 (Not Found)             | Room not found or already closed.              |
-| 500 (Internal Server Error) | Unexpected error in the server or database.    |
+| Response Code               | Explanation                                                                |
+|-----------------------------|----------------------------------------------------------------------------|
+| 200 (OK)                    | Success, room closed and Yjs document removed, or room was already closed. |
+| 404 (Not Found)             | Room not found.                                                            |
+| 500 (Internal Server Error) | Unexpected error in the server or database.                                |
 
 ### Command Line Example:
 
