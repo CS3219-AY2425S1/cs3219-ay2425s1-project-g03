@@ -1,3 +1,7 @@
+/**
+ * Adapted from: https://github.com/yjs/y-websocket/blob/master/bin/utils.cjs
+ */
+
 const Y = require('yjs');
 const syncProtocol = require('y-protocols/sync');
 const awarenessProtocol = require('y-protocols/awareness');
