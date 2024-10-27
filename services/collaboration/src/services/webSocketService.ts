@@ -2,12 +2,21 @@ import { Server } from "http";
 import { WebSocketServer, WebSocket } from "ws";
 import * as Y from "yjs";
 import { findRoomById, mdb } from "./mongodbService";
-import { handleBadRequest, handleNotFound, handleServerError, handleSuccess } from "../utils/helper";
+import {
+  handleBadRequest,
+  handleNotFound,
+  handleServerError,
+  handleSuccess,
+} from "../utils/helper";
 
 const { setPersistence, setupWSConnection } = require("../utils/utility.js");
 
-const WEBSOCKET_AUTH_FAILED = parseInt(process.env.WEBSOCKET_AUTH_FAILED || "4000");
-const WEBSOCKET_ROOM_CLOSED = parseInt(process.env.WEBSOCKET_ROOM_CLOSED || "4001");
+const WEBSOCKET_AUTH_FAILED = parseInt(
+  process.env.WEBSOCKET_AUTH_FAILED || "4000",
+);
+const WEBSOCKET_ROOM_CLOSED = parseInt(
+  process.env.WEBSOCKET_ROOM_CLOSED || "4001",
+);
 
 /**
  * Start the WebSocket server
@@ -32,13 +41,19 @@ export const startWebSocketServer = (server: Server) => {
     if (!roomId) {
       console.log("Connection rejected: Missing roomId");
       handleBadRequest(conn, "Missing roomId in connection request");
-      return conn.close(WEBSOCKET_AUTH_FAILED, "Authorization failed: Missing roomId");
+      return conn.close(
+        WEBSOCKET_AUTH_FAILED,
+        "Authorization failed: Missing roomId",
+      );
     }
 
     if (!userId) {
       console.log("Connection rejected: Missing userId");
       handleBadRequest(conn, "Missing userId in connection request");
-      return conn.close(WEBSOCKET_AUTH_FAILED, "Authorization failed: Missing userId");
+      return conn.close(
+        WEBSOCKET_AUTH_FAILED,
+        "Authorization failed: Missing userId",
+      );
     }
 
     try {
@@ -55,21 +70,37 @@ export const startWebSocketServer = (server: Server) => {
         return conn.close(WEBSOCKET_ROOM_CLOSED, "Room closed");
       }
 
-      const userInRoom = room.users.find((user: { id: string }) => user.id === userId);
+      const userInRoom = room.users.find(
+        (user: { id: string }) => user.id === userId,
+      );
 
       if (!userInRoom) {
         console.log("Connection rejected: User does not belong to the room");
         handleServerError(conn, "User does not belong to the room");
-        return conn.close(WEBSOCKET_AUTH_FAILED, "Authorization failed: User does not belong to the room");
+        return conn.close(
+          WEBSOCKET_AUTH_FAILED,
+          "Authorization failed: User does not belong to the room",
+        );
       }
 
       if (userInRoom.isForfeit) {
         console.log("Connection rejected: User has forfeited");
-        handleServerError(conn, "User has forfeited and cannot access this room");
-        return conn.close(WEBSOCKET_AUTH_FAILED, "Authorization failed: User has forfeited");
+        handleServerError(
+          conn,
+          "User has forfeited and cannot access this room",
+        );
+        return conn.close(
+          WEBSOCKET_AUTH_FAILED,
+          "Authorization failed: User has forfeited",
+        );
       }
 
-      console.log("WebSocket connection established for room:", roomId, "user:", userId);
+      console.log(
+        "WebSocket connection established for room:",
+        roomId,
+        "user:",
+        userId,
+      );
       setupWSConnection(conn, req);
       handleSuccess(conn, "WebSocket connection established");
     } catch (error) {
