@@ -85,24 +85,24 @@ export class EditorComponent implements AfterViewInit, OnInit {
     }
 
     initConnection() {
-      this.ydoc = new Y.Doc();
-      this.wsProvider = new WebsocketProvider(WEBSOCKET_CONFIG.baseUrl, this.roomId, this.ydoc, {
-        params: {
-          userId: this.authService.userValue?.id as string,
-        },
-      });
+        this.ydoc = new Y.Doc();
+        this.wsProvider = new WebsocketProvider(WEBSOCKET_CONFIG.baseUrl, this.roomId, this.ydoc, {
+            params: {
+                userId: this.authService.userValue?.id as string,
+            },
+        });
 
-      this.wsProvider.ws!.onclose = (event: { code: number; reason: any; }) => {
-        if (event.code === 4000 || event.code === 4001) {
-          console.error("WebSocket authorization failed:", event.reason);
-          this.router.navigate(['/matching']);
-        }
-      };
+        this.wsProvider.ws!.onclose = (event: { code: number; reason: string }) => {
+            if (event.code === 4000 || event.code === 4001) {
+                console.error('WebSocket authorization failed:', event.reason);
+                this.router.navigate(['/matching']);
+            }
+        };
 
-      this.yeditorText = this.ydoc.getText('editorText');
-      this.ysubmit = this.ydoc.getMap('submit');
-      this.yforfeit = this.ydoc.getMap('forfeit');
-      this.undoManager = new Y.UndoManager(this.yeditorText);
+        this.yeditorText = this.ydoc.getText('editorText');
+        this.ysubmit = this.ydoc.getMap('submit');
+        this.yforfeit = this.ydoc.getMap('forfeit');
+        this.undoManager = new Y.UndoManager(this.yeditorText);
     }
 
     showTest() {
