@@ -184,7 +184,7 @@ a
 `isForfeit` field that tracks whether the user has left the room through forfeiting or is still active.
 
 - **HTTP Method**: `PATCH`
-- **Endpoint**: `/room/{roomId}/user/{userId}/isForfeit`
+- **Endpoint**: `/room/roomToEdit/{roomId}/user/{userId}/isForfeit`
 
 ### Parameters:
 

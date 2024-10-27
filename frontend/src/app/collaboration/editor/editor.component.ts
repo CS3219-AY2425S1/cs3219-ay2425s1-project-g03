@@ -77,11 +77,11 @@ export class EditorComponent implements AfterViewInit, OnInit {
     ) {}
 
     ngOnInit() {
+        this.initRoomId();
         this.initConnection();
     }
 
     ngAfterViewInit() {
-        this.initRoomId();
         this.setTheme();
         this.setProvider();
         this.setEditorState();
