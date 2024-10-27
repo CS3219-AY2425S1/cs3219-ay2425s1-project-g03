@@ -11,12 +11,8 @@ import {
 
 const { setPersistence, setupWSConnection } = require("../utils/utility.js");
 
-const WEBSOCKET_AUTH_FAILED = parseInt(
-  process.env.WEBSOCKET_AUTH_FAILED || "4000",
-);
-const WEBSOCKET_ROOM_CLOSED = parseInt(
-  process.env.WEBSOCKET_ROOM_CLOSED || "4001",
-);
+const WEBSOCKET_AUTH_FAILED = 4000;
+const WEBSOCKET_ROOM_CLOSED = 4001;
 
 /**
  * Start the WebSocket server

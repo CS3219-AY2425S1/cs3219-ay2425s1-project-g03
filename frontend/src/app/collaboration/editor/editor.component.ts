@@ -29,6 +29,11 @@ import { SubmitDialogComponent } from '../submit-dialog/submit-dialog.component'
 import { ForfeitDialogComponent } from '../forfeit-dialog/forfeit-dialog.component';
 import { Router } from '@angular/router';
 
+enum WebSocketCode {
+    AUTH_FAILED = 4000,
+    ROOM_CLOSED = 4001,
+}
+
 @Component({
     selector: 'app-editor',
     standalone: true,
@@ -93,7 +98,7 @@ export class EditorComponent implements AfterViewInit, OnInit {
         });
 
         this.wsProvider.ws!.onclose = (event: { code: number; reason: string }) => {
-            if (event.code === 4000 || event.code === 4001) {
+            if (event.code === WebSocketCode.AUTH_FAILED || event.code === WebSocketCode.ROOM_CLOSED) {
                 console.error('WebSocket authorization failed:', event.reason);
                 this.router.navigate(['/matching']);
             }

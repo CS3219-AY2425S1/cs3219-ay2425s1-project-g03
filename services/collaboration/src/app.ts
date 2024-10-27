@@ -4,6 +4,7 @@ import cors from "cors";
 import roomRouter from "./routes/roomRoutes";
 import bodyParser from "body-parser";
 import router from "./routes";
+import config from "./config";
 
 const app: Express = express();
 
@@ -18,7 +19,7 @@ app.use((req, res, next) => {
 
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN ?? true,
+    origin: config.CORS_ORIGIN,
     methods: ["GET", "PATCH"],
     allowedHeaders: [
       "Origin",

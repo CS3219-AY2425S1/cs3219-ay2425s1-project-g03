@@ -1,17 +1,19 @@
 import { startMongoDB } from "./services/mongodbService";
 import { startWebSocketServer } from "./services/webSocketService";
 import app from "./app";
+import http from "http";
 import { initializeRoomConsumer } from "./events/consumer";
+import config from "./config";
 
-const WS_PORT = process.env.WS_PORT || 8084;
-const HTTP_PORT = process.env.HTTP_PORT || 8087;
+const WS_PORT = config.WS_PORT;
+const HTTP_PORT = config.HTTP_PORT;
 
 /**
  * Start MongoDB and services
  */
 startMongoDB()
   .then(() => {
-    const wsServer = require("http").createServer();
+    const wsServer = http.createServer();
     wsServer.listen(WS_PORT, () => {
       console.log(`WebSocket server running on port ${WS_PORT}`);
     });

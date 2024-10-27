@@ -1,4 +1,5 @@
 import amqp, { Connection, Channel } from "amqplib/callback_api";
+import config from "../config";
 
 let channel: Channel | null = null;
 let connection: Connection | null = null;
@@ -10,12 +11,7 @@ export const getChannel = async (): Promise<Channel> => {
   if (!channel) {
     try {
       await new Promise<void>((resolve, reject) => {
-        const brokerUrl = process.env.BROKER_URL;
-        if (!brokerUrl) {
-          throw new Error("Broker URL not specified");
-        }
-
-        amqp.connect(brokerUrl, (err, conn) => {
+        amqp.connect(config.BROKER_URL, (err, conn) => {
           if (err) {
             console.error("RabbitMQ connection error:", err);
             return reject(err);

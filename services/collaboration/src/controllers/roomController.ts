@@ -15,6 +15,7 @@ import {
   handleServerError,
   handleBadRequest,
 } from "../utils/helper";
+import config from "../config";
 
 /**
  * Create a room with users, question details, and Yjs document
@@ -31,10 +32,10 @@ export const createRoomWithQuestion = async (
   difficulty: string,
 ) => {
   try {
-    const questionServiceUrl =
-      process.env.QUESTION_SERVICE_URL || "http://question:8081/";
+    const questionServiceUrl = config.QUESTION_SERVICE_URL;
+    const topicString = topics.join(",");
     const response = await axios.get(
-      `${questionServiceUrl}questions/search?topics=${topics.join(",")}&difficulty=${difficulty}&limit=1`,
+      `${questionServiceUrl}questions/search?topics=${topicString}&difficulty=${difficulty}&limit=1`,
     );
 
     if (response.data && response.data.data && response.data.data.length > 0) {
