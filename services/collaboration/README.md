@@ -71,6 +71,8 @@ Here are the key environment variables used in the `.env` file:
 | `CORS_ORIGIN`            | Allowed origins for CORS (default: * to allow all origins)                            |
 | `COLLAB_WS_PORT`         | Port for the WebSocket server (default: 8084)                                         |
 | `COLLAB_HTTP_PORT`       | Port for the HTTP server (default: 8087)                                              |
+| `WEBSOCKET_AUTH_FAILED`  | WebSocket error code for failed authorization (default: 4000)                         |
+| `WEBSOCKET_ROOM_CLOSED`  | WebSocket error code for closed rooms (default: 4001)                                 |
 | `ENV`                    | Environment setting (`development` or `production`)                                   |
 
 ---

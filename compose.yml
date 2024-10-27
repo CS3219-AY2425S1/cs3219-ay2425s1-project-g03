@@ -197,6 +197,8 @@ services:
       QUESTION_SERVICE_URL: ${QUESTION_SERVICE_URL}
       WS_PORT: ${COLLAB_WS_PORT}
       HTTP_PORT: ${COLLAB_HTTP_PORT}
+      WEBSOCKET_AUTH_FAILED: ${WEBSOCKET_AUTH_FAILED}
+      WEBSOCKET_ROOM_CLOSED: ${WEBSOCKET_ROOM_CLOSED}
     depends_on:
       broker:
         condition: service_healthy
