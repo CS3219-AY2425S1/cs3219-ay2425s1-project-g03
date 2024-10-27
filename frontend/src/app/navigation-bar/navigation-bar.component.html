@@ -8,23 +8,19 @@
     <ng-template pTemplate="end">
         @if (user) {
             <p-menu #menu [model]="items" [popup]="true" appendTo="body"></p-menu>
-            <p-button
-                [label]="user.username"
-                (onClick)="menu.toggle($event)"
-                icon="pi pi-user"
-                class="nav-dropdown"/>
+            <p-button [label]="user.username" (onClick)="menu.toggle($event)" icon="pi pi-user" class="nav-dropdown" />
         } @else {
             <div class="flex flex-row gap-2 p-2">
                 <p-button
                     label="Login"
                     icon="pi pi-sign-in"
                     class="nav-dropdown min-w-max"
-                    routerLink="account/login"/>
+                    routerLink="account/login" />
                 <p-button
                     label="Sign Up"
                     icon="pi pi-pen-to-square"
                     class="nav-dropdown min-w-max"
-                    routerLink="/account/register"/>
+                    routerLink="/account/register" />
             </div>
         }
     </ng-template>
