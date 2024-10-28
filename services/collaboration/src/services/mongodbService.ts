@@ -1,7 +1,7 @@
-import { MongoClient, Db, ObjectId } from "mongodb";
-import { MongodbPersistence } from "y-mongodb-provider";
-import * as Y from "yjs";
-import config from "../config";
+import { MongoClient, Db, ObjectId } from 'mongodb';
+import { MongodbPersistence } from 'y-mongodb-provider';
+import * as Y from 'yjs';
+import config from '../config';
 
 let roomDb: Db | null = null;
 let yjsDb: Db | null = null;
@@ -12,55 +12,55 @@ export let mdb!: MongodbPersistence;
  * Connect to the room database
  */
 const connectToRoomDB = async (): Promise<Db> => {
-  try {
-    if (!roomDb) {
-      const client = new MongoClient(config.COLLAB_DB_URI);
-      await client.connect();
-      roomDb = client.db("collaboration-service");
-      console.log("Connected to the collaboration-service (room) database");
+    try {
+        if (!roomDb) {
+            const client = new MongoClient(config.COLLAB_DB_URI);
+            await client.connect();
+            roomDb = client.db('collaboration-service');
+            console.log('Connected to the collaboration-service (room) database');
+        }
+        return roomDb;
+    } catch (error) {
+        console.error('Failed to connect to the Room database:', error);
+        throw error;
     }
-    return roomDb;
-  } catch (error) {
-    console.error("Failed to connect to the Room database:", error);
-    throw error;
-  }
 };
 
 /**
  * Connect to the YJS database
  */
 const connectToYJSDB = async (): Promise<Db> => {
-  try {
-    if (!yjsDb) {
-      mdb = new MongodbPersistence(config.YJS_DB_URI, {
-        flushSize: 100,
-        multipleCollections: true,
-      });
+    try {
+        if (!yjsDb) {
+            mdb = new MongodbPersistence(config.YJS_DB_URI, {
+                flushSize: 100,
+                multipleCollections: true,
+            });
 
-      const client = new MongoClient(config.YJS_DB_URI);
-      await client.connect();
-      yjsDb = client.db("yjs-documents");
-      console.log("Connected to the YJS database");
+            const client = new MongoClient(config.YJS_DB_URI);
+            await client.connect();
+            yjsDb = client.db('yjs-documents');
+            console.log('Connected to the YJS database');
+        }
+        return yjsDb;
+    } catch (error) {
+        console.error('Failed to connect to the YJS database:', error);
+        throw error;
     }
-    return yjsDb;
-  } catch (error) {
-    console.error("Failed to connect to the YJS database:", error);
-    throw error;
-  }
 };
 
 /**
  * Start MongoDB connection for rooms and Yjs
  */
 export const startMongoDB = async (): Promise<void> => {
-  try {
-    await connectToRoomDB();
-    await connectToYJSDB();
-    console.log("Connected to both Room and YJS MongoDB databases");
-  } catch (error) {
-    console.error("MongoDB connection failed:", error);
-    throw error;
-  }
+    try {
+        await connectToRoomDB();
+        await connectToYJSDB();
+        console.log('Connected to both Room and YJS MongoDB databases');
+    } catch (error) {
+        console.error('MongoDB connection failed:', error);
+        throw error;
+    }
 };
 
 /**
@@ -69,21 +69,21 @@ export const startMongoDB = async (): Promise<void> => {
  * @returns roomId
  */
 export const createRoomInDB = async (roomData: any): Promise<string> => {
-  try {
-    const db = await connectToRoomDB();
-    const result = await db.collection("rooms").insertOne({
-      ...roomData,
-      room_status: true,
-    });
-    const roomId = result.insertedId.toString();
+    try {
+        const db = await connectToRoomDB();
+        const result = await db.collection('rooms').insertOne({
+            ...roomData,
+            room_status: true,
+        });
+        const roomId = result.insertedId.toString();
 
-    await createYjsDocument(roomId);
+        await createYjsDocument(roomId);
 
-    return roomId;
-  } catch (error) {
-    console.error("Error creating room in DB:", error);
-    throw error;
-  }
+        return roomId;
+    } catch (error) {
+        console.error('Error creating room in DB:', error);
+        throw error;
+    }
 };
 
 /**
@@ -92,16 +92,14 @@ export const createRoomInDB = async (roomData: any): Promise<string> => {
  * @returns
  */
 export const findRoomById = async (roomId: string) => {
-  try {
-    const db = await connectToRoomDB();
-    const room = await db
-      .collection("rooms")
-      .findOne({ _id: new ObjectId(roomId) });
-    return room;
-  } catch (error) {
-    console.error(`Error finding room by ID ${roomId}:`, error);
-    throw error;
-  }
+    try {
+        const db = await connectToRoomDB();
+        const room = await db.collection('rooms').findOne({ _id: new ObjectId(roomId) });
+        return room;
+    } catch (error) {
+        console.error(`Error finding room by ID ${roomId}:`, error);
+        throw error;
+    }
 };
 
 /**
@@ -110,17 +108,17 @@ export const findRoomById = async (roomId: string) => {
  * @returns
  */
 export const createYjsDocument = async (roomId: string) => {
-  try {
-    const yjsDoc = await mdb.getYDoc(roomId);
-    console.log(`Yjs document created for room: ${roomId}`);
-    const initialSync = Y.encodeStateAsUpdate(yjsDoc);
-    await mdb.storeUpdate(roomId, initialSync);
+    try {
+        const yjsDoc = await mdb.getYDoc(roomId);
+        console.log(`Yjs document created for room: ${roomId}`);
+        const initialSync = Y.encodeStateAsUpdate(yjsDoc);
+        await mdb.storeUpdate(roomId, initialSync);
 
-    return yjsDoc;
-  } catch (error) {
-    console.error(`Failed to create Yjs document for room ${roomId}:`, error);
-    throw error;
-  }
+        return yjsDoc;
+    } catch (error) {
+        console.error(`Failed to create Yjs document for room ${roomId}:`, error);
+        throw error;
+    }
 };
 
 /**
@@ -128,14 +126,14 @@ export const createYjsDocument = async (roomId: string) => {
  * @param roomId
  */
 export const deleteYjsDocument = async (roomId: string) => {
-  try {
-    const db = await connectToYJSDB();
-    await db.collection(roomId).drop();
-    console.log(`Yjs document collection for room ${roomId} deleted`);
-  } catch (error) {
-    console.error(`Failed to delete Yjs document for room ${roomId}:`, error);
-    throw error;
-  }
+    try {
+        const db = await connectToYJSDB();
+        await db.collection(roomId).drop();
+        console.log(`Yjs document collection for room ${roomId} deleted`);
+    } catch (error) {
+        console.error(`Failed to delete Yjs document for room ${roomId}:`, error);
+        throw error;
+    }
 };
 
 /**
@@ -143,22 +141,22 @@ export const deleteYjsDocument = async (roomId: string) => {
  * @param userId
  */
 export const findRoomsByUserId = async (userId: string) => {
-  try {
-    const db = await connectToRoomDB();
-    console.log(`Querying for rooms with user ID: ${userId}`);
-    const rooms = await db
-      .collection("rooms")
-      .find({
-        users: { $elemMatch: { id: userId } },
-        room_status: true,
-      })
-      .toArray();
-    console.log("Rooms found:", rooms);
-    return rooms;
-  } catch (error) {
-    console.error(`Error querying rooms for user ID ${userId}:`, error);
-    throw error;
-  }
+    try {
+        const db = await connectToRoomDB();
+        console.log(`Querying for rooms with user ID: ${userId}`);
+        const rooms = await db
+            .collection('rooms')
+            .find({
+                users: { $elemMatch: { id: userId } },
+                room_status: true,
+            })
+            .toArray();
+        console.log('Rooms found:', rooms);
+        return rooms;
+    } catch (error) {
+        console.error(`Error querying rooms for user ID ${userId}:`, error);
+        throw error;
+    }
 };
 
 /**
@@ -166,20 +164,17 @@ export const findRoomsByUserId = async (userId: string) => {
  * @param roomId
  */
 export const closeRoomById = async (roomId: string) => {
-  try {
-    const db = await connectToRoomDB();
-    const result = await db
-      .collection("rooms")
-      .updateOne(
-        { _id: new ObjectId(roomId) },
-        { $set: { room_status: false } },
-      );
-    console.log(`Room status updated to closed for room ID: ${roomId}`);
-    return result;
-  } catch (error) {
-    console.error(`Error closing room with ID ${roomId}:`, error);
-    throw error;
-  }
+    try {
+        const db = await connectToRoomDB();
+        const result = await db
+            .collection('rooms')
+            .updateOne({ _id: new ObjectId(roomId) }, { $set: { room_status: false } });
+        console.log(`Room status updated to closed for room ID: ${roomId}`);
+        return result;
+    } catch (error) {
+        console.error(`Error closing room with ID ${roomId}:`, error);
+        throw error;
+    }
 };
 
 /**
@@ -188,35 +183,26 @@ export const closeRoomById = async (roomId: string) => {
  * @param userId
  * @param statusExist
  */
-export const updateRoomUserStatus = async (
-  roomId: string,
-  userId: string,
-  isForfeit: boolean,
-) => {
-  try {
-    const db = await connectToRoomDB();
-    const result = await db
-      .collection("rooms")
-      .findOneAndUpdate(
-        { _id: new ObjectId(roomId), "users.id": userId },
-        { $set: { "users.$.isForfeit": isForfeit } },
-        { returnDocument: "after" },
-      );
+export const updateRoomUserStatus = async (roomId: string, userId: string, isForfeit: boolean) => {
+    try {
+        const db = await connectToRoomDB();
+        const result = await db
+            .collection('rooms')
+            .findOneAndUpdate(
+                { _id: new ObjectId(roomId), 'users.id': userId },
+                { $set: { 'users.$.isForfeit': isForfeit } },
+                { returnDocument: 'after' },
+            );
 
-    if (!result.value) {
-      console.error(`User with ID ${userId} not found in room ${roomId}`);
-      return null;
+        if (!result.value) {
+            console.error(`User with ID ${userId} not found in room ${roomId}`);
+            return null;
+        }
+
+        console.log(`User isForfeit status updated successfully for user ID: ${userId} in room ID: ${roomId}`);
+        return result.value;
+    } catch (error) {
+        console.error(`Error updating user isForfeit status for user ID ${userId} in room ${roomId}:`, error);
+        throw error;
     }
-
-    console.log(
-      `User isForfeit status updated successfully for user ID: ${userId} in room ID: ${roomId}`,
-    );
-    return result.value;
-  } catch (error) {
-    console.error(
-      `Error updating user isForfeit status for user ID ${userId} in room ${roomId}:`,
-      error,
-    );
-    throw error;
-  }
 };
