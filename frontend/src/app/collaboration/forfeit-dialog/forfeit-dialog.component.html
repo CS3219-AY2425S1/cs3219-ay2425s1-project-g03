@@ -8,10 +8,15 @@
     <ng-template pTemplate="header">
         <h2 class="mt-0 mb-0">Forfeit</h2>
     </ng-template>
-    <div class="mb-4" style="white-space: pre-line">
+    <div class="mb-2" style="white-space: pre-line">
         <span>
             <p class="m-0">{{ message }}</p>
         </span>
+    </div>
+    <div class="flex flex-column w-full align-items-center justify-content-center gap-2">
+        @if (isForfeit) {
+            <p-progressSpinner styleClass="w-2rem h-2rem mt-2" strokeWidth="6" />
+        }
     </div>
     <ng-template pTemplate="footer">
         <div class="flex w-full justify-content-end gap-4">
