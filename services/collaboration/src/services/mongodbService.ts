@@ -1,7 +1,8 @@
-import { MongoClient, Db, ObjectId } from 'mongodb';
+import { MongoClient, Db, ObjectId, WithId } from 'mongodb';
 import { MongodbPersistence } from 'y-mongodb-provider';
 import * as Y from 'yjs';
 import config from '../config';
+import { Room } from '../controllers/types';
 
 let roomDb: Db | null = null;
 let yjsDb: Db | null = null;
@@ -140,12 +141,12 @@ export const deleteYjsDocument = async (roomId: string) => {
  * Find rooms by user ID where room_status is true
  * @param userId
  */
-export const findRoomsByUserId = async (userId: string) => {
+export const findRoomsByUserId = async (userId: string): Promise<WithId<Room>[]> => {
     try {
         const db = await connectToRoomDB();
         console.log(`Querying for rooms with user ID: ${userId}`);
         const rooms = await db
-            .collection('rooms')
+            .collection<Room>('rooms') // Type the collection as Room
             .find({
                 users: { $elemMatch: { id: userId } },
                 room_status: true,
