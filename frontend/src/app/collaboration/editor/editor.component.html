@@ -19,11 +19,15 @@
         </div>
     </div>
 </div>
-<p-toast [breakpoints]="{ '920px': { width: '80%', right: '0', left: '0' } }" styleClass="w-30rem" />
+<p-toast
+    position="top-right"
+    [breakpoints]="{ '920px': { width: '80%', right: '0', left: '0' } }"
+    styleClass="w-30rem" />
 
 <app-submit-dialog
     (dialogClose)="onSubmitDialogClose()"
     (successfulSubmit)="onSuccess()"
+    [numUniqueUsers]="numUniqueUsers"
     [ysubmit]="ysubmit"
     [yforfeit]="yforfeit"
     [roomId]="roomId"

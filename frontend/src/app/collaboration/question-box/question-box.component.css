@@ -1,11 +1,11 @@
-::ng-deep .easy-chip .p-chip {
+:host ::ng-deep .easy-chip .p-chip {
     background-color: var(--green-700);
 }
 
-::ng-deep .medium-chip .p-chip {
+:host ::ng-deep .medium-chip .p-chip {
     background-color: var(--orange-600);
 }
 
-::ng-deep .hard-chip .p-chip {
+:host ::ng-deep .hard-chip .p-chip {
     background-color: var(--red-700);
 }

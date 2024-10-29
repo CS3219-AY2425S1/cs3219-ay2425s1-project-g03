@@ -27,3 +27,12 @@ interface RoomData {
     createdAt: string;
     room_status: boolean;
 }
+
+export interface awarenessData {
+    user: {
+        userId: string;
+        name: string;
+        color: string;
+        colorLight: string;
+    };
+}

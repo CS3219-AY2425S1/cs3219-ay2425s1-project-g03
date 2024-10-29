@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, Inject, ViewChild, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Inject, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { oneDark } from '@codemirror/theme-one-dark';
 import { EditorState, Extension } from '@codemirror/state';
 import { basicSetup } from 'codemirror';
@@ -28,6 +28,7 @@ import prettierPluginJava from 'prettier-plugin-java';
 import { SubmitDialogComponent } from '../submit-dialog/submit-dialog.component';
 import { ForfeitDialogComponent } from '../forfeit-dialog/forfeit-dialog.component';
 import { Router } from '@angular/router';
+import { awarenessData } from '../collab.model';
 
 enum WebSocketCode {
     AUTH_FAILED = 4000,
@@ -49,8 +50,9 @@ enum WebSocketCode {
     templateUrl: './editor.component.html',
     styleUrl: './editor.component.css',
 })
-export class EditorComponent implements AfterViewInit, OnInit {
+export class EditorComponent implements AfterViewInit, OnInit, OnDestroy {
     @ViewChild('editor') editor!: ElementRef;
+    @ViewChild(ForfeitDialogComponent) forfeitChild!: ForfeitDialogComponent;
 
     state!: EditorState;
     view!: EditorView;
@@ -66,6 +68,7 @@ export class EditorComponent implements AfterViewInit, OnInit {
     isInitiator = false;
     isForfeitClick = false;
     roomId!: string;
+    numUniqueUsers!: number;
 
     constructor(
         @Inject(DOCUMENT) private document: Document,
@@ -75,6 +78,11 @@ export class EditorComponent implements AfterViewInit, OnInit {
         private roomService: RoomService,
         private router: Router,
     ) {}
+
+    ngOnDestroy() {
+        // This lets the client to disconnect from the websocket on re-route to another page.
+        this.wsProvider.destroy();
+    }
 
     ngOnInit() {
         this.initRoomId();
@@ -108,6 +116,17 @@ export class EditorComponent implements AfterViewInit, OnInit {
         this.ysubmit = this.ydoc.getMap('submit');
         this.yforfeit = this.ydoc.getMap('forfeit');
         this.undoManager = new Y.UndoManager(this.yeditorText);
+
+        this.wsProvider.awareness.on('change', () => {
+            const data = Array.from(this.wsProvider.awareness.getStates().values());
+            const uniqueIds = new Set(
+                data
+                    .map(x => (x as awarenessData).user?.userId)
+                    .filter((userId): userId is string => userId !== undefined),
+            );
+
+            this.numUniqueUsers = uniqueIds.size;
+        });
     }
 
     showTest() {
@@ -149,6 +168,7 @@ export class EditorComponent implements AfterViewInit, OnInit {
         const randomIndex = Math.floor(Math.random() * usercolors.length);
 
         this.wsProvider.awareness.setLocalStateField('user', {
+            userId: this.authService.userValue?.id,
             name: this.authService.userValue?.username,
             color: usercolors[randomIndex].color,
             colorLight: usercolors[randomIndex].light,

@@ -21,13 +21,12 @@ export class SubmitDialogComponent implements AfterViewInit {
     @Input() isVisible = false;
     @Input() isInitiator!: boolean;
     @Input() roomId!: string;
+    @Input() numUniqueUsers!: number;
 
     @Output() dialogClose = new EventEmitter<void>();
     @Output() successfulSubmit = new EventEmitter<void>();
 
-    MAX_NUM_OF_USERS = 2;
     message!: string;
-    remainingUsers = this.MAX_NUM_OF_USERS;
 
     constructor(
         @Inject(DOCUMENT) private document: Document,
@@ -52,18 +51,18 @@ export class SubmitDialogComponent implements AfterViewInit {
                 this.isInitiator = false;
             }
         });
-
-        this.yforfeit.observe(() => {
-            this.remainingUsers -= this.yforfeit.size;
-        });
     }
 
     onDialogShow() {
         if (this.isInitiator) {
             this.initiateSubmit();
-            this.message = "Waiting for the other user's decision...";
+            if (this.numUniqueUsers > 1) {
+                this.message = "Waiting for the other user's decision...";
+            } else {
+                this.message = 'Submitting...';
+            }
         } else {
-            this.message = `Your peer has initiated a submission.\n\nDo you agree?`;
+            this.message = 'Your peer has initiated a submission.\n\nDo you agree?';
         }
     }
 
@@ -82,8 +81,7 @@ export class SubmitDialogComponent implements AfterViewInit {
     }
 
     checkVoteOutcome(counter: number) {
-        console.log(counter);
-        if (counter != this.remainingUsers) {
+        if (counter != this.numUniqueUsers) {
             return;
         }
 
@@ -95,14 +93,14 @@ export class SubmitDialogComponent implements AfterViewInit {
                     this.message = 'Successfully submitted. \n\n Redirecting you to homepage...';
                     setTimeout(() => {
                         this.router.navigate(['/matching']);
-                    }, 1000);
+                    }, 1500);
                 },
             });
         }
 
         setTimeout(() => {
             this.router.navigate(['/matching']);
-        }, 1000);
+        }, 1500);
     }
 
     closeVoting() {
