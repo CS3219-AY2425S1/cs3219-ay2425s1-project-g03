@@ -10,9 +10,7 @@ const PORT = config.PORT;
 startMongoDB()
     .then(() => {
         const server = http.createServer(app);
-
-        const wss = startWebSocketServer(server);
-
+        startWebSocketServer(server);
         server.listen(PORT, () => {
             console.log(`Server (HTTP + WebSocket) running on port ${PORT}`);
         });

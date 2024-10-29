@@ -24,13 +24,6 @@ services:
       - /app/node_modules
       - ./services/user:/app
 
-  collaboration:
-    command: npm run dev
-    ports:
-        - 8084:8084
-    volumes:
-      - /app/node_modules
-      - ./services/collaboration:/app
   match:
     command: npm run dev
     ports:
@@ -43,7 +36,15 @@ services:
     ports:
       - 27019:27017
   
-  match-broker:
+  collaboration:
+    command: npm run dev
+    ports:
+      - 8084:8084
+    volumes:
+      - /app/node_modules
+      - ./services/collaboration:/app
+  
+  broker:
     ports:
       - 5672:5672
 

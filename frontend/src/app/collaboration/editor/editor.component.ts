@@ -2,7 +2,6 @@ import {
     AfterViewInit,
     Component,
     ElementRef,
-    Inject,
     ViewChild,
     OnInit,
     OnDestroy,
@@ -11,7 +10,6 @@ import {
 import { oneDark } from '@codemirror/theme-one-dark';
 import { EditorState, Extension } from '@codemirror/state';
 import { basicSetup } from 'codemirror';
-import { DOCUMENT } from '@angular/common';
 import { EditorView } from 'codemirror';
 import { java } from '@codemirror/lang-java';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
@@ -80,9 +78,7 @@ export class EditorComponent implements AfterViewInit, OnInit, OnDestroy {
     numUniqueUsers = 0;
 
     constructor(
-        @Inject(DOCUMENT) private document: Document,
         private messageService: MessageService,
-        private confirmationService: ConfirmationService,
         private authService: AuthenticationService,
         private roomService: RoomService,
         private router: Router,
