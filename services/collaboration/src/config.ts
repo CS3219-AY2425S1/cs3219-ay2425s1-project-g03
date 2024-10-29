@@ -10,8 +10,7 @@ const envSchema = z
         QUESTION_SERVICE_URL: z.string().url(),
         NODE_ENV: z.enum(['development', 'production']).default('development'),
         CORS_ORIGIN: z.union([z.string().url(), z.literal('*')]).default('*'),
-        WS_PORT: z.coerce.number().min(1024).default(8084),
-        HTTP_PORT: z.coerce.number().min(1024).default(8087),
+        PORT: z.coerce.number().min(1024).default(8084),
     })
     .superRefine((data, ctx) => {
         const isUrl = z.string().url();

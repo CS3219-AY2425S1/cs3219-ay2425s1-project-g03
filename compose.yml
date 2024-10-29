@@ -185,9 +185,6 @@ services:
     build:
       context: services/collaboration
       dockerfile: Dockerfile
-    ports:
-      - 8084:8084
-      - 8087:8087
     environment:
       COLLAB_DB_CLOUD_URI: ${COLLAB_DB_CLOUD_URI}
       COLLAB_DB_LOCAL_URI: ${COLLAB_DB_LOCAL_URI}
@@ -195,8 +192,6 @@ services:
       YJS_DB_LOCAL_URI: ${YJS_DB_LOCAL_URI}
       BROKER_URL: ${BROKER_URL}
       QUESTION_SERVICE_URL: ${QUESTION_SERVICE_URL}
-      WS_PORT: ${COLLAB_WS_PORT}
-      HTTP_PORT: ${COLLAB_HTTP_PORT}
     depends_on:
       broker:
         condition: service_healthy

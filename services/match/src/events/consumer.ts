@@ -44,7 +44,6 @@ async function consumeMatchUpdated(msg: MatchUpdatedEvent) {
 
 async function consumeCollabCreated(msg: CollabCreatedEvent) {
     const { requestId1, requestId2, collabId } = msg;
-    // Remember remove this console.log after debugging is done.
     console.log(msg);
     await findAndAssignCollab(requestId1, requestId2, collabId);
 }

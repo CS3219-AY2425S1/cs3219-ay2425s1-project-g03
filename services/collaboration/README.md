@@ -69,10 +69,7 @@ Here are the key environment variables used in the `.env` file:
 | `DB_PASSWORD`            | Password for the MongoDB databases (for both cloud and local environments)            |
 | `QUESTION_SERVICE_URL`   | URL for connecting to the Question Service API                                        |
 | `CORS_ORIGIN`            | Allowed origins for CORS (default: * to allow all origins)                            |
-| `COLLAB_WS_PORT`         | Port for the WebSocket server (default: 8084)                                         |
-| `COLLAB_HTTP_PORT`       | Port for the HTTP server (default: 8087)                                              |
-| `WEBSOCKET_AUTH_FAILED`  | WebSocket error code for failed authorization (default: 4000)                         |
-| `WEBSOCKET_ROOM_CLOSED`  | WebSocket error code for closed rooms (default: 4001)                                 |
+| `PORT`                   | Port for the Room and Collaboration Service (default: 8084)                           |
 | `ENV`                    | Environment setting (`development` or `production`)                                   |
 
 ---
