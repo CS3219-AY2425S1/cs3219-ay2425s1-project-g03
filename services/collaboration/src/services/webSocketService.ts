@@ -1,4 +1,4 @@
-import { Server } from 'http';
+import { IncomingMessage, Server } from 'http';
 import { WebSocketServer, WebSocket } from 'ws';
 import * as Y from 'yjs';
 import { findRoomById, mdb } from './mongodbService';
@@ -8,24 +8,23 @@ const { setPersistence, setupWSConnection } = require('../utils/utility.js');
 const WEBSOCKET_AUTH_FAILED = 4000;
 const WEBSOCKET_ROOM_CLOSED = 4001;
 
+const URL_REGEX = /^.*\/([0-9a-f]{24})\?userId=([0-9a-f]{24})$/;
+
 /**
  * Start and configure the WebSocket server
  * @returns {WebSocketServer} The configured WebSocket server instance
  */
 export const startWebSocketServer = (server: Server) => {
-    const wss = new WebSocketServer({ server });
+    const wss = new WebSocketServer({ noServer: true });
 
-    wss.on('connection', async (conn: WebSocket, req) => {
-        console.log('Incoming WebSocket connection request.');
-        console.log('URL Params: ', req.url);
-
-        const path = req.url?.split('?')[0];
-        const roomId = path ? path.slice(1) : null;
-        console.log('Room ID: ', roomId);
-
-        const urlParams = new URLSearchParams(req.url?.split('?')[1]);
-        const userId = urlParams.get('userId');
-        console.log('User ID: ', userId);
+    wss.on('connection', async (conn: WebSocket, req: IncomingMessage) => {
+        const url = req.url;
+        const match = url?.match(URL_REGEX);
+        if (!match) {
+            return false;
+        }
+        const roomId = match[1];
+        const userId = match[2];
 
         // https://discuss.yjs.dev/t/how-to-send-message-back-to-client-when-authorize-failed/2126
         if (!roomId) {
@@ -69,6 +68,10 @@ export const startWebSocketServer = (server: Server) => {
             conn.close(WEBSOCKET_AUTH_FAILED, 'Authorization failed');
         }
     });
+
+    server.on('upgrade', (request: IncomingMessage, socket, head) => {
+        wss.handleUpgrade(request, socket, head, (ws: WebSocket) => wss.emit('connection', ws, request));
+    })
 
     setPersistence({
         bindState: async (docName: string, ydoc: Y.Doc) => {
