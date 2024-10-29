@@ -1,77 +1,64 @@
-import amqp, { Connection, Channel } from 'amqplib/callback_api';
+import amqplib, { Channel, Connection } from 'amqplib';
 import config from '../config';
 
-let channel: Channel | null = null;
-let connection: Connection | null = null;
+class Broker {
+    private connection!: Connection;
+    private channel!: Channel;
+    private connected = false;
 
-/**
- * Function to connect to an existing RabbitMQ channel via RABBITMQ_URL
- */
-export const getChannel = async (): Promise<Channel> => {
-    if (!channel) {
+    async connect(): Promise<void> {
+        if (this.connection && this.channel) {
+            return;
+        }
+
         try {
-            await new Promise<void>((resolve, reject) => {
-                amqp.connect(config.BROKER_URL, (err, conn) => {
-                    if (err) {
-                        console.error('RabbitMQ connection error:', err);
-                        return reject(err);
-                    }
-
-                    connection = conn;
-
-                    conn.createChannel((err, ch) => {
-                        if (err) {
-                            console.error('RabbitMQ channel creation error:', err);
-                            return reject(err);
-                        }
-                        channel = ch;
-                        resolve();
-                    });
-                });
-            });
+            this.connection = await amqplib.connect(config.BROKER_URL);
+            console.log('Connected to RabbitMQ');
+            this.channel = await this.connection.createChannel();
+            this.connected = true;
         } catch (error) {
-            console.error('Error during RabbitMQ connection or channel access:', error);
+            console.error('Failed to connect to RabbitMQ:', error);
             throw error;
         }
     }
 
-    if (!channel) {
-        throw new Error('Failed to get the RabbitMQ channel.');
+    async produce(queue: string, message: any): Promise<void> {
+        try {
+            if (!this.connected) {
+                await this.connect();
+            }
+            this.channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)));
+        } catch (error) {
+            console.error('Failed to produce message:', error);
+            throw error;
+        }
     }
 
-    return channel;
-};
+    async consume<T>(queue: string, onMessage: (message: T) => void): Promise<void> {
+        try {
+            if (!this.connected) {
+                await this.connect();
+            }
 
-/**
- * Function to consume a message from a RabbitMQ queue
- * @param queue
- * @param onMessage
- */
-export const consumeMessageFromQueue = async <T>(queue: string, onMessage: (message: T) => void): Promise<void> => {
-    try {
-        const ch = await getChannel();
-
-        ch.assertQueue(queue, { durable: true });
-
-        ch.consume(
-            queue,
-            msg => {
-                if (!msg) {
-                    return console.error(`No message found in queue ${queue}`);
-                }
-
-                try {
+            await this.channel.assertQueue(queue, { durable: true });
+            await this.channel.consume(
+                queue,
+                msg => {
+                    if (!msg) {
+                        return console.error('Invalid message from queue', queue);
+                    }
                     const parsedMessage = JSON.parse(msg.content.toString()) as T;
                     onMessage(parsedMessage);
-                    ch.ack(msg);
-                } catch (error) {
-                    console.error('Error handling the message:', error);
-                }
-            },
-            { noAck: false },
-        );
-    } catch (error) {
-        console.error(`Failed to consume message from queue ${queue}:`, error);
-        throw error;
+                    this.channel.ack(msg);
+                },
+                { noAck: false },
+            );
+        } catch (error) {
+            console.error('Failed to consume message:', error);
+            throw error;
+        }
     }
-};
+}
+
+const broker = new Broker();
+export default broker;

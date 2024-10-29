@@ -1,4 +1,4 @@
-import { getChannel } from './broker';
+import Broker from './broker';
 
 /**
  * Send message to queue
@@ -7,12 +7,9 @@ import { getChannel } from './broker';
  */
 export const sendMessageToQueue = async (queue: string, message: any) => {
     try {
-        const channel = await getChannel();
-
         console.log(`Producing message to ${queue}: ${JSON.stringify(message)}`);
 
-        channel.assertQueue(queue, { durable: true });
-        channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)));
+        await Broker.produce(queue, message);
 
         console.log(`Message successfully produced to ${queue}`);
     } catch (error) {

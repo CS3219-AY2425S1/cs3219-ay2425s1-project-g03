@@ -1,5 +1,5 @@
 import { Queues } from './queues';
-import { getChannel } from './broker';
+import Broker from './broker';
 import { createRoomWithQuestion } from '../controllers/roomController';
 import { sendMessageToQueue } from './producer';
 
@@ -8,49 +8,38 @@ import { sendMessageToQueue } from './producer';
  */
 export async function initializeRoomConsumer() {
     try {
-        const channel = await getChannel();
+        await Broker.consume(Queues.MATCH_FOUND, async (content: any) => {
+            try {
+                console.log(`Message consumed from MATCH_FOUND queue: ${JSON.stringify(content)}`);
 
-        channel.assertQueue(Queues.MATCH_FOUND, { durable: true });
+                const { user1, user2, topics, difficulty } = content;
+                const { requestId: requestId1 } = user1;
+                const { requestId: requestId2 } = user2;
 
-        channel.consume(Queues.MATCH_FOUND, async (msg: any) => {
-            if (msg) {
-                try {
-                    const content = JSON.parse(msg.content.toString());
+                const roomId = await createRoomWithQuestion(user1, user2, topics, difficulty);
 
-                    console.log(`Message consumed from MATCH_FOUND queue: ${JSON.stringify(content)}`);
+                if (roomId) {
+                    console.log(`Room created successfully with ID: ${roomId}`);
 
-                    const { user1, user2, topics, difficulty } = content;
+                    const collabCreatedMessage = {
+                        requestId1,
+                        requestId2,
+                        collabId: roomId,
+                    };
 
-                    const { requestId: requestId1 } = user1;
-                    const { requestId: requestId2 } = user2;
+                    console.log(
+                        `Message to be produced to COLLAB_CREATED queue: ${JSON.stringify(collabCreatedMessage)}`,
+                    );
 
-                    const roomId = await createRoomWithQuestion(user1, user2, topics, difficulty);
+                    await sendMessageToQueue(Queues.COLLAB_CREATED, collabCreatedMessage);
 
-                    if (roomId) {
-                        console.log(`Room created successfully with ID: ${roomId}`);
-
-                        const collabCreatedMessage = {
-                            requestId1,
-                            requestId2,
-                            collabId: roomId,
-                        };
-
-                        console.log(
-                            `Message to be produced to COLLAB_CREATED queue: ${JSON.stringify(collabCreatedMessage)}`,
-                        );
-
-                        await sendMessageToQueue(Queues.COLLAB_CREATED, collabCreatedMessage);
-
-                        console.log(`Message sent to COLLAB_CREATED queue: ${JSON.stringify(collabCreatedMessage)}`);
-                    } else {
-                        console.log('Failed to create room.');
-                    }
-
-                    channel.ack(msg);
-                } catch (error) {
-                    console.error('Error processing message from MATCH_FOUND queue:', error);
-                    channel.nack(msg);
+                    console.log(`Message sent to COLLAB_CREATED queue: ${JSON.stringify(collabCreatedMessage)}`);
+                } else {
+                    console.log('Failed to create room.');
                 }
+            } catch (error) {
+                console.error('Error processing message from MATCH_FOUND queue:', error);
+                throw error;
             }
         });
     } catch (error) {
