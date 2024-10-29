@@ -37,9 +37,9 @@ export class ForfeitDialogComponent implements OnInit {
 
     initDocListener() {
         this.yforfeit.observe(() => {
-            const counter = this.yforfeit.size;
+            const numForfeit = this.yforfeit.size;
 
-            if (counter == 1) {
+            if (numForfeit == 1) {
                 this.message = 'Are you sure you want to forfeit?';
             }
         });

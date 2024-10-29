@@ -1,4 +1,13 @@
-import { AfterViewInit, Component, ElementRef, Inject, ViewChild, OnInit, OnDestroy } from '@angular/core';
+import {
+    AfterViewInit,
+    Component,
+    ElementRef,
+    Inject,
+    ViewChild,
+    OnInit,
+    OnDestroy,
+    ChangeDetectorRef,
+} from '@angular/core';
 import { oneDark } from '@codemirror/theme-one-dark';
 import { EditorState, Extension } from '@codemirror/state';
 import { basicSetup } from 'codemirror';
@@ -68,7 +77,7 @@ export class EditorComponent implements AfterViewInit, OnInit, OnDestroy {
     isInitiator = false;
     isForfeitClick = false;
     roomId!: string;
-    numUniqueUsers!: number;
+    numUniqueUsers = 0;
 
     constructor(
         @Inject(DOCUMENT) private document: Document,
@@ -77,6 +86,7 @@ export class EditorComponent implements AfterViewInit, OnInit, OnDestroy {
         private authService: AuthenticationService,
         private roomService: RoomService,
         private router: Router,
+        private changeDetector: ChangeDetectorRef,
     ) {}
 
     ngOnDestroy() {
@@ -87,6 +97,7 @@ export class EditorComponent implements AfterViewInit, OnInit, OnDestroy {
     ngOnInit() {
         this.initRoomId();
         this.initConnection();
+        this.getNumOfConnectedUsers();
     }
 
     ngAfterViewInit() {
@@ -116,7 +127,9 @@ export class EditorComponent implements AfterViewInit, OnInit, OnDestroy {
         this.ysubmit = this.ydoc.getMap('submit');
         this.yforfeit = this.ydoc.getMap('forfeit');
         this.undoManager = new Y.UndoManager(this.yeditorText);
+    }
 
+    getNumOfConnectedUsers() {
         this.wsProvider.awareness.on('change', () => {
             const data = Array.from(this.wsProvider.awareness.getStates().values());
             const uniqueIds = new Set(
@@ -126,10 +139,12 @@ export class EditorComponent implements AfterViewInit, OnInit, OnDestroy {
             );
 
             this.numUniqueUsers = uniqueIds.size;
+
+            this.changeDetector.detectChanges();
         });
     }
 
-    showTest() {
+    showSubmitDialog() {
         this.isSubmit = true;
         this.isInitiator = true;
     }
@@ -228,14 +243,16 @@ export class EditorComponent implements AfterViewInit, OnInit, OnDestroy {
         this.view.focus();
     }
 
-    onSubmitDialogClose() {
-        this.messageService.add({
-            severity: 'error',
-            summary: 'Fail',
-            detail: 'Submission failed: Not all participants agreed. Please try again.',
-        });
+    onSubmitDialogClose(numForfeit: number) {
+        if (numForfeit == 0 && this.ysubmit.size > 0) {
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Fail',
+                detail: 'Submission failed: Not all participants agreed. Please try again.',
+            });
+        }
+
         this.isSubmit = false;
-        this.isInitiator = false;
     }
 
     onSuccess() {
@@ -245,7 +262,6 @@ export class EditorComponent implements AfterViewInit, OnInit, OnDestroy {
             detail: 'You have successfully submitted!',
         });
         this.isSubmit = false;
-        this.isInitiator = false;
     }
 
     forfeit() {
