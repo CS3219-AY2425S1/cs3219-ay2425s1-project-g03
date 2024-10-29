@@ -26,7 +26,6 @@ export class CollabGuardService implements CanActivate {
                     return of(false);
                 }
 
-                // TODO check if room is close
                 return this.collabService.getRoomDetails(roomId).pipe(
                     map(response => {
                         const isFound = response.data.users.some(roomUser => roomUser?.id === user.id);
