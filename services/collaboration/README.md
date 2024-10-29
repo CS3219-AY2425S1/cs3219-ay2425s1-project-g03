@@ -104,7 +104,7 @@ One user can have multiple rooms, and each room is identified by a unique `room_
 ### Command Line Example:
 
 ```bash
-Retrieve Room IDs by User ID: curl -X GET http://localhost:8087/room/user/6718b0070e24954ac125e5e1
+Retrieve Room IDs by User ID: curl -X GET http://localhost:8084/room/user/6718b0070e24954ac125e5e1
 ```
 
 ### Example of Response Body for Success:
@@ -143,7 +143,7 @@ This endpoint retrieves the details of a room by its room ID.
 ### Command Line Example:
 
 ```bash
-Retrieve Room by Room ID: curl -X GET http://localhost:8087/room/6718b027b4624a70311bc0ed
+Retrieve Room by Room ID: curl -X GET http://localhost:8084/room/6718b027b4624a70311bc0ed
 ```
 
 ### Example of Response Body for Success:
@@ -202,7 +202,7 @@ a
 ### Command Line Example:
 
 ```bash
-Update User Status: curl -X PATCH http://localhost:8087/room/roomToEdit/6718b027b4624a70311bc0ed/user/6718b0070e24954ac125e5e1/isForfeit -H "Content-Type: application/json" -d '{"isForfeit": true}'
+Update User Status: curl -X PATCH http://localhost:8084/room/roomToEdit/6718b027b4624a70311bc0ed/user/6718b0070e24954ac125e5e1/isForfeit -H "Content-Type: application/json" -d '{"isForfeit": true}'
 ```
 
 ```json
@@ -258,7 +258,7 @@ This endpoint allows a user to close a room (change `room_status` to `false`) an
 ### Command Line Example:
 
 ```bash
-Close Room: curl -X PATCH http://localhost:8087/room/6718b027b4624a70311bc0ed/close
+Close Room: curl -X PATCH http://localhost:8084/room/6718b027b4624a70311bc0ed/close
 ```
 
 ### Example of Response Body for Success:

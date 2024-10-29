@@ -2,102 +2,81 @@ import { Response } from 'express';
 import { WebSocket } from 'ws';
 
 /**
- * Handles bad requests and sends a 400 response with a custom message.
+ * WebSocket-specific handlers
+ */
+
+/**
+ * Handle bad request for WebSocket
  * @param client
  * @param message
  */
-export const handleBadRequest = (client: Response | WebSocket, message = 'Bad Request') => {
-    try {
-        if (client instanceof WebSocket) {
-            client.send(
-                JSON.stringify({
-                    status: 'Error',
-                    message,
-                }),
-            );
-        } else {
-            client.status(400).json({
-                status: 'Error',
-                message,
-            });
-        }
-    } catch (error) {
-        console.error('Error handling bad request:', error);
-    }
+export const handleWebSocketBadRequest = (client: WebSocket, message = 'Bad Request') => {
+    client.send(JSON.stringify({ status: 'Error', message }));
 };
 
 /**
- * Handles not found requests and sends a 404 response with a custom message.
+ * Handle not found for WebSocket
  * @param client
  * @param message
  */
-export const handleNotFound = (client: Response | WebSocket, message = 'Not Found') => {
-    try {
-        if (client instanceof WebSocket) {
-            client.send(
-                JSON.stringify({
-                    status: 'Error',
-                    message,
-                }),
-            );
-        } else {
-            client.status(404).json({
-                status: 'Error',
-                message,
-            });
-        }
-    } catch (error) {
-        console.error('Error handling not found:', error);
-    }
+export const handleWebSocketNotFound = (client: WebSocket, message = 'Not Found') => {
+    client.send(JSON.stringify({ status: 'Error', message }));
 };
 
 /**
- * Handles success responses and sends a 200 response with a custom message or object.
+ * Handle success for WebSocket
  * @param client
- * @param data - Can be either a message (string) or an object.
+ * @param data
  */
-export const handleSuccess = (client: Response | WebSocket, data: string | object = 'Success') => {
-    try {
-        if (client instanceof WebSocket) {
-            client.send(
-                JSON.stringify({
-                    status: 'Success',
-                    data,
-                }),
-            );
-        } else {
-            client.status(200).json({
-                status: 'Success',
-                data,
-            });
-        }
-    } catch (error) {
-        console.error('Error handling success response:', error);
-    }
+export const handleWebSocketSuccess = (client: WebSocket, data: string | object = 'Success') => {
+    client.send(JSON.stringify({ status: 'Success', data }));
 };
 
 /**
- * Handles internal server errors (500) and sends a response with a custom message.
- * If no client (Response or WebSocket) is provided, it logs the error.
+ * Handle internal server error for WebSocket
  * @param client
  * @param message
  */
-export const handleServerError = (client?: Response | WebSocket, message = 'Internal Server Error') => {
-    if (!client) {
-        console.error('Error:', message);
-        return;
-    }
-    if (client instanceof WebSocket) {
-        client.send(
-            JSON.stringify({
-                status: 'Error',
-                message,
-            }),
-        );
-    } else {
-        client.status(500).json({
-            status: 'Error',
-            message,
-        });
-    }
+export const handleWebSocketServerError = (client: WebSocket, message = 'Internal Server Error') => {
+    client.send(JSON.stringify({ status: 'Error', message }));
+};
+
+/**
+ * HTTP-specific handlers
+ */
+
+/**
+ * Handle bad request for HTTP
+ * @param client
+ * @param message
+ */
+export const handleHttpBadRequest = (client: Response, message = 'Bad Request') => {
+    client.status(400).json({ status: 'Error', message });
+};
+
+/**
+ * Handle not found for HTTP
+ * @param client
+ * @param message
+ */
+export const handleHttpNotFound = (client: Response, message = 'Not Found') => {
+    client.status(404).json({ status: 'Error', message });
+};
+
+/**
+ * Handle success for HTTP
+ * @param client
+ * @param data
+ */
+export const handleHttpSuccess = (client: Response, data: string | object = 'Success') => {
+    client.status(200).json({ status: 'Success', data });
+};
+
+/**
+ * Handle internal server error for HTTP
+ * @param client
+ * @param message
+ */
+export const handleHttpServerError = (client: Response, message = 'Internal Server Error') => {
+    client.status(500).json({ status: 'Error', message });
 };

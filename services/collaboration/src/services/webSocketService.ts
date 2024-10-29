@@ -2,7 +2,12 @@ import { Server } from 'http';
 import { WebSocketServer, WebSocket } from 'ws';
 import * as Y from 'yjs';
 import { findRoomById, mdb } from './mongodbService';
-import { handleBadRequest, handleNotFound, handleServerError, handleSuccess } from '../utils/helper';
+import {
+    handleWebSocketBadRequest,
+    handleWebSocketNotFound,
+    handleWebSocketServerError,
+    handleWebSocketSuccess,
+} from '../utils/helper';
 
 const { setPersistence, setupWSConnection } = require('../utils/utility.js');
 
@@ -28,16 +33,15 @@ export const startWebSocketServer = (server: Server) => {
         const userId = urlParams.get('userId');
         console.log('User ID: ', userId);
 
-        // https://discuss.yjs.dev/t/how-to-send-message-back-to-client-when-authorize-failed/2126
         if (!roomId) {
             console.log('Connection rejected: Missing roomId');
-            handleBadRequest(conn, 'Missing roomId in connection request');
+            handleWebSocketBadRequest(conn, 'Missing roomId in connection request');
             return conn.close(WEBSOCKET_AUTH_FAILED, 'Authorization failed: Missing roomId');
         }
 
         if (!userId) {
             console.log('Connection rejected: Missing userId');
-            handleBadRequest(conn, 'Missing userId in connection request');
+            handleWebSocketBadRequest(conn, 'Missing userId in connection request');
             return conn.close(WEBSOCKET_AUTH_FAILED, 'Authorization failed: Missing userId');
         }
 
@@ -45,13 +49,13 @@ export const startWebSocketServer = (server: Server) => {
             const room = await findRoomById(roomId);
             if (!room) {
                 console.log('Connection rejected: Room not found');
-                handleNotFound(conn, 'Room not found');
+                handleWebSocketNotFound(conn, 'Room not found');
                 return conn.close(WEBSOCKET_AUTH_FAILED, 'Authorization failed');
             }
 
             if (!room.room_status) {
                 console.log('Connection rejected: Room is closed');
-                handleNotFound(conn, 'Room is closed');
+                handleWebSocketNotFound(conn, 'Room is closed');
                 return conn.close(WEBSOCKET_ROOM_CLOSED, 'Room closed');
             }
 
@@ -59,22 +63,22 @@ export const startWebSocketServer = (server: Server) => {
 
             if (!userInRoom) {
                 console.log('Connection rejected: User does not belong to the room');
-                handleServerError(conn, 'User does not belong to the room');
+                handleWebSocketServerError(conn, 'User does not belong to the room');
                 return conn.close(WEBSOCKET_AUTH_FAILED, 'Authorization failed: User does not belong to the room');
             }
 
             if (userInRoom.isForfeit) {
                 console.log('Connection rejected: User has forfeited');
-                handleServerError(conn, 'User has forfeited and cannot access this room');
+                handleWebSocketServerError(conn, 'User has forfeited and cannot access this room');
                 return conn.close(WEBSOCKET_AUTH_FAILED, 'Authorization failed: User has forfeited');
             }
 
             console.log('WebSocket connection established for room:', roomId, 'user:', userId);
             setupWSConnection(conn, req);
-            handleSuccess(conn, 'WebSocket connection established');
+            handleWebSocketSuccess(conn, 'WebSocket connection established');
         } catch (error) {
             console.error('Failed to set up WebSocket connection:', error);
-            handleServerError(conn, 'Failed to establish WebSocket connection');
+            handleWebSocketServerError(conn, 'Failed to establish WebSocket connection');
             conn.close(WEBSOCKET_AUTH_FAILED, 'Authorization failed');
         }
     });
@@ -95,7 +99,6 @@ export const startWebSocketServer = (server: Server) => {
                 });
             } catch (error) {
                 console.error(`Error loading document ${docName}:`, error);
-                handleServerError(undefined, `Error loading document ${docName}`);
             }
         },
         writeState: async (docName: string, ydoc: Y.Doc) => {
