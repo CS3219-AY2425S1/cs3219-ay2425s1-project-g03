@@ -19,9 +19,11 @@
         }
     </div>
     <ng-template pTemplate="footer">
-        <div class="flex w-full justify-content-end gap-4">
-            <p-button type="button" label="Forfeit" severity="danger" [outlined]="true" (click)="onForfeit()" />
-            <p-button type="button" label="Cancel" severity="contrast" [outlined]="true" (click)="onCancel()" />
-        </div>
+        @if (!hideButtons) {
+            <div class="flex w-full justify-content-end gap-4">
+                <p-button type="button" label="Forfeit" severity="danger" [outlined]="true" (click)="onForfeit()" />
+                <p-button type="button" label="Cancel" severity="contrast" [outlined]="true" (click)="onCancel()" />
+            </div>
+        }
     </ng-template>
 </p-dialog>

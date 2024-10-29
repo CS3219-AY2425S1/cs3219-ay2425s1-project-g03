@@ -271,4 +271,12 @@ export class EditorComponent implements AfterViewInit, OnInit, OnDestroy {
     onForfeitDialogClose() {
         this.isForfeitClick = false;
     }
+
+    forfeitNotify() {
+        this.messageService.add({
+            severity: 'error',
+            summary: 'Warning',
+            detail: 'Your peer has chosen to forfeit the session.',
+        });
+    }
 }

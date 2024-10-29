@@ -19,10 +19,7 @@
         </div>
     </div>
 </div>
-<p-toast
-    position="top-right"
-    [breakpoints]="{ '920px': { width: '80%', right: '0', left: '0' } }"
-    styleClass="w-30rem" />
+<p-toast position="top-right" [breakpoints]="{ '920px': { width: '80%' } }" styleClass="w-30rem" />
 
 <app-submit-dialog
     (dialogClose)="onSubmitDialogClose($event)"
@@ -33,6 +30,7 @@
     [isVisible]="isSubmit"
     [isInitiator]="isInitiator" />
 <app-forfeit-dialog
+    (notify)="forfeitNotify()"
     (dialogClose)="onForfeitDialogClose()"
     [yforfeit]="yforfeit"
     [roomId]="roomId"

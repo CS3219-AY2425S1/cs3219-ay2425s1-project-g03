@@ -21,9 +21,12 @@ export class ForfeitDialogComponent implements OnInit {
     @Input() yforfeit!: Y.Map<boolean>;
 
     @Output() dialogClose = new EventEmitter<void>();
+    @Output() notify = new EventEmitter<void>();
 
     message!: string;
     isForfeit = false;
+    userId!: string;
+    hideButtons = false;
 
     constructor(
         private authService: AuthenticationService,
@@ -31,16 +34,23 @@ export class ForfeitDialogComponent implements OnInit {
         private router: Router,
     ) {}
     ngOnInit() {
+        this.getUserId();
         this.setMessage();
         this.initDocListener();
+    }
+
+    getUserId() {
+        this.userId = this.authService.userValue?.id || '';
     }
 
     initDocListener() {
         this.yforfeit.observe(() => {
             const numForfeit = this.yforfeit.size;
+            const isQuitter = this.yforfeit.entries().next().value[0] == this.userId;
 
-            if (numForfeit == 1) {
+            if (!isQuitter && numForfeit == 1) {
                 this.message = 'Are you sure you want to forfeit?';
+                this.notify.emit();
             }
         });
     }
@@ -57,9 +67,10 @@ export class ForfeitDialogComponent implements OnInit {
                     this.yforfeit.set(userId, true);
                     this.message = 'You have forfeited. \n\n Redirecting you to homepage...';
                     this.isForfeit = true;
+                    this.hideButtons = true;
                     setTimeout(() => {
                         this.router.navigate(['/matching']);
-                    }, 1000);
+                    }, 1500);
                 },
             });
         }
