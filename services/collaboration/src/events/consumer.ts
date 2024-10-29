@@ -36,6 +36,24 @@ export async function initializeRoomConsumer() {
                     console.log(`Message sent to COLLAB_CREATED queue: ${JSON.stringify(collabCreatedMessage)}`);
                 } else {
                     console.log('Failed to create room.');
+
+                    const collabCreateFailedMessage = {
+                        requestId1,
+                        requestId2,
+                        error: 'Room creation failed',
+                    };
+
+                    console.log(
+                        `Message to be produced to COLLAB_CREATE_FAILED queue: ${JSON.stringify(
+                            collabCreateFailedMessage,
+                        )}`,
+                    );
+
+                    await sendMessageToQueue(Queues.COLLAB_CREATE_FAILED, collabCreateFailedMessage);
+
+                    console.log(
+                        `Message sent to COLLAB_CREATE_FAILED queue: ${JSON.stringify(collabCreateFailedMessage)}`,
+                    );
                 }
             } catch (error) {
                 console.error('Error processing message from MATCH_FOUND queue:', error);
