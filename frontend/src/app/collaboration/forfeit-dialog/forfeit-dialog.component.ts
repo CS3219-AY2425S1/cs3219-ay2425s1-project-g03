@@ -62,7 +62,7 @@ export class ForfeitDialogComponent implements OnInit {
     onForfeit() {
         const userId = this.authService.userValue?.id;
         if (userId) {
-            this.collabService.forfeit(this.roomId, userId).subscribe({
+            this.collabService.forfeit(this.roomId).subscribe({
                 next: () => {
                     this.yforfeit.set(userId, true);
                     this.message = 'You have forfeited. \n\n Redirecting you to homepage...';
