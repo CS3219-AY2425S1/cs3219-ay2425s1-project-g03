@@ -29,10 +29,21 @@ export const startWebSocketServer = (server: Server) => {
         const roomId = path ? path.slice(1) : null;
         console.log('Room ID: ', roomId);
 
+        const urlParams = new URLSearchParams(req.url?.split('?')[1]);
+        const userId = urlParams.get('userId');
+        console.log('User ID: ', userId);
+
+        // https://discuss.yjs.dev/t/how-to-send-message-back-to-client-when-authorize-failed/2126
         if (!roomId) {
             console.log('Connection rejected: Missing roomId');
             handleWebSocketBadRequest(conn, 'Missing roomId in connection request');
             return conn.close(WEBSOCKET_AUTH_FAILED, 'Authorization failed: Missing roomId');
+        }
+
+        if (!userId) {
+            console.log('Connection rejected: Missing userId');
+            handleWebSocketBadRequest(conn, 'Missing userId in connection request');
+            return conn.close(WEBSOCKET_AUTH_FAILED, 'Authorization failed: Missing userId');
         }
 
         try {
@@ -47,6 +58,20 @@ export const startWebSocketServer = (server: Server) => {
                 console.log('Connection rejected: Room is closed');
                 handleWebSocketNotFound(conn, 'Room is closed');
                 return conn.close(WEBSOCKET_ROOM_CLOSED, 'Room closed');
+            }
+
+            const userInRoom = room.users.find((user: { id: string }) => user.id === userId);
+
+            if (!userInRoom) {
+                console.log('Connection rejected: User does not belong to the room');
+                handleWebSocketServerError(conn, 'User does not belong to the room');
+                return conn.close(WEBSOCKET_AUTH_FAILED, 'Authorization failed: User does not belong to the room');
+            }
+
+            if (userInRoom.isForfeit) {
+                console.log('Connection rejected: User has forfeited');
+                handleWebSocketServerError(conn, 'User has forfeited and cannot access this room');
+                return conn.close(WEBSOCKET_AUTH_FAILED, 'Authorization failed: User has forfeited');
             }
 
             console.log('WebSocket connection established for room:', roomId);
