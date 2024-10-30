@@ -8,54 +8,35 @@ import {
     closeRoomById,
     updateRoomUserStatus,
 } from '../services/mongodbService';
-import axios from 'axios';
 import { handleHttpNotFound, handleHttpSuccess, handleHttpServerError, handleHttpBadRequest } from '../utils/helper';
-import config from '../config';
-import { User, Room } from './types';
+import { Room } from './types';
+
+export enum Difficulty {
+    Easy = 'Easy',
+    Medium = 'Medium',
+    Hard = 'Hard',
+}
+
+export interface Question {
+    id: number;
+    description: string;
+    difficulty: Difficulty;
+    title: string;
+    topics?: string[];
+}
 
 /**
  * Create a room with users, question details, and Yjs document
  * @param user1
  * @param user2
- * @param topics
- * @param difficulty
+ * @param question
  * @returns roomId
  */
-export const createRoomWithQuestion = async (
-    user1: User,
-    user2: User,
-    topics: string[],
-    difficulty: string,
-): Promise<string | null> => {
+export const createRoomWithQuestion = async (user1: any, user2: any, question: Question) => {
     try {
-        const questionServiceUrl = config.QUESTION_SERVICE_URL;
-        const topicString = topics.join(',');
-        const response = await axios.get<{ data: { id: number }[] }>(
-            `${questionServiceUrl}questions/search?topics=${topicString}&difficulty=${difficulty}&limit=1`,
-        );
-
-        const question = response.data.data[0];
-        if (!question) {
-            console.error('No question found for the given parameters');
-            return null;
-        }
-
-        const roomData: Partial<Room> = {
-            users: [
-                { ...user1, isForfeit: false },
-                { ...user2, isForfeit: false },
-            ],
-            question_id: question.id,
-            createdAt: new Date(),
-        };
-
-        const room_id = await createRoomInDB(roomData);
-        console.log('Room created with ID:', room_id);
-
-        await createYjsDocument(room_id.toString());
-        console.log('Yjs document created for room ID:', room_id);
-
-        return room_id;
+        const roomId = await createRoomInDB(user1, user2, question);
+        await createYjsDocument(roomId.toString());
+        return roomId;
     } catch (error) {
         console.error('Error fetching question or creating room:', error);
         return null;
@@ -101,7 +82,7 @@ export const getRoomByRoomIdController = async (req: Request, res: Response) => 
         return handleHttpSuccess(res, {
             room_id: room._id,
             users: room.users,
-            question_id: room.question_id,
+            question: room.question,
             createdAt: room.createdAt,
             room_status: room.room_status,
         });

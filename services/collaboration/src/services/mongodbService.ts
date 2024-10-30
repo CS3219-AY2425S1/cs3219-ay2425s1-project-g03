@@ -2,6 +2,7 @@ import { MongoClient, Db, ObjectId, WithId } from 'mongodb';
 import { MongodbPersistence } from 'y-mongodb-provider';
 import * as Y from 'yjs';
 import config from '../config';
+import { Question } from '../controllers/roomController';
 import { Room } from '../controllers/types';
 
 let roomDb: Db | null = null;
@@ -69,11 +70,16 @@ export const startMongoDB = async (): Promise<void> => {
  * @param roomData
  * @returns roomId
  */
-export const createRoomInDB = async (roomData: any): Promise<string> => {
+export const createRoomInDB = async (user1: any, user2: any, question: Question): Promise<string> => {
     try {
         const db = await connectToRoomDB();
         const result = await db.collection('rooms').insertOne({
-            ...roomData,
+            users: [
+                { ...user1, isForfeit: false },
+                { ...user2, isForfeit: false },
+            ],
+            question,
+            createdAt: new Date(),
             room_status: true,
         });
         return result.insertedId.toString();

@@ -67,7 +67,6 @@ Here are the key environment variables used in the `.env` file:
 | `YJS_LOCAL_MONGO_URI`    | URI for connecting to the local MongoDB database for Yjs document persistence         |
 | `DB_USERNAME`            | Username for the MongoDB databases (for both cloud and local environments)            |
 | `DB_PASSWORD`            | Password for the MongoDB databases (for both cloud and local environments)            |
-| `QUESTION_SERVICE_URL`   | URL for connecting to the Question Service API                                        |
 | `CORS_ORIGIN`            | Allowed origins for CORS (default: * to allow all origins)                            |
 | `PORT`                   | Port for the Room and Collaboration Service (default: 8084)                           |
 | `ENV`                    | Environment setting (`development` or `production`)                                   |
@@ -294,13 +293,14 @@ curl -X PATCH http://localhost:8080/api/collaboration/room/6721a64b0c4d990bc0fee
 ## Documentation on Queue (RabbitMQ)
 
 The collaboration service uses RabbitMQ as a message broker to facilitate communication between microservices (such as
-the `matching service` and `collaboration service`) in an asynchronous manner. The system consists of a consumer and a
-producer:
+the `matching service` and `collaboration service`) in an asynchronous manner. The system consists of a consumer and two
+producers:
 
 ### Queues Used
 
-- `MATCH_FOUND`: Handles messages related to matching users and creating collaboration rooms.
+- `QUESTION_FOUND`: Handles messages related to matching users and creating collaboration rooms.
 - `COLLAB_CREATED`: Sends messages indicating that a collaboration room has been successfully created.
+- `MATCH_FAILED`: Sends messages indicating that a collaboration room could not be created.
 
 ---
 
@@ -322,35 +322,33 @@ The producer will send a message to the `COLLAB_CREATED` queue when a collaborat
 }
 ```
 
-The producer will send a message to the `COLLAB_CREATE_FAILED` queue when a collaboration room fails to be created.
+The producer will send a message to the `MATCH_FAILED` queue when a collaboration room was unable to be created.
 
-- **Queue**: `COLLAB_CREATE_FAILED`
-- **Data in the Message**:
-    - `requestId1` (Required) - The request ID of the first user.
-    - `requestId2` (Required) - The request ID of the second user.
-    - `error` (Required) - A message indicating the reason for failure, typically "Room creation failed."
+- **Queue**: `MATCH_FAILED`
+- **Data Produced**
+  - `requestId1` (Required) - The first request ID associated with the match failure.
+  - `requestId2` (Required) - The second request ID associated with the match failure.
+  - `reason` (Required) - The error encountered.
 
-```json
-{
-  "requestId1": "user1-request-id",
-  "requestId2": "user2-request-id",
-  "error": "Room creation failed"
-}
-```
+  ```json
+    {
+      "requestId1": "6714d1806da8e6d033ac2be1",
+      "requestId2": "67144180cda8e610333e4b12",
+      "reason": "Failed to create room",
+    }
+  ```
 
 ---
 
 ## Consumer
 
-The consumer will listen for messages on the `MATCH_FOUND` queue and create a collaboration room when two users are
-matched.
+The consumer will listen for messages on the `QUESTION_FOUND` queue and create a collaboration room when two users are matched.
 
-- **Queue**: `MATCH_FOUND`
+- **Queue**: `QUESTION_FOUND`
 - **Data in the Message**:
     - `user1` (Required) - The details of the first user.
     - `user2` (Required) - The details of the second user.
-    - `topics` (Required) - The topics selected by the users.
-    - `difficulty` (Required) - The difficulty level selected by the users.
+    - `question` (Required) - The question assigned to the users.
 
 ```json
 {
@@ -364,11 +362,14 @@ matched.
     "username": "user2-username",
     "requestId": "user2-request-id"
   },
-  "topics": [
-    "topic1",
-    "topic2"
-  ],
-  "difficulty": "Medium"
+  "question": {
+    "_id": "66f77e7bf9530832bd839239",
+    "id": 21,
+    "title": "Reverse Integer",
+    "description": "Given a signed 32-bit integer x, return x with its digits reversed.",
+    "topics": ["Math"],
+    "difficulty": "Medium"
+  }
 }
 ```
 

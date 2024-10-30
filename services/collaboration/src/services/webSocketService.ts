@@ -71,7 +71,7 @@ export const startWebSocketServer = (server: Server) => {
 
     server.on('upgrade', (request: IncomingMessage, socket, head) => {
         wss.handleUpgrade(request, socket, head, (ws: WebSocket) => wss.emit('connection', ws, request));
-    })
+    });
 
     setPersistence({
         bindState: async (docName: string, ydoc: Y.Doc) => {
