@@ -31,7 +31,7 @@ This endpoint allows the retrieval of all the questions in the database. If filt
 that matches with parameters will be returned; if no parameters are provided, all questions will be returned.
 
 - **HTTP Method**: `GET`
-- **Endpoint**: `/questions`
+- **Endpoint**: `/api/question`
 
 #### Parameters:
 
@@ -51,25 +51,25 @@ that matches with parameters will be returned; if no parameters are provided, al
 
 ```
 Retrieve all Questions:
-curl -X GET http://localhost:8081/questions
+curl -X GET http://localhost:8081/api/question
 
 Retrieve Questions by Title:
-curl -X GET "http://localhost:8081/questions?title=Reverse%20a%20String"
+curl -X GET "http://localhost:8081/api/question?title=Reverse%20a%20String"
 
 Retrieve Questions by Description:
-curl -X GET "http://localhost:8081/questions?description=string"
+curl -X GET "http://localhost:8081/api/question?description=string"
 
 Retrieve Questions by Topics:
-curl -X GET "http://localhost:8081/questions?topics=Algorithms,Data%20Structures"
+curl -X GET "http://localhost:8081/api/question?topics=Algorithms,Data%20Structures"
 
 Retrieve Questions by Difficulty:
-curl -X GET "http://localhost:8081/questions?difficulty=Easy"
+curl -X GET "http://localhost:8081/api/question?difficulty=Easy"
 
 Retrieve Questions by Title and Difficulty:
-curl -X GET "http://localhost:8081/questions?title=Reverse%20a%20String&difficulty=Easy"
+curl -X GET "http://localhost:8081/api/question?title=Reverse%20a%20String&difficulty=Easy"
 
 Retrieve Questions by Title, Description, Topics, and Difficulty:
-curl -X GET "http://localhost:8081/questions?title=Reverse%20a%20String&description=string&topics=Algorithms&difficulty=Easy"
+curl -X GET "http://localhost:8081/api/question?title=Reverse%20a%20String&description=string&topics=Algorithms&difficulty=Easy"
 ```
 
 #### Parameter Format Details:
@@ -117,7 +117,7 @@ encoding and readability concerns.
 This endpoint allows the retrieval of the question by using the question ID.
 
 - **HTTP Method**: `GET`
-- **Endpoint**: `/questions/{id}`
+- **Endpoint**: `/api/question/{id}`
 
 #### Parameters:
 
@@ -135,7 +135,7 @@ This endpoint allows the retrieval of the question by using the question ID.
 
 ```
 Retrieve Question by ID:
-curl -X GET http://localhost:8081/questions/1
+curl -X GET http://localhost:8081/api/question/1
 ```
 
 #### Example of Response Body for Success:
@@ -165,7 +165,7 @@ curl -X GET http://localhost:8081/questions/1
 This endpoint allows the retrieval of random questions that matches the parameters provided.
 
 - **HTTP Method**: `GET`
-- **Endpoint**: `/questions/search`
+- **Endpoint**: `/api/question/search`
 
 #### Parameters:
 
@@ -187,10 +187,10 @@ This endpoint allows the retrieval of random questions that matches the paramete
 
 ```
 Retrieve Random Question by Topics and Difficulty:
-curl -X GET "http://localhost:8081/questions/search?topics=Algorithms&difficulty=Medium"
+curl -X GET "http://localhost:8081/api/question/search?topics=Algorithms&difficulty=Medium"
 
 Retrieve Random Question by Topics, Difficulty, and Limit:
-curl -X GET "http://localhost:8081/questions/search?topics=Algorithms,Data%20Structures&difficulty=Easy&limit=5"
+curl -X GET "http://localhost:8081/api/question/search?topics=Algorithms,Data%20Structures&difficulty=Easy&limit=5"
 ```
 
 #### Example of Response Body for Success:
@@ -243,7 +243,7 @@ curl -X GET "http://localhost:8081/questions/search?topics=Algorithms,Data%20Str
 This endpoint retrieves all unique topics in the database
 
 - **HTTP Method**: `GET`
-- **Endpoint**: `/questions/topics`
+- **Endpoint**: `/api/question/topics`
 
 #### Responses:
 
@@ -256,7 +256,7 @@ This endpoint retrieves all unique topics in the database
 
 ```
 Retrieve Topics:
-curl -X GET http://localhost:8081/questions/topics
+curl -X GET http://localhost:8081/api/question/topics
 ```
 
 #### Example of Response Body for Success:
@@ -286,7 +286,7 @@ This endpoint allows the addition of a new question. The `id` is now automatical
 uniqueness.
 
 - **HTTP Method**: `POST`
-- **Endpoint**: `/questions`
+- **Endpoint**: `/api/question`
 
 #### Request Body:
 
@@ -307,7 +307,7 @@ uniqueness.
 
 ```
 Add Question:
-curl -X POST http://localhost:8081/questions -H "Content-Type: application/json" -d "{\"title\": \"New Question\", \"description\": \"This is a description for a new question.\", \"topics\": [\"Data Structures\", \"Algorithms\"], \"difficulty\": \"Medium\"}"
+curl -X POST http://localhost:8081/api/question -H "Content-Type: application/json" -d "{\"title\": \"New Question\", \"description\": \"This is a description for a new question.\", \"topics\": [\"Data Structures\", \"Algorithms\"], \"difficulty\": \"Medium\"}"
 ```
 
 #### Example of Response Body for Success:
@@ -334,7 +334,7 @@ curl -X POST http://localhost:8081/questions -H "Content-Type: application/json"
 This endpoint allows updating an existing question. Only the title, description, topics, and difficulty can be updated.
 
 - **HTTP Method**: `PUT`
-- **Endpoint**: `/questions/{id}`
+- **Endpoint**: `/api/question/{id}`
 
 #### Request Parameters:
 
@@ -360,7 +360,7 @@ This endpoint allows updating an existing question. Only the title, description,
 
 ```
 Update Question:
-curl -X PUT http://localhost:8081/questions/21 -H "Content-Type: application/json" -d "{\"title\": \"Updated Question Title\", \"description\": \"This is the updated description.\", \"topics\": [\"Updated Topic\"], \"difficulty\": \"Hard\"}"
+curl -X PUT http://localhost:8081/api/question/21 -H "Content-Type: application/json" -d "{\"title\": \"Updated Question Title\", \"description\": \"This is the updated description.\", \"topics\": [\"Updated Topic\"], \"difficulty\": \"Hard\"}"
 ```
 
 #### Example of Response Body for Success:
@@ -387,7 +387,7 @@ curl -X PUT http://localhost:8081/questions/21 -H "Content-Type: application/jso
 This endpoint allows the deletion of a question by the question ID.
 
 - **HTTP Method**: `DELETE`
-- **Endpoint**: `/questions/{id}`
+- **Endpoint**: `/api/question/{id}`
 
 #### Parameters:
 
@@ -405,7 +405,7 @@ This endpoint allows the deletion of a question by the question ID.
 
 ```
 Delete Question:
-curl -X DELETE http://localhost:8081/questions/21
+curl -X DELETE http://localhost:8081/api/question/21
 ```
 
 #### Example of Response Body for Success:
@@ -432,7 +432,7 @@ curl -X DELETE http://localhost:8081/questions/21
 This endpoint allows the deletion of multiple questions by their question IDs.
 
 - **HTTP Method**: `POST`
-- **Endpoint**: `/questions/delete`
+- **Endpoint**: `/api/question/delete`
 
 #### Parameters:
 
@@ -451,7 +451,7 @@ This endpoint allows the deletion of multiple questions by their question IDs.
 
 ```
 Delete Questions:
-curl -X POST http://localhost:8081/questions/delete -H "Content-Type: application/json" -d '{"ids": [21, 22]}'
+curl -X POST http://localhost:8081/api/question/delete -H "Content-Type: application/json" -d '{"ids": [21, 22]}'
 ```
 
 #### Example of Response Body for Success:

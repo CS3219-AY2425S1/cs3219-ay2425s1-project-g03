@@ -24,6 +24,6 @@ app.use(
 
 // Routes
 app.use('/', router);
-app.use('/request', verifyAccessToken, matchRequestRouter);
+app.use('/api/match/request', verifyAccessToken, matchRequestRouter);
 
 export default app;

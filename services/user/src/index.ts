@@ -28,8 +28,8 @@ app.use((req: Request, res: Response, next: NextFunction) => {
     next();
 });
 
-app.use('/users', userRoutes);
-app.use('/auth', authRoutes);
+app.use('/api/user/users', userRoutes);
+app.use('/api/user/auth', authRoutes);
 
 app.get('/', (req: Request, res: Response) => {
     console.log('Sending Greetings!');

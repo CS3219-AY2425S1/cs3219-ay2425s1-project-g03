@@ -22,6 +22,6 @@ app.use(
 );
 
 app.use('/', router);
-app.use('/room', verifyAccessToken, roomRouter);
+app.use('/api/collaboration/room', verifyAccessToken, roomRouter);
 
 export default app;

@@ -42,7 +42,7 @@
 
 - HTTP Method: `POST`
 
-- Endpoint: http://localhost:8082/users
+- Endpoint: http://localhost:8082/api/user/users
 
 - Body
   - Required: `username` (string), `email` (string), `password` (string)
@@ -72,11 +72,11 @@
 
 - HTTP Method: `GET`
 
-- Endpoint: http://localhost:8082/users/{userId}
+- Endpoint: http://localhost:8082/api/user/users/{userId}
 
 - Parameters
     - Required: `userId` path parameter
-    - Example: `http://localhost:8082/users/60c72b2f9b1d4c3a2e5f8b4c`
+    - Example: `http://localhost:8082/api/user/users/60c72b2f9b1d4c3a2e5f8b4c`
 
 - <a name="auth-header">Headers</a>
   
@@ -104,7 +104,7 @@
 
 - This endpoint allows retrieval of all users' data from the database.
 - HTTP Method: `GET`
-- Endpoint: http://localhost:8082/users
+- Endpoint: http://localhost:8082/api/user/users
 - Headers
     - Required: `Authorization: Bearer <JWT_ACCESS_TOKEN>`
     - Auth Rules:
@@ -128,7 +128,7 @@
 
 - HTTP Method: `PATCH`
 
-- Endpoint: http://localhost:8082/users/{userId}
+- Endpoint: http://localhost:8082/api/user/users/{userId}
 
 - Parameters
   - Required: `userId` path parameter
@@ -170,7 +170,7 @@
 
 - HTTP Method: `PATCH`
 
-- Endpoint: http://localhost:8082/users/{userId}
+- Endpoint: http://localhost:8082/api/user/users/{userId}
 
 - Parameters
   - Required: `userId` path parameter
@@ -208,7 +208,7 @@
 
 - This endpoint allows deletion of a user and their related data from the database using the user's ID.
 - HTTP Method: `DELETE`
-- Endpoint: http://localhost:8082/users/{userId}
+- Endpoint: http://localhost:8082/api/user/users/{userId}
 - Parameters
 
   - Required: `userId` path parameter
@@ -235,7 +235,7 @@
 
 - This endpoint allows a user to authenticate with an email and password and returns a JWT access token. The token is valid for 1 day and can be used subsequently to access protected resources. For example usage, refer to the [Authorization header section in the Get User endpoint](#auth-header).
 - HTTP Method: `POST`
-- Endpoint: http://localhost:8082/auth/login
+- Endpoint: http://localhost:8082/api/user/auth/login
 - Body
   - Required: `username` (string), `password` (string)
 
@@ -259,7 +259,7 @@
 
 - This endpoint allows one to verify a JWT access token to authenticate and retrieve the user's data associated with the token.
 - HTTP Method: `GET`
-- Endpoint: http://localhost:8082/auth/verify-token
+- Endpoint: http://localhost:8082/api/user/auth/verify-token
 - Headers
   - Required: `Authorization: Bearer <JWT_ACCESS_TOKEN>`
 

@@ -86,7 +86,7 @@ This endpoint retrieves all active room IDs associated with the authenticated us
 is `true` will be retrieved.
 
 - **HTTP Method**: `GET`
-- **Endpoint**: `/room/user/rooms`
+- **Endpoint**: `/api/collaboration/room/user/rooms`
 
 ### Authorization
 
@@ -126,7 +126,7 @@ curl -X GET http://localhost:8080/api/collaboration/room/user/rooms \
 This endpoint retrieves the details of a room by its room ID.
 
 - **HTTP Method**: `GET`
-- **Endpoint**: `/room/{roomId}`
+- **Endpoint**: `/api/collaboration/room/{roomId}`
 
 ### Authorization
 
@@ -187,7 +187,7 @@ This endpoint updates the `isForfeit` status of a specified user in a particular
 a `isForfeit` field that tracks whether the user has left the room through forfeiting or is still active.
 
 - **HTTP Method**: `PATCH`
-- **Endpoint**: `/room/{roomId}/user/isForfeit`
+- **Endpoint**: `/api/collaboration/room/{roomId}/user/isForfeit`
 
 ### Authorization
 
@@ -254,7 +254,7 @@ curl -X PATCH http://localhost:8080/api/collaboration/room/6721a64b0c4d990bc0fee
 This endpoint allows a user to close a room (change `room_status` to `false`) and delete the associated Yjs document.
 
 - **HTTP Method**: `PATCH`
-- **Endpoint**: `/room/{roomId}/close`
+- **Endpoint**: `/api/collaboration/room/{roomId}/close`
 
 ### Authorization
 

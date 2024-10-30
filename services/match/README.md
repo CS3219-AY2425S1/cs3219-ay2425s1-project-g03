@@ -27,7 +27,7 @@ docker compose down -v
 
 - This endpoint creates a new match request. The match request will remain valid for 1 minute.
 - **HTTP Method**: `POST`
-- **Endpoint**: http://localhost:8083/match/request
+- **Endpoint**: http://localhost:8083/api/match/request
 - **Body**
   - `topics` (Required) - The topics associated with the match request.
   - `difficulty` (Required) - The difficulty level of the match request.
@@ -75,10 +75,10 @@ docker compose down -v
 
 - This endpoint deletes the match request.
 - **HTTP Method**: `DELETE`
-- **Endpoint**: http://localhost:8083/match/request/{requestId}
+- **Endpoint**: http://localhost:8083/api/match/request/{requestId}
 - **Parameters**
   -  `requestId` (Required) - The request ID of the match request.
-  - Example: `http://localhost:8083/match/request/6706b5d706ecde0138ca27a9`
+  - Example: `http://localhost:8083/api/match/request/6706b5d706ecde0138ca27a9`
 - **Headers**
   - `Authorization: Bearer <JWT_ACCESS_TOKEN>` (Required)
   - The endpoint requires the user to include a JWT (JSON Web Token) in the HTTP Request Header for authentication and authorization. This token is generated during the authentication process (i.e., login) and contains information about the user's identity. The server verifies this token to ensure that the client is authorized to access the data.
@@ -115,10 +115,10 @@ docker compose down -v
 
 - This endpoint retrieves the match request and its status.
 - **HTTP Method**: `GET`
-- **Endpoint**: http://localhost:8083/match/request/{requestId}
+- **Endpoint**: http://localhost:8083/api/match/request/{requestId}
 - **Parameters**
   -  `requestId` (Required) - The request ID of the match request.
-  - Example: `http://localhost:8083/match/request/6706b5d706ecde0138ca27a9`
+  - Example: `http://localhost:8083/api/match/request/6706b5d706ecde0138ca27a9`
 - **Headers**
   - `Authorization: Bearer <JWT_ACCESS_TOKEN>` (Required)
   - The endpoint requires the user to include a JWT (JSON Web Token) in the HTTP Request Header for authentication and authorization. This token is generated during the authentication process (i.e., login) and contains information about the user's identity. The server verifies this token to ensure that the client is authorized to access the data.
