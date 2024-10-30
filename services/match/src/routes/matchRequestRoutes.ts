@@ -1,5 +1,9 @@
 import express from 'express';
-import { createMatchRequest, deleteMatchRequest, retrieveMatchRequest } from '../controllers/matchRequestController';
+import {
+    createMatchRequest,
+    deleteMatchRequest,
+    retrieveMatchRequest,
+} from '../controllers/matchRequestController';
 const router = express.Router();
 
 router.post('', createMatchRequest);

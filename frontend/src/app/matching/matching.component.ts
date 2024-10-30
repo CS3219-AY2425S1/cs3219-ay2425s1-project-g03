@@ -137,7 +137,7 @@ export class MatchingComponent implements OnInit {
 
     onRetryMatchRequest(matchId: string) {
         this.matchId = matchId;
-        this.isMatchTimeout = false;
+        this.isMatchFailed = false;
         this.isProcessingMatch = true;
     }
 
