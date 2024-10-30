@@ -65,7 +65,7 @@
         (dialogClose)="onMatchDialogClose()" />
     <app-retry-matching
         [matchRequest]="matchRequest"
-        [isVisible]="isMatchFailed"
+        [isVisible]="isMatchTimeout"
         (retryMatch)="onRetryMatchRequest($event)"
         (dialogClose)="onRetryMatchDialogClose()" />
 

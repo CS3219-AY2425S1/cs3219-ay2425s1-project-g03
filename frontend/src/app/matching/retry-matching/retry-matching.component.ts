@@ -14,7 +14,7 @@ import { MatchRequest } from '../match.model';
 })
 export class RetryMatchingComponent {
     @Input() isVisible = false;
-    @Input({required: true}) matchRequest!: MatchRequest;
+    @Input({ required: true }) matchRequest!: MatchRequest;
 
     @Output() dialogClose = new EventEmitter<void>();
     @Output() retryMatch = new EventEmitter<string>();

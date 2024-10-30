@@ -56,8 +56,6 @@ export class FindingMatchComponent {
     onMatchSuccess() {
         this.stopTimer();
         this.isFindingMatch = false;
-        this.matchSuccess.emit();
-        // Possible to handle routing to workspace here.
     }
 
     onDialogShow() {
@@ -75,6 +73,10 @@ export class FindingMatchComponent {
                 console.log(response);
                 const status: MatchStatus = response.data.status || MatchStatus.PENDING;
                 switch (status) {
+                    case MatchStatus.MATCH_FAILED:
+                        this.stopPolling$.next(false);
+                        this.onMatchFailed();
+                        break;
                     case MatchStatus.MATCH_FOUND:
                         this.onMatchSuccess();
                         break;
@@ -87,7 +89,7 @@ export class FindingMatchComponent {
                         break;
                     case MatchStatus.TIME_OUT:
                         this.stopPolling$.next(false);
-                        this.onMatchFailed();
+                        this.onMatchTimeout();
                         break;
                 }
             }),
