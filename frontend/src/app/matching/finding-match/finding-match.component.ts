@@ -137,7 +137,7 @@ export class FindingMatchComponent {
     }
 
     redirectToCollab(collabId: string) {
-        this.router.navigate(['/start'], {
+        this.router.navigate(['/collab'], {
             queryParams: {
                 roomId: collabId,
             },
