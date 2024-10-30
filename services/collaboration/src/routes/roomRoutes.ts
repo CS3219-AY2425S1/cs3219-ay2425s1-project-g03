@@ -12,9 +12,9 @@ import {
 const router = Router();
 
 /**
- * Get room IDs by user ID
+ * Get room IDs by user ID (userId is now obtained from the JWT token)
  */
-router.get('/user/:userId', getRoomIdsByUserIdController);
+router.get('/user/rooms', getRoomIdsByUserIdController);
 
 /**
  * Get room by room ID
@@ -27,8 +27,8 @@ router.get('/:roomId', getRoomByRoomIdController);
 router.patch('/:roomId/close', closeRoomController);
 
 /**
- * Update user status in a room
+ * Update user isForfeit status in a room
  */
-router.patch('/roomToEdit/:roomId/user/:userId/isForfeit', updateUserStatusInRoomController);
+router.patch('/:roomId/user/isForfeit', updateUserStatusInRoomController);
 
 export default router;

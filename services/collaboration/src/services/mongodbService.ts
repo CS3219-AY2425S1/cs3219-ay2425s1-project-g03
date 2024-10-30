@@ -92,11 +92,10 @@ export const createRoomInDB = async (roomData: any): Promise<string> => {
  * @param roomId
  * @returns
  */
-export const findRoomById = async (roomId: string) => {
+export const findRoomById = async (roomId: string): Promise<WithId<Room> | null> => {
     try {
         const db = await connectToRoomDB();
-        const room = await db.collection('rooms').findOne({ _id: new ObjectId(roomId) });
-        return room;
+        return await db.collection<Room>('rooms').findOne({ _id: new ObjectId(roomId) });
     } catch (error) {
         console.error(`Error finding room by ID ${roomId}:`, error);
         throw error;
@@ -146,7 +145,7 @@ export const findRoomsByUserId = async (userId: string): Promise<WithId<Room>[]>
         const db = await connectToRoomDB();
         console.log(`Querying for rooms with user ID: ${userId}`);
         const rooms = await db
-            .collection<Room>('rooms') // Type the collection as Room
+            .collection<Room>('rooms')
             .find({
                 users: { $elemMatch: { id: userId } },
                 room_status: true,
@@ -168,8 +167,8 @@ export const closeRoomById = async (roomId: string) => {
     try {
         const db = await connectToRoomDB();
         const result = await db
-            .collection('rooms')
-            .updateOne({ _id: new ObjectId(roomId) }, { $set: { room_status: false } });
+            .collection<Room>('rooms')
+            .updateOne({ _id: new ObjectId(roomId) as ObjectId }, { $set: { room_status: false } });
         console.log(`Room status updated to closed for room ID: ${roomId}`);
         return result;
     } catch (error) {
@@ -178,17 +177,11 @@ export const closeRoomById = async (roomId: string) => {
     }
 };
 
-/**
- * Update the status of a user in a room
- * @param roomId
- * @param userId
- * @param statusExist
- */
 export const updateRoomUserStatus = async (roomId: string, userId: string, isForfeit: boolean) => {
     try {
         const db = await connectToRoomDB();
         const result = await db
-            .collection('rooms')
+            .collection<Room>('rooms')
             .findOneAndUpdate(
                 { _id: new ObjectId(roomId), 'users.id': userId },
                 { $set: { 'users.$.isForfeit': isForfeit } },

@@ -5,6 +5,7 @@ import roomRouter from './routes/roomRoutes';
 import bodyParser from 'body-parser';
 import router from './routes';
 import config from './config';
+import { verifyAccessToken } from './middleware/jwt';
 
 const app: Express = express();
 
@@ -26,6 +27,6 @@ app.use(
 );
 
 app.use('/', router);
-app.use('/room', roomRouter);
+app.use('/room', verifyAccessToken, roomRouter);
 
 export default app;

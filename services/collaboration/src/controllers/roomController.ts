@@ -62,16 +62,15 @@ export const createRoomWithQuestion = async (
     }
 };
 
-/**
- * Controller function to get room IDs by user ID
- * @param req
- * @param res
- */
 export const getRoomIdsByUserIdController = async (req: Request, res: Response) => {
-    console.log('Received request for user ID:', req.params.userId);
-    try {
-        const userId = req.params.userId;
+    const userId = req.user?.id ? String(req.user.id) : '';
 
+    if (!userId) {
+        return handleHttpBadRequest(res, 'Invalid user ID');
+    }
+
+    console.log('Received request for user ID:', userId);
+    try {
         const rooms = await findRoomsByUserId(userId);
         if (!rooms || rooms.length === 0) {
             return handleHttpNotFound(res, 'No rooms found for the given user');
@@ -147,13 +146,18 @@ export const closeRoomController = async (req: Request, res: Response) => {
 };
 
 /**
- * Controller function to update the status of a user in a room
+ * Controller function to update user status in a room
  * @param req
  * @param res
  */
 export const updateUserStatusInRoomController = async (req: Request, res: Response) => {
-    const { roomId, userId } = req.params;
+    const { roomId } = req.params;
+    const userId = req.user?.id ? String(req.user.id) : '';
     const { isForfeit } = req.body;
+
+    if (!userId) {
+        return handleHttpBadRequest(res, 'Invalid user ID');
+    }
 
     if (typeof isForfeit !== 'boolean') {
         return handleHttpBadRequest(res, 'Invalid isForfeit value. Must be true or false.');

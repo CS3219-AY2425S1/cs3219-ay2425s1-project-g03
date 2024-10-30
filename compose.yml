@@ -191,6 +191,7 @@ services:
       YJS_DB_CLOUD_URI: ${YJS_DB_CLOUD_URI}
       YJS_DB_LOCAL_URI: ${YJS_DB_LOCAL_URI}
       BROKER_URL: ${BROKER_URL}
+      JWT_SECRET: ${JWT_SECRET}
       QUESTION_SERVICE_URL: ${QUESTION_SERVICE_URL}
     depends_on:
       broker:

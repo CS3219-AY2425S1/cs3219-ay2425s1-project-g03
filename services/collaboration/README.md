@@ -81,17 +81,18 @@ collaboration service. It enables creating rooms, retrieving room details, and m
 
 ---
 
-## Get Room IDs by User ID
+## Get Room IDs by User (JWT Authentication)
 
-This endpoint retrieves all room IDs for a given user, but only if the room is still active (`room_status` is `true`).
-One user can have multiple rooms, and each room is identified by a unique `room_id`.
+This endpoint retrieves all active room IDs associated with the authenticated user. Only rooms where `room_status`
+is `true` will be retrieved.
 
 - **HTTP Method**: `GET`
-- **Endpoint**: `/room/user/{userId}`
+- **Endpoint**: `/room/user/rooms`
 
-### Parameters:
+### Authorization
 
-- `userId` (Required) - The ID of the user whose room IDs are to be retrieved.
+This endpoint requires a valid JWT token in the `Authorization` header. The `userId` is derived from the token and is
+not provided directly.
 
 ### Responses:
 
@@ -104,7 +105,8 @@ One user can have multiple rooms, and each room is identified by a unique `room_
 ### Command Line Example:
 
 ```bash
-Retrieve Room IDs by User ID: curl -X GET http://localhost:8084/room/user/6718b0070e24954ac125e5e1
+curl -X GET http://localhost:8080/api/collaboration/room/user/rooms \
+     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3MjFhNWZiZWFlNjBjOGViMWU1ZWYzNCIsInVzZXJuYW1lIjoiVGVzdGluZyIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzMwMjU4NDI4LCJleHAiOjE3MzAzNDQ4Mjh9.DF9CaChoG3-UmeZgZG9SlpjtTknVzeVSBAJDJRdqGk0
 ```
 
 ### Example of Response Body for Success:
@@ -113,8 +115,7 @@ Retrieve Room IDs by User ID: curl -X GET http://localhost:8084/room/user/6718b0
 {
   "status": "Success",
   "data": [
-    "6718b027b4624a70311bc0ed",
-    "6718b058b4624a70311bc0ee"
+    "6721a64b0c4d990bc0feee4c"
   ]
 }
 ```
@@ -127,6 +128,10 @@ This endpoint retrieves the details of a room by its room ID.
 
 - **HTTP Method**: `GET`
 - **Endpoint**: `/room/{roomId}`
+
+### Authorization
+
+This endpoint requires a valid JWT token in the Authorization header.
 
 ### Parameters:
 
@@ -143,7 +148,8 @@ This endpoint retrieves the details of a room by its room ID.
 ### Command Line Example:
 
 ```bash
-Retrieve Room by Room ID: curl -X GET http://localhost:8084/room/6718b027b4624a70311bc0ed
+curl -X GET http://localhost:8080/api/collaboration/room/6721a64b0c4d990bc0feee4c \
+     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3MjFhNWZiZWFlNjBjOGViMWU1ZWYzNCIsInVzZXJuYW1lIjoiVGVzdGluZyIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzMwMjU4NDI4LCJleHAiOjE3MzAzNDQ4Mjh9.DF9CaChoG3-UmeZgZG9SlpjtTknVzeVSBAJDJRdqGk0
 ```
 
 ### Example of Response Body for Success:
@@ -152,7 +158,7 @@ Retrieve Room by Room ID: curl -X GET http://localhost:8084/room/6718b027b4624a7
 {
   "status": "Success",
   "data": {
-    "room_id": "6718b027b4624a70311bc0ed",
+    "room_id": "6721a64b0c4d990bc0feee4c",
     "users": [
       {
         "id": "6718b0050e24954ac125e5dd",
@@ -179,16 +185,19 @@ Retrieve Room by Room ID: curl -X GET http://localhost:8084/room/6718b027b4624a7
 ## Update User Forfeit Status in Room
 
 This endpoint updates the `isForfeit` status of a specified user in a particular room. Each user in a room has
-a
-`isForfeit` field that tracks whether the user has left the room through forfeiting or is still active.
+a `isForfeit` field that tracks whether the user has left the room through forfeiting or is still active.
 
 - **HTTP Method**: `PATCH`
-- **Endpoint**: `/room/roomToEdit/{roomId}/user/{userId}/isForfeit`
+- **Endpoint**: `/room/{roomId}/user/isForfeit`
+
+### Authorization
+
+This endpoint requires a valid JWT token in the Authorization header. The userId is derived from the token.
 
 ### Parameters:
 
 - `roomId` (Required) - The ID of the room to update.
-- `userId` (Required) - The ID of the user to update.
+- `isForfeit` (Required, Boolean) - The forfeit status of the user.
 
 ### Responses:
 
@@ -202,8 +211,13 @@ a
 ### Command Line Example:
 
 ```bash
-Update User Status: curl -X PATCH http://localhost:8084/room/roomToEdit/6718b027b4624a70311bc0ed/user/6718b0070e24954ac125e5e1/isForfeit -H "Content-Type: application/json" -d '{"isForfeit": true}'
+curl -X PATCH http://localhost:8080/api/collaboration/room/6721a64b0c4d990bc0feee4c/user/isForfeit \
+     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3MjFhNWZiZWFlNjBjOGViMWU1ZWYzNCIsInVzZXJuYW1lIjoiVGVzdGluZyIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzMwMjU4NDI4LCJleHAiOjE3MzAzNDQ4Mjh9.DF9CaChoG3-UmeZgZG9SlpjtTknVzeVSBAJDJRdqGk0" \
+     -H "Content-Type: application/json" \
+     -d '{"isForfeit": true}'
 ```
+
+### Example of Response Body for Success:
 
 ```json
 {
@@ -211,7 +225,7 @@ Update User Status: curl -X PATCH http://localhost:8084/room/roomToEdit/6718b027
   "data": {
     "message": "User status updated successfully",
     "room": {
-      "room_id": "6718b027b4624a70311bc0ed",
+      "room_id": "6721a64b0c4d990bc0feee4c",
       "users": [
         {
           "id": "6718b0050e24954ac125e5dd",
@@ -243,6 +257,10 @@ This endpoint allows a user to close a room (change `room_status` to `false`) an
 - **HTTP Method**: `PATCH`
 - **Endpoint**: `/room/{roomId}/close`
 
+### Authorization
+
+This endpoint requires a valid JWT token in the Authorization header.
+
 ### Parameters:
 
 - `roomId` (Required) - The ID of the room to close.
@@ -258,7 +276,8 @@ This endpoint allows a user to close a room (change `room_status` to `false`) an
 ### Command Line Example:
 
 ```bash
-Close Room: curl -X PATCH http://localhost:8084/room/6718b027b4624a70311bc0ed/close
+curl -X PATCH http://localhost:8080/api/collaboration/room/6721a64b0c4d990bc0feee4c/close \
+    -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3MjFhNWZiZWFlNjBjOGViMWU1ZWYzNCIsInVzZXJuYW1lIjoiVGVzdGluZyIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzMwMjU4NDI4LCJleHAiOjE3MzAzNDQ4Mjh9.DF9CaChoG3-UmeZgZG9SlpjtTknVzeVSBAJDJRdqGk0"
 ```
 
 ### Example of Response Body for Success:
@@ -266,7 +285,7 @@ Close Room: curl -X PATCH http://localhost:8084/room/6718b027b4624a70311bc0ed/cl
 ```json
 {
   "status": "Success",
-  "data": "Room 6718b027b4624a70311bc0ed successfully closed"
+  "data": "Room 6721a64b0c4d990bc0feee4c successfully closed"
 }
 ```
 
@@ -300,6 +319,22 @@ The producer will send a message to the `COLLAB_CREATED` queue when a collaborat
   "requestId1": "user1-request-id",
   "requestId2": "user2-request-id",
   "collabId": "generated-room-id"
+}
+```
+
+The producer will send a message to the `COLLAB_CREATE_FAILED` queue when a collaboration room fails to be created.
+
+- **Queue**: `COLLAB_CREATE_FAILED`
+- **Data in the Message**:
+    - `requestId1` (Required) - The request ID of the first user.
+    - `requestId2` (Required) - The request ID of the second user.
+    - `error` (Required) - A message indicating the reason for failure, typically "Room creation failed."
+
+```json
+{
+  "requestId1": "user1-request-id",
+  "requestId2": "user2-request-id",
+  "error": "Room creation failed"
 }
 ```
 
