@@ -6,7 +6,7 @@
   "scripts": {
     "start": "tsc && node dist/index.js",
     "build": "tsc",
-    "dev": "nodemon src/index.ts",
+    "dev": "nodemon --files src/index.ts",
     "test": "echo \"No test specified\" && exit 1",
     "lint": "npx eslint .",
     "lint:fix": "npx eslint . --fix"

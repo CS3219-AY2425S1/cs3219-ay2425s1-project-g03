@@ -110,7 +110,8 @@ export class EditorComponent implements AfterViewInit, OnInit, OnDestroy {
 
     initConnection() {
       this.ydoc = new Y.Doc();
-      this.wsProvider = new WebsocketProvider(WEBSOCKET_CONFIG.baseUrl, this.roomId, this.ydoc);
+      const websocketUrl = WEBSOCKET_CONFIG.baseUrl + 'collaboration/';
+      this.wsProvider = new WebsocketProvider(websocketUrl, this.roomId, this.ydoc);
 
       this.wsProvider.ws!.onclose = (event: { code: number; reason: string }) => {
             if (event.code === WebSocketCode.AUTH_FAILED || event.code === WebSocketCode.ROOM_CLOSED) {

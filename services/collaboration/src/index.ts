@@ -16,9 +16,11 @@ startMongoDB()
         server.listen(PORT, () => {
             console.log(`Server (HTTP + WebSocket) running on port ${PORT}`);
         });
-
+    }).then(() => {
         console.log('Initializing room consumer');
         initializeRoomConsumer();
+    }).then(() => {
+        console.log('Room consumer is listening')
     })
     .catch(error => {
         console.error('Failed to start services:', error);
