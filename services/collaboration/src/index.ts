@@ -11,7 +11,19 @@ startMongoDB()
     .then(() => {
         const server = http.createServer(app);
 
-        startWebSocketServer(server);
+        // Initialize the WebSocket server without passing server as a parameter
+        const wss = startWebSocketServer();
+
+        // Handle WebSocket upgrade requests
+        server.on('upgrade', (req, socket, head) => {
+            if (req.headers['upgrade'] === 'websocket') {
+                wss.handleUpgrade(req, socket, head, ws => {
+                    wss.emit('connection', ws, req);
+                });
+            } else {
+                socket.destroy();
+            }
+        });
 
         server.listen(PORT, () => {
             console.log(`Server (HTTP + WebSocket) running on port ${PORT}`);

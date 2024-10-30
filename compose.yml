@@ -182,6 +182,8 @@ services:
   collaboration:
     container_name: collaboration
     image: collaboration
+    ports:
+      - 8084:8084
     build:
       context: services/collaboration
       dockerfile: Dockerfile
