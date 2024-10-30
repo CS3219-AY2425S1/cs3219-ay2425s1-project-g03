@@ -1,3 +1,5 @@
+import { Question } from '../questions/question.model';
+
 export interface RoomResponse {
     status: string;
     data: RoomData;
@@ -23,7 +25,7 @@ export interface CollabUser {
 interface RoomData {
     room_id: string;
     users: CollabUser[];
-    question_id: number;
+    question: Question;
     createdAt: string;
     room_status: boolean;
 }
