@@ -76,11 +76,7 @@ export const createRoomInDB = async (roomData: any): Promise<string> => {
             ...roomData,
             room_status: true,
         });
-        const roomId = result.insertedId.toString();
-
-        await createYjsDocument(roomId);
-
-        return roomId;
+        return result.insertedId.toString();
     } catch (error) {
         console.error('Error creating room in DB:', error);
         throw error;
