@@ -1,3 +1,4 @@
+import { Server } from 'http';
 import { WebSocketServer, WebSocket } from 'ws';
 import * as Y from 'yjs';
 import { findRoomById, mdb } from './mongodbService';
@@ -17,8 +18,8 @@ const WEBSOCKET_ROOM_CLOSED = 4001;
  * Start and configure the WebSocket server
  * @returns {WebSocketServer} The configured WebSocket server instance
  */
-export const startWebSocketServer = (): WebSocketServer => {
-    const wss = new WebSocketServer({ noServer: true }); // `noServer: true` for manual upgrade handling
+export const startWebSocketServer = (server: Server) => {
+    const wss = new WebSocketServer({ server });
 
     wss.on('connection', async (conn: WebSocket, req) => {
         console.log('Incoming WebSocket connection request.');

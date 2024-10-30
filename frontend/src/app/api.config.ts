@@ -3,5 +3,5 @@ export const API_CONFIG = {
 };
 
 export const WEBSOCKET_CONFIG = {
-    baseUrl: 'ws://collaboration:8084',
+    baseUrl: 'ws://localhost:8084',
 };
