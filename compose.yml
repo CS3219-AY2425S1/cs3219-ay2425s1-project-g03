@@ -193,6 +193,7 @@ services:
       BROKER_URL: ${BROKER_URL}
       JWT_SECRET: ${JWT_SECRET}
       QUESTION_SERVICE_URL: ${QUESTION_SERVICE_URL}
+
     depends_on:
       broker:
         condition: service_healthy

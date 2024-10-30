@@ -5,7 +5,7 @@ import { produceMatchFailedEvent, produceQuestionFoundEvent } from './producer';
 import { Queues } from './queues';
 
 async function consumeMatchFound(msg: MatchFoundEvent) {
-    console.log('Attempting to find questions:', msg);
+    console.log('Attempting to find questions: ', msg);
 
     const { user1, user2, topics, difficulty } = msg;
     const questions = await Question.find({ topics: { $in: topics }, difficulty }).exec();

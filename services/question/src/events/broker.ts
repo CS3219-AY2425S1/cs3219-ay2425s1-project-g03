@@ -21,7 +21,7 @@ class MessageBroker {
             this.channel = await this.connection.createChannel();
             this.connected = true;
         } catch (error) {
-            console.error('Failed to connect to RabbitMQ:', error);
+            console.error('Failed to connect to RabbitMQ: ', error);
             throw error;
         }
     }
@@ -34,7 +34,7 @@ class MessageBroker {
 
             this.channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)));
         } catch (error) {
-            console.error('Failed to produce message:', error);
+            console.error('Failed to produce message: ', error);
             throw error;
         }
     }
@@ -50,7 +50,7 @@ class MessageBroker {
             this.channel.consume(
                 queue,
                 msg => {
-                    if (!msg) return console.error('Invalid message from queue', queue);
+                    if (!msg) return console.error('Invalid message from queue ', queue);
 
                     onMessage(JSON.parse(msg.content.toString()) as T);
                     this.channel.ack(msg);
@@ -58,7 +58,7 @@ class MessageBroker {
                 { noAck: false },
             );
         } catch (error) {
-            console.error('Failed to consume message:', error);
+            console.error('Failed to consume message: ', error);
             throw error;
         }
     }
