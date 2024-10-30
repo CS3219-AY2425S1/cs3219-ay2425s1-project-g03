@@ -45,7 +45,6 @@ services:
     networks:
       - gateway-network
       - question-db-network
-      - collaboration-network
     restart: always
 
   question-db:
@@ -198,8 +197,6 @@ services:
     networks:
       - gateway-network
       - collaboration-db-network
-      - match-db-network
-      - collaboration-network
     restart: always
 
   collaboration-db:
@@ -225,8 +222,6 @@ networks:
   collaboration-db-network:
     driver: bridge
   match-db-network:
-    driver: bridge
-  collaboration-network:
     driver: bridge
   collaboration-db-network:
     driver: bridge
