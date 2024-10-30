@@ -101,7 +101,7 @@ export class EditorComponent implements AfterViewInit, OnInit, OnDestroy {
         const websocketUrl = WEBSOCKET_CONFIG.baseUrl + 'collaboration/';
         this.wsProvider = new WebsocketProvider(websocketUrl, this.roomId, this.ydoc, {
             params: {
-                userId: this.authService.userValue?.id as string,
+                accessToken: this.authService.userValue?.accessToken || '',
             },
         });
 

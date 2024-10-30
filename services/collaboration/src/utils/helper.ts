@@ -1,6 +1,9 @@
 import { Response } from 'express';
 import { WebSocket } from 'ws';
 
+const WEBSOCKET_AUTH_FAILED = 4000;
+const WEBSOCKET_ROOM_CLOSED = 4001;
+
 /**
  * HTTP-specific handlers
  */
@@ -39,4 +42,16 @@ export const handleHttpSuccess = (client: Response, data: string | object = 'Suc
  */
 export const handleHttpServerError = (client: Response, message = 'Internal Server Error') => {
     client.status(500).json({ status: 'Error', message });
+};
+
+/**
+ * WS-specific handlers
+ */
+
+export const handleAuthFailed = (ws: WebSocket, message: string) => {
+    ws.close(WEBSOCKET_AUTH_FAILED, message);
+};
+
+export const handleRoomClosed = (ws: WebSocket, message = 'Room closed') => {
+    ws.close(WEBSOCKET_ROOM_CLOSED, message);
 };

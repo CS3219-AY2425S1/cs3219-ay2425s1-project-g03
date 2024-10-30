@@ -4,6 +4,7 @@ import * as Y from 'yjs';
 import config from '../config';
 import { Question } from '../controllers/roomController';
 import { Room } from '../controllers/types';
+import { IdType } from '../middleware/request';
 
 let roomDb: Db | null = null;
 let yjsDb: Db | null = null;
@@ -100,6 +101,25 @@ export const findRoomById = async (roomId: string): Promise<WithId<Room> | null>
         return await db.collection<Room>('rooms').findOne({ _id: new ObjectId(roomId) });
     } catch (error) {
         console.error(`Error finding room by ID ${roomId}:`, error);
+        throw error;
+    }
+};
+
+/**
+ * Find a room
+ * @param roomId
+ * @param userId
+ * @returns
+ */
+export const findRoom = async (roomId: IdType, userId: IdType): Promise<WithId<Room> | null> => {
+    try {
+        const db = await connectToRoomDB();
+        return await db.collection<Room>('rooms').findOne({
+            _id: new ObjectId(roomId),
+            users: { $elemMatch: { id: userId } },
+        });
+    } catch (error) {
+        console.error(`Error finding room by room ID ${roomId} and user ID ${userId}:`, error);
         throw error;
     }
 };
