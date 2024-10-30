@@ -15,7 +15,6 @@ import { yCollab } from 'y-codemirror.next';
 import * as prettier from 'prettier';
 import * as prettierPluginEstree from 'prettier/plugins/estree';
 import { usercolors } from './user-colors';
-import { WEBSOCKET_CONFIG } from '../../api.config';
 import { AuthenticationService } from '../../../_services/authentication.service';
 import { RoomService } from '../room.service';
 // The 'prettier-plugin-java' package does not provide TypeScript declaration files.
@@ -28,6 +27,7 @@ import { SubmitDialogComponent } from '../submit-dialog/submit-dialog.component'
 import { ForfeitDialogComponent } from '../forfeit-dialog/forfeit-dialog.component';
 import { Router } from '@angular/router';
 import { awarenessData } from '../collab.model';
+import { environment } from '../../../environments/environment';
 
 enum WebSocketCode {
     AUTH_FAILED = 4000,
@@ -98,7 +98,7 @@ export class EditorComponent implements AfterViewInit, OnInit, OnDestroy {
 
     initConnection() {
         this.ydoc = new Y.Doc();
-        const websocketUrl = WEBSOCKET_CONFIG.baseUrl + 'collaboration/';
+        const websocketUrl = environment.wsUrl + 'collaboration/';
         this.wsProvider = new WebsocketProvider(websocketUrl, this.roomId, this.ydoc, {
             params: {
                 accessToken: this.authService.userValue?.accessToken || '',

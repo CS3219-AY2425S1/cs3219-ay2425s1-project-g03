@@ -1,4 +1,4 @@
-import { API_CONFIG } from '../app/api.config';
+import { environment } from '../environments/environment';
 
 /**
  * Abstract class that serves as a base for API services.
@@ -16,6 +16,6 @@ export abstract class ApiService {
      * the specified apiPath.
      */
     get apiUrl(): string {
-        return API_CONFIG.baseUrl + this.apiPath;
+        return environment.apiUrl + this.apiPath;
     }
 }
