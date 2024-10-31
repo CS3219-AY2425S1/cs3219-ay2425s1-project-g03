@@ -3,13 +3,6 @@ import { QuestionBoxComponent } from './question-box/question-box.component';
 import { EditorComponent } from './editor/editor.component';
 import { SplitterModule } from 'primeng/splitter';
 import { ChatBoxComponent } from './chat-box/chat-box.component';
-import * as Y from 'yjs';
-import { WebsocketProvider } from 'y-websocket';
-import { WEBSOCKET_CONFIG } from '../api.config';
-import { RoomService } from './room.service';
-import { AuthenticationService } from '../../_services/authentication.service';
-import { WebSocketCode } from './websocket-code.enum';
-import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-collaboration',

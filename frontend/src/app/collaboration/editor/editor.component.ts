@@ -41,7 +41,8 @@ import * as Y from 'yjs';
 import { WebsocketProvider } from 'y-websocket';
 import { SubmitDialogComponent } from '../submit-dialog/submit-dialog.component';
 import { ForfeitDialogComponent } from '../forfeit-dialog/forfeit-dialog.component';
-import { languageMap, parserMap, LanguageOption } from './languages';
+import { ChatBoxComponent } from '../chat-box/chat-box.component';
+import { Router } from '@angular/router';
 import { awarenessData } from '../collab.model';
 import { usercolors } from './user-colors';
 
@@ -55,8 +56,7 @@ import { usercolors } from './user-colors';
         ToastModule,
         SubmitDialogComponent,
         ForfeitDialogComponent,
-        DropdownModule,
-        FormsModule,
+        ChatBoxComponent,
     ],
     providers: [MessageService],
     templateUrl: './editor.component.html',

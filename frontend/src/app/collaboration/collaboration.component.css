@@ -23,6 +23,10 @@
     border: 0px;
 }
 
+:host ::ng-deep .p-splitter {
+    border: 0px;
+}
+
 ::ng-deep .b1 {
     height: calc(100% - 80px);
 }
