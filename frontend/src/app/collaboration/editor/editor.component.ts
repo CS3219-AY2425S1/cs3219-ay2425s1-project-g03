@@ -26,6 +26,7 @@ import { RoomService } from '../room.service';
 import prettierPluginJava from 'prettier-plugin-java';
 import { SubmitDialogComponent } from '../submit-dialog/submit-dialog.component';
 import { ForfeitDialogComponent } from '../forfeit-dialog/forfeit-dialog.component';
+import { ChatBoxComponent } from '../chat-box/chat-box.component';
 import { Router } from '@angular/router';
 import { awarenessData } from '../collab.model';
 
@@ -44,6 +45,7 @@ enum WebSocketCode {
         ToastModule,
         SubmitDialogComponent,
         ForfeitDialogComponent,
+        ChatBoxComponent,
     ],
     providers: [ConfirmationService, MessageService],
     templateUrl: './editor.component.html',
