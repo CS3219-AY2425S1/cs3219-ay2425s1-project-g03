@@ -170,7 +170,7 @@ export class EditorComponent implements AfterViewInit, OnInit {
     async format() {
         try {
             const currentCode = this.view.state.doc.toString();
-            const selectedParser = parserMap[this.selectedLanguage];
+            const selectedParser = parserMap[this.selectedLanguage.toLowerCase()];
             const formattedCode = prettier.format(currentCode, {
                 parser: selectedParser,
                 plugins: [
