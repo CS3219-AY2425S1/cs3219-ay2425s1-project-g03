@@ -160,6 +160,7 @@ export class EditorComponent implements AfterViewInit, OnInit {
     setEditorState() {
         const undoManager = this.undoManager;
         const myExt: Extension = [
+            EditorView.lineWrapping,
             basicSetup,
             java(),
             javascript(),
