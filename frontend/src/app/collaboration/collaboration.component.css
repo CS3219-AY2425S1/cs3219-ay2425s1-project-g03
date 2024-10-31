@@ -17,7 +17,6 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 1rem;
 }
 
 :host ::ng-deep .p-splitter {
@@ -26,4 +25,10 @@
 
 ::ng-deep .b1 {
     height: calc(100% - 80px);
+}
+
+:host .grid {
+    margin-right: 0rem;
+    margin-left: 0rem;
+    margin-top: 0rem;
 }
