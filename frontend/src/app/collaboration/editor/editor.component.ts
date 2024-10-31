@@ -108,10 +108,14 @@ export class EditorComponent implements AfterViewInit, OnInit {
     isForfeitClick = false;
     numUniqueUsers = 0;
 <<<<<<< HEAD
+<<<<<<< HEAD
     selectedLanguage!: string;
 =======
     selectedLanguage = 'java';
 >>>>>>> a5a23c8 (Add more languages to codemirror)
+=======
+    selectedLanguage!: string;
+>>>>>>> e639b21 (Fix bug for language selection)
     languages: LanguageOption[] = [];
 
     constructor(
@@ -188,10 +192,12 @@ export class EditorComponent implements AfterViewInit, OnInit {
             this.selectedLanguage = language!;
 =======
 
-        const firstEntry = this.ysubmit.entries().next().value;
-
-        if (firstEntry && firstEntry[0] === undefined) {
+        const language = this.ylanguage.get('selection');
+        if (language == undefined) {
             this.ylanguage.set('selected', 'java');
+            this.selectedLanguage = 'java';
+        } else {
+            this.selectedLanguage = language!;
         }
     }
 
