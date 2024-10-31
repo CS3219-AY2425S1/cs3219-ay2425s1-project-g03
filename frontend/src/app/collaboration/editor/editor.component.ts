@@ -83,7 +83,7 @@ export class EditorComponent implements AfterViewInit, OnInit {
     isInitiator = false;
     isForfeitClick = false;
     numUniqueUsers = 0;
-    selectedLanguage = 'java';
+    selectedLanguage!: string;
     languages: LanguageOption[] = [];
 
     constructor(
@@ -134,10 +134,12 @@ export class EditorComponent implements AfterViewInit, OnInit {
         this.ylanguage = this.ydoc.getMap('language');
         this.undoManager = new Y.UndoManager(this.yeditorText);
 
-        const firstEntry = this.ysubmit.entries().next().value;
-
-        if (firstEntry && firstEntry[0] === undefined) {
+        const language = this.ylanguage.get('selection');
+        if (language == undefined) {
             this.ylanguage.set('selected', 'java');
+            this.selectedLanguage = 'java';
+        } else {
+            this.selectedLanguage = language!;
         }
     }
 
