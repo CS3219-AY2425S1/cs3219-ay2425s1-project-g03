@@ -9,8 +9,14 @@ import {
     Input,
 } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
+<<<<<<< HEAD
 import { FormsModule } from '@angular/forms';
 import { DropdownModule } from 'primeng/dropdown';
+=======
+import { EditorView } from 'codemirror';
+import { java } from '@codemirror/lang-java';
+import { javascript } from '@codemirror/lang-javascript';
+>>>>>>> 6aa266b (Fix css issues)
 import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -43,7 +49,12 @@ import { SubmitDialogComponent } from '../submit-dialog/submit-dialog.component'
 import { ForfeitDialogComponent } from '../forfeit-dialog/forfeit-dialog.component';
 import { languageMap, parserMap, LanguageOption } from './languages';
 import { awarenessData } from '../collab.model';
+<<<<<<< HEAD
 import { usercolors } from './user-colors';
+=======
+// import { autocompletion, Completion, CompletionSource } from '@codemirror/autocomplete';
+// import { linter, Diagnostic } from '@codemirror/lint';
+>>>>>>> 6aa266b (Fix css issues)
 
 @Component({
     selector: 'app-editor',
@@ -175,7 +186,21 @@ export class EditorComponent implements AfterViewInit, OnInit {
         });
     }
 
+<<<<<<< HEAD
     setEditorState(language: string) {
+=======
+    setEditorState() {
+        const undoManager = this.undoManager;
+        const myExt: Extension = [
+            basicSetup,
+            java(),
+            javascript(),
+            this.customTheme,
+            oneDark,
+            yCollab(this.yeditorText, this.wsProvider.awareness, { undoManager }),
+        ];
+
+>>>>>>> 6aa266b (Fix css issues)
         this.state = EditorState.create({
             doc: this.yeditorText.toString(),
             extensions: this.getEditorExtensions(language),
