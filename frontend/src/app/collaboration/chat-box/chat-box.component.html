@@ -3,8 +3,15 @@
         <div class="flex-1 overflow-hidden w-full p-4">
           <div class="card flex flex-column" style="height: 100%">
             <div class="container flex flex-1 flex-column overflow-hidden">
-              <div class="messages">
-                <div *ngFor="let message of messages" class="message">{{ message }}</div>
+              <div #messagesContainer class="messages">
+                <div *ngFor="let message of messages">
+                  <div [ngClass]="{'username-left': message.sender === username, 'username-right': message.sender !== username}">
+                    {{ message.sender }}
+                  </div>
+                  <div [ngClass]="{'message-left': message.sender === username, 'message-right': message.sender !== username}">
+                    <div class="message-box">{{ message.text }}</div>
+                  </div>
+                </div>
               </div>
               <div class="input-container">
                 <input #chatInput type="text" placeholder="Type a message" (keyup.enter)="sendMessage()" />
