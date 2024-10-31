@@ -23,6 +23,7 @@ services:
       - collaboration
     networks:
       - gateway-network
+    restart: always
 
   question:
     container_name: question
@@ -137,45 +138,6 @@ services:
       timeout: 30s
       retries: 10
       start_period: 30s
-    environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
-
-  collaboration:
-    container_name: collaboration
-    image: collaboration
-    build:
-      context: services/collaboration
-      dockerfile: Dockerfile
-    ports:
-      - 8084:8084
-      - 8087:8087
-    environment:
-      COLLAB_CLOUD_MONGO_URI: ${COLLAB_CLOUD_MONGO_URI}
-      COLLAB_LOCAL_MONGO_URI: ${COLLAB_LOCAL_MONGO_URI}
-      YJS_CLOUD_MONGO_URI: ${YJS_CLOUD_MONGO_URI}
-      YJS_LOCAL_MONGO_URI: ${YJS_LOCAL_MONGO_URI}
-      BROKER_URL: ${BROKER_URL}
-      QUESTION_SERVICE_URL: ${QUESTION_SERVICE_URL}
-      WS_PORT: ${COLLAB_WS_PORT}
-      HTTP_PORT: ${COLLAB_HTTP_PORT}
-    depends_on:
-      match-broker:
-        condition: service_healthy
-    networks:
-      - gateway-network
-      - collaboration-db-network
-      - match-db-network
-      - collaboration-network
-    restart: always
-
-  collaboration-db:
-    container_name: collaboration-db
-    image: mongo:7.0.14
-    volumes:
-      - collaboration-db:/data/db
-    networks:
-      - collaboration-db-network
     restart: always
 
   collaboration:
