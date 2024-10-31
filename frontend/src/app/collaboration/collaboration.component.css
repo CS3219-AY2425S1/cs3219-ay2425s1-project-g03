@@ -23,10 +23,6 @@
     border: 0px;
 }
 
-:host ::ng-deep .p-splitter {
-    border: 0px;
-}
-
 ::ng-deep .b1 {
     height: calc(100% - 80px);
 }
@@ -35,25 +31,4 @@
     margin-right: 0rem;
     margin-left: 0rem;
     margin-top: 0rem;
-}
-
-/* Target the splitter gutter (handle) */
-:host ::ng-deep .p-splitter-gutter:hover {
-    background-color: #bbbbbb; /* Replace with your desired hover color */
-    cursor: pointer; /* Optional: show pointer cursor */
-}
-
-/* Optionally, add a transition for a smoother effect */
-:host ::ng-deep .p-splitter-gutter {
-    transition: background-color 0.3s ease;
-}
-
-:host ::ng-deep .p-splitter-gutter-handle {
-    background-color: #bbbbbb; /* Replace with your desired hover color */
-    cursor: pointer; /* Optional: show pointer cursor */
-}
-
-/* Optionally, add a transition for a smoother effect */
-:host ::ng-deep .p-splitter-gutter-handle {
-    transition: background-color 0.3s ease;
 }
