@@ -1,13 +1,11 @@
 <p-splitter styleClass="w-full background">
     <ng-template pTemplate>
         <div class="grid" style="height: calc(100vh - 80px)">
-            <app-question-box class="col-12"></app-question-box>
-            <app-chat-box class="col-12"></app-chat-box>
+            <app-question-box class="col-12" />
+            <app-chat-box class="col-12" [ydoc]="ydoc" />
         </div>
     </ng-template>
     <ng-template pTemplate>
-        <div class="grid p-3 w-full">
-            <app-editor class="col-12" [ydoc]="ydoc" [wsProvider]="wsProvider" [roomId]="roomId" />
-        </div>
+        <app-editor class="w-full" [ydoc]="ydoc" [wsProvider]="wsProvider" [roomId]="roomId" />
     </ng-template>
 </p-splitter>

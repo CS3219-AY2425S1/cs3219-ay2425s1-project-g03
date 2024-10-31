@@ -15,7 +15,12 @@ import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
-import { MessageService } from 'primeng/api';
+import * as Y from 'yjs';
+import { WebsocketProvider } from 'y-websocket';
+import { yCollab } from 'y-codemirror.next';
+import * as prettier from 'prettier';
+import * as prettierPluginEstree from 'prettier/plugins/estree';
+import { usercolors } from './user-colors';
 import { AuthenticationService } from '../../../_services/authentication.service';
 // The 'prettier-plugin-java' package does not provide TypeScript declaration files.
 // We are using '@ts-ignore' to bypass TypeScript's missing type declaration error.
@@ -41,10 +46,8 @@ import * as Y from 'yjs';
 import { WebsocketProvider } from 'y-websocket';
 import { SubmitDialogComponent } from '../submit-dialog/submit-dialog.component';
 import { ForfeitDialogComponent } from '../forfeit-dialog/forfeit-dialog.component';
-import { ChatBoxComponent } from '../chat-box/chat-box.component';
 import { Router } from '@angular/router';
 import { awarenessData } from '../collab.model';
-import { usercolors } from './user-colors';
 
 @Component({
     selector: 'app-editor',
@@ -56,7 +59,6 @@ import { usercolors } from './user-colors';
         ToastModule,
         SubmitDialogComponent,
         ForfeitDialogComponent,
-        ChatBoxComponent,
     ],
     providers: [MessageService],
     templateUrl: './editor.component.html',
@@ -95,7 +97,6 @@ export class EditorComponent implements AfterViewInit, OnInit {
 
     ngOnInit() {
         this.initYdoc();
-        this.initDoctListener();
         this.getNumOfConnectedUsers();
         this.populateLanguages();
     }
@@ -108,31 +109,6 @@ export class EditorComponent implements AfterViewInit, OnInit {
         this.setCursorPosition();
     }
 
-    populateLanguages() {
-        this.languages = Object.keys(languageMap).map(lang => ({
-            label: lang.charAt(0).toUpperCase() + lang.slice(1),
-            value: lang,
-        }));
-    }
-
-    changeLanguage(language: string) {
-        this.selectedLanguage = language.toLowerCase();
-        this.ylanguage.set('selected', language);
-    }
-
-    updateEditor(language: string) {
-        this.setEditorState(language);
-        this.view.setState(this.state);
-    }
-
-    updateLanguageExtension(language: string) {
-        if (languageMap[language]) {
-            this.view.dispatch({
-                effects: StateEffect.reconfigure.of([this.getEditorExtensions(language)]),
-            });
-        }
-    }
-
     initYdoc() {
         this.yeditorText = this.ydoc.getText('editorText');
         this.ysubmit = this.ydoc.getMap('submit');
@@ -140,12 +116,47 @@ export class EditorComponent implements AfterViewInit, OnInit {
         this.ylanguage = this.ydoc.getMap('language');
         this.undoManager = new Y.UndoManager(this.yeditorText);
 
-        const language = this.ylanguage.get('selection');
-        if (language == undefined) {
-            this.ylanguage.set('selected', 'java');
-            this.selectedLanguage = 'java';
-        } else {
-            this.selectedLanguage = language!;
+    getNumOfConnectedUsers() {
+        this.wsProvider.awareness.on('change', () => {
+            const data = Array.from(this.wsProvider.awareness.getStates().values());
+            const uniqueIds = new Set(
+                data
+                    .map(x => (x as awarenessData).user?.userId)
+                    .filter((userId): userId is string => userId !== undefined),
+            );
+
+            this.numUniqueUsers = uniqueIds.size;
+
+            this.changeDetector.detectChanges();
+        });
+    }
+
+    showSubmitDialog() {
+        this.isSubmit = true;
+        this.isInitiator = true;
+    }
+
+    async format() {
+        try {
+            const currentCode = this.view.state.doc.toString();
+
+            const formattedCode = prettier.format(currentCode, {
+                parser: 'java',
+                plugins: [prettierPluginJava, prettierPluginEstree], // Add necessary plugins
+            });
+
+            this.view.dispatch({
+                changes: {
+                    from: 0,
+                    to: this.view.state.doc.length,
+                    insert: await formattedCode,
+                },
+            });
+
+            this.view.focus();
+        } catch (e) {
+            console.error('Error formatting code:', e);
+            this.messageService.add({ severity: 'error', summary: 'Formatting Error' });
         }
     }
 
