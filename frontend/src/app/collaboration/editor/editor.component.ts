@@ -16,7 +16,7 @@ import { EditorView } from 'codemirror';
 import { java } from '@codemirror/lang-java';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { ButtonModule } from 'primeng/button';
-import { ConfirmationService, MessageService } from 'primeng/api';
+import { MessageService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
 import * as Y from 'yjs';
@@ -26,7 +26,6 @@ import * as prettier from 'prettier';
 import * as prettierPluginEstree from 'prettier/plugins/estree';
 import { usercolors } from './user-colors';
 import { AuthenticationService } from '../../../_services/authentication.service';
-import { RoomService } from '../room.service';
 // The 'prettier-plugin-java' package does not provide TypeScript declaration files.
 // We are using '@ts-ignore' to bypass TypeScript's missing type declaration error.
 
@@ -35,7 +34,6 @@ import { RoomService } from '../room.service';
 import prettierPluginJava from 'prettier-plugin-java';
 import { SubmitDialogComponent } from '../submit-dialog/submit-dialog.component';
 import { ForfeitDialogComponent } from '../forfeit-dialog/forfeit-dialog.component';
-import { Router } from '@angular/router';
 import { awarenessData } from '../collab.model';
 
 @Component({
@@ -49,7 +47,7 @@ import { awarenessData } from '../collab.model';
         SubmitDialogComponent,
         ForfeitDialogComponent,
     ],
-    providers: [ConfirmationService, MessageService],
+    providers: [MessageService],
     templateUrl: './editor.component.html',
     styleUrl: './editor.component.css',
 })
@@ -77,10 +75,7 @@ export class EditorComponent implements AfterViewInit, OnInit {
     constructor(
         @Inject(DOCUMENT) private document: Document,
         private messageService: MessageService,
-        private confirmationService: ConfirmationService,
         private authService: AuthenticationService,
-        private roomService: RoomService,
-        private router: Router,
         private changeDetector: ChangeDetectorRef,
     ) {}
 
