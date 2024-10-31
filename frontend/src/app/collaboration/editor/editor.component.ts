@@ -8,24 +8,14 @@ import {
     ChangeDetectorRef,
     Input,
 } from '@angular/core';
-import { oneDark } from '@codemirror/theme-one-dark';
-import { EditorState, Extension } from '@codemirror/state';
-import { basicSetup } from 'codemirror';
 import { DOCUMENT } from '@angular/common';
-import { EditorView } from 'codemirror';
-import { java } from '@codemirror/lang-java';
-import { javascript } from '@codemirror/lang-javascript';
+import { FormsModule } from '@angular/forms';
+import { DropdownModule } from 'primeng/dropdown';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { ButtonModule } from 'primeng/button';
-import { MessageService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
-import * as Y from 'yjs';
-import { WebsocketProvider } from 'y-websocket';
-import { yCollab } from 'y-codemirror.next';
-import * as prettier from 'prettier';
-import * as prettierPluginEstree from 'prettier/plugins/estree';
-import { usercolors } from './user-colors';
+import { MessageService } from 'primeng/api';
 import { AuthenticationService } from '../../../_services/authentication.service';
 // The 'prettier-plugin-java' package does not provide TypeScript declaration files.
 // We are using '@ts-ignore' to bypass TypeScript's missing type declaration error.
@@ -33,11 +23,27 @@ import { AuthenticationService } from '../../../_services/authentication.service
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import prettierPluginJava from 'prettier-plugin-java';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import prettierPluginPhp from '@prettier/plugin-php';
+import prettierPluginXml from '@prettier/plugin-xml';
+import * as prettierPluginRust from 'prettier-plugin-rust';
+import prettierPluginSql from 'prettier-plugin-sql';
+import parserBabel from 'prettier/plugins/babel';
+import * as prettier from 'prettier';
+import * as prettierPluginEstree from 'prettier/plugins/estree';
+import { oneDark } from '@codemirror/theme-one-dark';
+import { EditorState, Extension } from '@codemirror/state';
+import { basicSetup } from 'codemirror';
+import { EditorView } from 'codemirror';
+import { yCollab } from 'y-codemirror.next';
+import * as Y from 'yjs';
+import { WebsocketProvider } from 'y-websocket';
 import { SubmitDialogComponent } from '../submit-dialog/submit-dialog.component';
 import { ForfeitDialogComponent } from '../forfeit-dialog/forfeit-dialog.component';
+import { languageMap, parserMap, LanguageOption } from './languages';
 import { awarenessData } from '../collab.model';
-// import { autocompletion, Completion, CompletionSource } from '@codemirror/autocomplete';
-// import { linter, Diagnostic } from '@codemirror/lint';
+import { usercolors } from './user-colors';
 
 @Component({
     selector: 'app-editor',
@@ -49,6 +55,8 @@ import { awarenessData } from '../collab.model';
         ToastModule,
         SubmitDialogComponent,
         ForfeitDialogComponent,
+        DropdownModule,
+        FormsModule,
     ],
     providers: [MessageService],
     templateUrl: './editor.component.html',
@@ -67,6 +75,7 @@ export class EditorComponent implements AfterViewInit, OnInit {
     yeditorText = new Y.Text('');
     ysubmit = new Y.Map<boolean>();
     yforfeit = new Y.Map<boolean>();
+    ylanguage = new Y.Map<string>();
     undoManager!: Y.UndoManager;
     customTheme!: Extension;
 
@@ -74,6 +83,8 @@ export class EditorComponent implements AfterViewInit, OnInit {
     isInitiator = false;
     isForfeitClick = false;
     numUniqueUsers = 0;
+    selectedLanguage = 'java';
+    languages: LanguageOption[] = [];
 
     constructor(
         @Inject(DOCUMENT) private document: Document,
@@ -84,22 +95,56 @@ export class EditorComponent implements AfterViewInit, OnInit {
 
     ngOnInit() {
         this.initYdoc();
+        this.initDoctListener();
         this.getNumOfConnectedUsers();
+        this.populateLanguages();
     }
 
     ngAfterViewInit() {
         this.setTheme();
         this.setProvider();
-        this.setEditorState();
+        this.setEditorState(this.selectedLanguage);
         this.setEditorView();
         this.setCursorPosition();
+    }
+
+    populateLanguages() {
+        this.languages = Object.keys(languageMap).map(lang => ({
+            label: lang.charAt(0).toUpperCase() + lang.slice(1),
+            value: lang,
+        }));
+    }
+
+    changeLanguage(language: string) {
+        const languageExtension = languageMap[language];
+
+        this.selectedLanguage = language.toLowerCase();
+        this.ylanguage.set('selected', language);
+        if (languageExtension) {
+            this.setEditorState(language);
+
+            this.view.setState(this.state);
+        }
     }
 
     initYdoc() {
         this.yeditorText = this.ydoc.getText('editorText');
         this.ysubmit = this.ydoc.getMap('submit');
         this.yforfeit = this.ydoc.getMap('forfeit');
+        this.ylanguage = this.ydoc.getMap('language');
         this.undoManager = new Y.UndoManager(this.yeditorText);
+
+        const firstEntry = this.ysubmit.entries().next().value;
+
+        if (firstEntry && firstEntry[0] === undefined) {
+            this.ylanguage.set('selected', 'java');
+        }
+    }
+
+    initDoctListener() {
+        this.ylanguage.observe(() => {
+            this.selectedLanguage = this.ylanguage.entries().next().value[1];
+        });
     }
 
     getNumOfConnectedUsers() {
@@ -125,10 +170,18 @@ export class EditorComponent implements AfterViewInit, OnInit {
     async format() {
         try {
             const currentCode = this.view.state.doc.toString();
-
+            const selectedParser = parserMap[this.selectedLanguage];
             const formattedCode = prettier.format(currentCode, {
-                parser: 'java',
-                plugins: [prettierPluginJava, prettierPluginEstree], // Add necessary plugins
+                parser: selectedParser,
+                plugins: [
+                    parserBabel,
+                    prettierPluginJava,
+                    prettierPluginEstree,
+                    prettierPluginPhp,
+                    prettierPluginXml,
+                    prettierPluginRust,
+                    prettierPluginSql,
+                ],
             });
 
             this.view.dispatch({
@@ -157,13 +210,12 @@ export class EditorComponent implements AfterViewInit, OnInit {
         });
     }
 
-    setEditorState() {
+    setEditorState(language: string) {
         const undoManager = this.undoManager;
         const myExt: Extension = [
             EditorView.lineWrapping,
             basicSetup,
-            java(),
-            javascript(),
+            languageMap[language],
             this.customTheme,
             oneDark,
             yCollab(this.yeditorText, this.wsProvider.awareness, { undoManager }),

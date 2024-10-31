@@ -2,7 +2,19 @@
     <div class="container flex flex-1 flex-column overflow-hidden pb-2">
         <div class="flex-1 overflow-hidden w-full p-4">
             <p class="m-0 mb-2 header">Editor</p>
-            <p-scrollPanel [style]="{ height: 'calc(100% - 75px)' }" class="h-full w-full scroll-panel overflow-auto">
+            <div class="card flex justify-content-center">
+                <p-dropdown
+                    class="w-12 pb-2"
+                    autoWidth="false"
+                    [style]="{ width: '100%' }"
+                    [options]="languages"
+                    [(ngModel)]="selectedLanguage"
+                    (onChange)="changeLanguage($event.value)"
+                    optionLabel="label"
+                    optionValue="value"
+                    placeholder="Select Language" />
+            </div>
+            <p-scrollPanel [style]="{ height: 'calc(100% - 117px)' }" class="h-full w-full scroll-panel overflow-auto">
                 <div #editor class="editor-content"></div>
             </p-scrollPanel>
             <footer class="mt-2">
