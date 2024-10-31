@@ -10,5 +10,5 @@ export async function logQueueStatus(): Promise<void> {
         updatedAt: r.updatedAt,
     }));
 
-    console.log('Current Queue Status: ', queueStatus);
+    console.log('Current Queue Status:', queueStatus);
 }
