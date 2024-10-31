@@ -1,7 +1,17 @@
 <div class="card flex flex-column" style="height: calc(100vh - 73px - 60vh)">
     <div class="container flex flex-1 flex-column overflow-hidden">
         <div class="flex-1 overflow-hidden w-full p-4">
-            <p>chat-box works!</p>
+          <div class="card flex flex-column" style="height: 100%">
+            <div class="container flex flex-1 flex-column overflow-hidden">
+              <div class="messages">
+                <div *ngFor="let message of messages" class="message">{{ message }}</div>
+              </div>
+              <div class="input-container">
+                <input #chatInput type="text" placeholder="Type a message" (keyup.enter)="sendMessage()" />
+                <button (click)="sendMessage()">Send</button>
+              </div>
+            </div>
+          </div>
         </div>
     </div>
 </div>
