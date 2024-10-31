@@ -44,11 +44,7 @@ export const createRoomWithQuestion = async (user1: any, user2: any, question: Q
 };
 
 export const getRoomIdsByUserIdController = async (req: Request, res: Response) => {
-    const userId = req.user?.id ? String(req.user.id) : '';
-
-    if (!userId) {
-        return handleHttpBadRequest(res, 'Invalid user ID');
-    }
+    const userId = req.user.id;
 
     console.log('Received request for user ID:', userId);
     try {
@@ -74,7 +70,7 @@ export const getRoomByRoomIdController = async (req: Request, res: Response) => 
     try {
         const roomId = req.params.roomId;
 
-        const room = await findRoomById(roomId);
+        const room = await findRoomById(roomId, req.user.id);
         if (!room) {
             return handleHttpNotFound(res, 'Room not found');
         }
@@ -99,9 +95,10 @@ export const getRoomByRoomIdController = async (req: Request, res: Response) => 
  */
 export const closeRoomController = async (req: Request, res: Response) => {
     try {
+        const userId = req.user.id;
         const roomId = req.params.roomId;
 
-        const room = await findRoomById(roomId);
+        const room = await findRoomById(roomId, userId);
         if (!room) {
             return handleHttpNotFound(res, 'Room not found');
         }
@@ -132,20 +129,16 @@ export const closeRoomController = async (req: Request, res: Response) => {
  * @param res
  */
 export const updateUserStatusInRoomController = async (req: Request, res: Response) => {
+    const userId = req.user.id;
     const { roomId } = req.params;
-    const userId = req.user?.id ? String(req.user.id) : '';
     const { isForfeit } = req.body;
-
-    if (!userId) {
-        return handleHttpBadRequest(res, 'Invalid user ID');
-    }
 
     if (typeof isForfeit !== 'boolean') {
         return handleHttpBadRequest(res, 'Invalid isForfeit value. Must be true or false.');
     }
 
     try {
-        const room = await findRoomById(roomId);
+        const room = await findRoomById(roomId, userId);
         if (!room) {
             return handleHttpNotFound(res, 'Room not found');
         }

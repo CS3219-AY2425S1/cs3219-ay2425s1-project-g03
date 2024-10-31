@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import { IncomingMessage, Server } from 'http';
 import { WebSocketServer, WebSocket } from 'ws';
 import * as Y from 'yjs';
-import { findRoom, mdb } from './mongodbService';
+import { findRoomById, mdb } from './mongodbService';
 import { handleAuthFailed, handleRoomClosed } from '../utils/helper';
 import config from '../config';
 import { RequestUser, userSchema } from '../middleware/request';
@@ -37,7 +37,7 @@ const authorize = async (ws: WebSocket, request: IncomingMessage): Promise<boole
         return false;
     }
 
-    const room = await findRoom(roomId, user.id);
+    const room = await findRoomById(roomId, user.id);
     if (!room) {
         handleAuthFailed(ws, 'Authorization failed');
         return false;
