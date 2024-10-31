@@ -33,7 +33,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 app.use('/api/user/users', userRoutes);
 app.use('/api/user/auth', authRoutes);
 
-app.get('/', (req: Request, res: Response) => {
+app.get('/ht', (req: Request, res: Response) => {
     console.log('Sending Greetings!');
     res.json({
         message: 'Hello World from user-service',
