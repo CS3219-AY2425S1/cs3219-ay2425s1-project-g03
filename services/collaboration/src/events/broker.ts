@@ -21,7 +21,7 @@ class MessageBroker {
             this.channel = await this.connection.createChannel();
             this.connected = true;
         } catch (error) {
-            console.error('Failed to connect to RabbitMQ: ', error);
+            console.error('Failed to connect to RabbitMQ:', error);
             throw error;
         }
     }
