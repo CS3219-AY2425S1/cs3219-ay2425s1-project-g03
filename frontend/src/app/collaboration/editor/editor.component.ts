@@ -5,8 +5,8 @@ import {
     Inject,
     ViewChild,
     OnInit,
-    OnDestroy,
     ChangeDetectorRef,
+    Input,
 } from '@angular/core';
 import { oneDark } from '@codemirror/theme-one-dark';
 import { EditorState, Extension } from '@codemirror/state';
@@ -25,7 +25,6 @@ import { yCollab } from 'y-codemirror.next';
 import * as prettier from 'prettier';
 import * as prettierPluginEstree from 'prettier/plugins/estree';
 import { usercolors } from './user-colors';
-import { WEBSOCKET_CONFIG } from '../../api.config';
 import { AuthenticationService } from '../../../_services/authentication.service';
 import { RoomService } from '../room.service';
 // The 'prettier-plugin-java' package does not provide TypeScript declaration files.
@@ -36,14 +35,8 @@ import { RoomService } from '../room.service';
 import prettierPluginJava from 'prettier-plugin-java';
 import { SubmitDialogComponent } from '../submit-dialog/submit-dialog.component';
 import { ForfeitDialogComponent } from '../forfeit-dialog/forfeit-dialog.component';
-import { ChatBoxComponent } from '../chat-box/chat-box.component';
 import { Router } from '@angular/router';
 import { awarenessData } from '../collab.model';
-
-enum WebSocketCode {
-    AUTH_FAILED = 4000,
-    ROOM_CLOSED = 4001,
-}
 
 @Component({
     selector: 'app-editor',
@@ -55,30 +48,30 @@ enum WebSocketCode {
         ToastModule,
         SubmitDialogComponent,
         ForfeitDialogComponent,
-        ChatBoxComponent,
     ],
     providers: [ConfirmationService, MessageService],
     templateUrl: './editor.component.html',
     styleUrl: './editor.component.css',
 })
-export class EditorComponent implements AfterViewInit, OnInit, OnDestroy {
+export class EditorComponent implements AfterViewInit, OnInit {
     @ViewChild('editor') editor!: ElementRef;
     @ViewChild(ForfeitDialogComponent) forfeitChild!: ForfeitDialogComponent;
 
+    @Input() ydoc!: Y.Doc;
+    @Input() wsProvider!: WebsocketProvider;
+    @Input() roomId!: string;
+
     state!: EditorState;
     view!: EditorView;
-    ydoc!: Y.Doc;
     yeditorText = new Y.Text('');
     ysubmit = new Y.Map<boolean>();
     yforfeit = new Y.Map<boolean>();
     undoManager!: Y.UndoManager;
     customTheme!: Extension;
-    wsProvider!: WebsocketProvider;
 
     isSubmit = false;
     isInitiator = false;
     isForfeitClick = false;
-    roomId!: string;
     numUniqueUsers = 0;
 
     constructor(
@@ -91,14 +84,8 @@ export class EditorComponent implements AfterViewInit, OnInit, OnDestroy {
         private changeDetector: ChangeDetectorRef,
     ) {}
 
-    ngOnDestroy() {
-        // This lets the client to disconnect from the websocket on re-route to another page.
-        this.wsProvider.destroy();
-    }
-
     ngOnInit() {
-        this.initRoomId();
-        this.initConnection();
+        this.initYdoc();
         this.getNumOfConnectedUsers();
     }
 
@@ -110,22 +97,7 @@ export class EditorComponent implements AfterViewInit, OnInit, OnDestroy {
         this.setCursorPosition();
     }
 
-    initConnection() {
-        this.ydoc = new Y.Doc();
-        const websocketUrl = WEBSOCKET_CONFIG.baseUrl + 'collaboration/';
-        this.wsProvider = new WebsocketProvider(websocketUrl, this.roomId, this.ydoc, {
-            params: {
-                userId: this.authService.userValue?.id as string,
-            },
-        });
-
-        this.wsProvider.ws!.onclose = (event: { code: number; reason: string }) => {
-            if (event.code === WebSocketCode.AUTH_FAILED || event.code === WebSocketCode.ROOM_CLOSED) {
-                console.error('WebSocket authorization failed:', event.reason);
-                this.router.navigate(['/matching']);
-            }
-        };
-
+    initYdoc() {
         this.yeditorText = this.ydoc.getText('editorText');
         this.ysubmit = this.ydoc.getMap('submit');
         this.yforfeit = this.ydoc.getMap('forfeit');
@@ -150,12 +122,6 @@ export class EditorComponent implements AfterViewInit, OnInit, OnDestroy {
     showSubmitDialog() {
         this.isSubmit = true;
         this.isInitiator = true;
-    }
-
-    initRoomId() {
-        this.roomService.getRoomId().subscribe(id => {
-            this.roomId = id!;
-        });
     }
 
     async format() {
