@@ -14,6 +14,7 @@ import { basicSetup } from 'codemirror';
 import { DOCUMENT } from '@angular/common';
 import { EditorView } from 'codemirror';
 import { java } from '@codemirror/lang-java';
+import { javascript } from '@codemirror/lang-javascript';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { ButtonModule } from 'primeng/button';
 import { MessageService } from 'primeng/api';
@@ -35,6 +36,8 @@ import prettierPluginJava from 'prettier-plugin-java';
 import { SubmitDialogComponent } from '../submit-dialog/submit-dialog.component';
 import { ForfeitDialogComponent } from '../forfeit-dialog/forfeit-dialog.component';
 import { awarenessData } from '../collab.model';
+// import { autocompletion, Completion, CompletionSource } from '@codemirror/autocomplete';
+// import { linter, Diagnostic } from '@codemirror/lint';
 
 @Component({
     selector: 'app-editor',
@@ -159,6 +162,7 @@ export class EditorComponent implements AfterViewInit, OnInit {
         const myExt: Extension = [
             basicSetup,
             java(),
+            javascript(),
             this.customTheme,
             oneDark,
             yCollab(this.yeditorText, this.wsProvider.awareness, { undoManager }),
