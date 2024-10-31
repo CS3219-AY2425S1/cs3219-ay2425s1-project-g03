@@ -54,3 +54,48 @@ button {
 button:hover {
   background-color: #666;
 }
+
+/* Additional CSS for username alignment and message styling */
+.username-left, .username-right {
+  font-weight: bold;
+  color: #ccc;
+}
+
+.username-left {
+  text-align: left;
+  color: #66c2ff;
+}
+
+.username-right {
+  text-align: right;
+  color: #ff9e66;
+}
+
+/* Message alignment */
+.message-left, .message-right {
+  display: flex;
+  margin: 7px 0;
+}
+
+.message-left {
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.message-right {
+  justify-content: flex-end;
+  text-align: left;
+}
+
+/* Message box styling */
+.message-box {
+  min-width: 50px;
+  max-width: 300px;
+  padding: 8px 12px;
+  background-color: #444;
+  border: 2px solid #d3d3d3;
+  border-radius: 4px;
+  color: #fff;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
