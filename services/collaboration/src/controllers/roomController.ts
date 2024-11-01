@@ -43,12 +43,17 @@ export const createRoomWithQuestion = async (user1: any, user2: any, question: Q
     }
 };
 
+/**
+ * Controller function to get room IDs by user ID (roomStatus is true)
+ * @param req
+ * @param res
+ */
 export const getRoomIdsByUserIdController = async (req: Request, res: Response) => {
     const userId = req.user.id;
 
     console.log('Received request for user ID:', userId);
     try {
-        const rooms = await findRoomsByUserId(userId);
+        const rooms = await findRoomsByUserId(userId, true);
         if (!rooms || rooms.length === 0) {
             return handleHttpNotFound(res, 'No rooms found for the given user');
         }
@@ -155,5 +160,41 @@ export const updateUserStatusInRoomController = async (req: Request, res: Respon
     } catch (error) {
         console.error('Error updating user isForfeit status in room:', error);
         return handleHttpServerError(res, 'Failed to update user isForfeit status in room');
+    }
+};
+
+/**
+ * Controller function to get room details (including question details) by authenticated user, filtered by room status
+ * @param req
+ * @param res
+ */
+export const getRoomsByUserIdAndStatusController = async (req: Request, res: Response) => {
+    const userId = req.user.id;
+    const roomStatusParam = req.params.room_status;
+
+    if (roomStatusParam !== 'true' && roomStatusParam !== 'false') {
+        return handleHttpBadRequest(res, 'Invalid room_status value. Must be "true" or "false".');
+    }
+
+    const roomStatus = roomStatusParam === 'true';
+
+    console.log('Received request for user ID:', userId, 'with room status:', roomStatus);
+
+    try {
+        const rooms = await findRoomsByUserId(userId, roomStatus);
+        if (!rooms || rooms.length === 0) {
+            return handleHttpNotFound(res, 'No rooms found for the given user and status');
+        }
+
+        const roomDetails = rooms.map(room => ({
+            room_id: room._id,
+            question: room.question,
+            createdAt: room.createdAt,
+            room_status: room.room_status,
+        }));
+        return handleHttpSuccess(res, roomDetails);
+    } catch (error) {
+        console.error('Error fetching rooms by user ID and status:', error);
+        return handleHttpServerError(res, 'Failed to retrieve rooms by user ID and status');
     }
 };

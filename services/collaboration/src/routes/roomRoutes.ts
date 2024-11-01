@@ -4,6 +4,7 @@ import {
     getRoomByRoomIdController,
     closeRoomController,
     updateUserStatusInRoomController,
+    getRoomsByUserIdAndStatusController,
 } from '../controllers/roomController';
 
 /**
@@ -30,5 +31,10 @@ router.patch('/:roomId/close', closeRoomController);
  * Update user isForfeit status in a room
  */
 router.patch('/:roomId/user/isForfeit', updateUserStatusInRoomController);
+
+/**
+ * Get rooms by user ID and room status
+ */
+router.get('/user/rooms/roomStatus/:room_status', getRoomsByUserIdAndStatusController);
 
 export default router;
