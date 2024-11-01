@@ -117,14 +117,17 @@ export class EditorComponent implements AfterViewInit, OnInit {
 
     changeLanguage(language: string) {
         const languageExtension = languageMap[language];
-
         this.selectedLanguage = language.toLowerCase();
         this.ylanguage.set('selected', language);
-        if (languageExtension) {
-            this.setEditorState(language);
 
-            this.view.setState(this.state);
+        if (languageExtension) {
+            this.updateEditor(language);
         }
+    }
+
+    updateEditor(language: string) {
+        this.setEditorState(language);
+        this.view.setState(this.state);
     }
 
     initYdoc() {
@@ -146,6 +149,7 @@ export class EditorComponent implements AfterViewInit, OnInit {
     initDoctListener() {
         this.ylanguage.observe(() => {
             this.selectedLanguage = this.ylanguage.entries().next().value[1];
+            this.updateEditor(this.selectedLanguage);
         });
     }
 
@@ -171,8 +175,19 @@ export class EditorComponent implements AfterViewInit, OnInit {
 
     async format() {
         try {
-            const currentCode = this.view.state.doc.toString();
             const selectedParser = parserMap[this.selectedLanguage.toLowerCase()];
+
+            if (selectedParser === undefined) {
+                this.messageService.add({
+                    severity: 'info',
+                    summary: 'Info Message',
+                    detail: `The selected language ${this.selectedLanguage.toLowerCase()} is currently not supported for auto formatting.`,
+                });
+
+                return;
+            }
+
+            const currentCode = this.view.state.doc.toString();
             const formattedCode = prettier.format(currentCode, {
                 parser: selectedParser,
                 plugins: [
@@ -195,9 +210,20 @@ export class EditorComponent implements AfterViewInit, OnInit {
             });
 
             this.view.focus();
-        } catch (e) {
-            console.error('Error formatting code:', e);
-            this.messageService.add({ severity: 'error', summary: 'Formatting Error' });
+        } catch (error) {
+            if (error instanceof SyntaxError || error instanceof Error) {
+                this.messageService.add({
+                    severity: 'warn',
+                    summary: 'Formatting Error',
+                    detail: "There's a syntax error in your code. Please fix it and try formatting again.",
+                });
+            } else {
+                this.messageService.add({
+                    severity: 'warn',
+                    summary: 'Formatting Error',
+                    detail: 'An error occurred while formatting. Please check your code and try again.',
+                });
+            }
         }
     }
 
