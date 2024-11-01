@@ -1,8 +1,8 @@
-import {AfterViewInit, Component, ElementRef, Input, ViewChild} from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, ViewChild } from '@angular/core';
 import * as Y from 'yjs';
-import {AuthenticationService} from '../../../_services/authentication.service';
-import {WebsocketProvider} from 'y-websocket';
-import {NgClass, NgForOf} from '@angular/common';
+import { AuthenticationService } from '../../../_services/authentication.service';
+import { WebsocketProvider } from 'y-websocket';
+import { NgClass, NgForOf } from '@angular/common';
 
 @Component({
   selector: 'app-chat-box',
@@ -19,8 +19,8 @@ export class ChatBoxComponent implements AfterViewInit {
   @ViewChild('chatInput') chatInput!: ElementRef;
   @ViewChild('messagesContainer') messagesContainer!: ElementRef;
 
-  messages: { text: string; sender: string; timestamp: string }[] = [];
-  yChatArray!: Y.Array<{ text: string; sender: string; timestamp: string }>;
+  messages: { text: string; sender: string; timestamp: string; visibleTo: boolean }[] = [];
+  yChatArray!: Y.Array<{ text: string; sender: string; timestamp: string; visibleTo: boolean }>;
   yMute!: Y.Map<boolean>;
   username!: string;
   isMuted = false;
@@ -58,8 +58,7 @@ export class ChatBoxComponent implements AfterViewInit {
     this.yChatArray.observe(() => {
       const allMessages = this.yChatArray.toArray();
       this.messages = allMessages.filter(message => {
-        if (message.sender === this.username || message.sender === 'System') return true;
-        return !this.isMuted;
+        return message.sender === this.username || message.visibleTo || message.sender === 'System';
       });
       this.scrollToBottom();
     });
@@ -77,7 +76,16 @@ export class ChatBoxComponent implements AfterViewInit {
         minute: '2-digit',
         hour12: true,
       });
-      const newMessage = { text: message, sender: this.username, timestamp };
+
+      const otherUserMuted = this.yMute.get(this.getOtherUsername()) ?? false;
+
+      const newMessage = {
+        text: message,
+        sender: this.username,
+        timestamp,
+        visibleTo: !otherUserMuted
+      };
+
       this.yChatArray.push([newMessage]);
       this.chatInput.nativeElement.value = '';
       this.scrollToBottom();
@@ -108,8 +116,14 @@ export class ChatBoxComponent implements AfterViewInit {
       text,
       sender: 'System',
       timestamp,
+      visibleTo: true
     };
     this.yChatArray.push([systemMessage]);
+  }
+
+  getOtherUsername(): string {
+    const allUsers = Array.from(this.yMute.keys());
+    return allUsers.find(user => user !== this.username) || 'Guest';
   }
 
   scrollToBottom() {
