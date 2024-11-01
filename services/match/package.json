@@ -1,11 +1,11 @@
 {
   "name": "match",
   "version": "0.0.0",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "build": "npx tsc",
-    "start": "npm run build && node ./dist/index.js",
-    "dev": "nodemon --files ./src/index.ts",
+    "start": "npm run build && node ./dist/server.js",
+    "dev": "nodemon --files ./src/server.ts",
     "lint": "npx eslint .",
     "lint:fix": "npx eslint . --fix"
   },

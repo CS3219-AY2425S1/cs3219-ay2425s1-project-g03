@@ -34,9 +34,8 @@ app.use('/api/user/users', userRoutes);
 app.use('/api/user/auth', authRoutes);
 
 app.get('/ht', (req: Request, res: Response) => {
-    console.log('Sending Greetings!');
     res.json({
-        message: 'Hello World from user-service',
+        message: 'User Service is up and running!',
     });
 });
 

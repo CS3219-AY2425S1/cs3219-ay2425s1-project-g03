@@ -2,12 +2,11 @@
   "name": "collaboration-service",
   "version": "1.0.0",
   "description": "Collaboration service using Yjs, WebSocket, and MongoDB.",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "start": "tsc && node dist/index.js",
-    "build": "tsc",
-    "dev": "nodemon --files src/index.ts",
-    "test": "echo \"No test specified\" && exit 1",
+    "build": "npx tsc",
+    "start": "npm run build && node ./dist/server.js",
+    "dev": "nodemon --files ./src/server.ts",
     "lint": "npx eslint .",
     "lint:fix": "npx eslint . --fix"
   },

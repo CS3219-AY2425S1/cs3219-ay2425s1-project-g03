@@ -2,7 +2,7 @@
   "name": "user-service",
   "version": "1.0.0",
   "description": "",
-  "main": "./dist/server.js",
+  "main": "server.js",
   "scripts": {
     "build": "npx tsc",
     "start": "npm run build && node ./dist/server.js",

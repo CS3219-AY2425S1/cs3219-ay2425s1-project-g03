@@ -1,21 +1,14 @@
-import http from 'http';
-import index from './index';
+import app from './app';
 import 'dotenv/config';
 import { connectToDB } from './model/repository';
 import config from './config';
 
 const port = config.PORT;
 
-const server = http.createServer(index);
-
 connectToDB()
-    .then(() => {
-        console.log('MongoDB Connected!');
-
-        server.listen(port);
-        console.log('User service server listening on http://localhost:' + port);
-    })
-    .catch(err => {
-        console.error('Failed to connect to DB');
-        console.error(err);
+    .then(() => console.log('MongoDB connected successfully'))
+    .then(() => app.listen(port, () => console.log(`User service is listening on port ${port}.`)))
+    .catch(error => {
+        console.error('Failed to start server');
+        console.error(error);
     });

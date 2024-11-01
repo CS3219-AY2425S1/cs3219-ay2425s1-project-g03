@@ -8,15 +8,16 @@ import config from './config';
 const PORT = config.PORT;
 
 startMongoDB()
+    .then(() => initializeConsumers())
+    .then(() => console.log('Consumers are listening'))
     .then(() => {
         const server = http.createServer(app);
         startWebSocketServer(server);
         server.listen(PORT, () => {
-            console.log(`Server (HTTP + WebSocket) running on port ${PORT}`);
+            console.log(`Collaboration service is listening on port ${PORT}`);
         });
     })
-    .then(() => initializeConsumers())
-    .then(() => console.log('Consumers are listening'))
     .catch(error => {
-        console.error('Failed to start services:', error);
+        console.error('Failed to start server');
+        console.error(error);
     });
