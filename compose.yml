@@ -24,6 +24,21 @@ services:
     networks:
       - gateway-network
     restart: always
+  
+  broker:
+    container_name: broker
+    hostname: broker
+    image: rabbitmq:4.0.2
+    user: rabbitmq
+    networks:
+      - gateway-network
+    healthcheck:
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 30s
+      timeout: 30s
+      retries: 10
+      start_period: 30s
+    restart: always
 
   question:
     container_name: question
@@ -121,21 +136,6 @@ services:
       - match-db:/data/db
     networks:
       - match-db-network
-    restart: always
-
-  broker:
-    container_name: broker
-    hostname: broker
-    image: rabbitmq:4.0.2
-    user: rabbitmq
-    networks:
-      - gateway-network
-    healthcheck:
-      test: rabbitmq-diagnostics check_port_connectivity
-      interval: 30s
-      timeout: 30s
-      retries: 10
-      start_period: 30s
     restart: always
 
   collaboration:
