@@ -19,13 +19,17 @@ export class CollabService extends ApiService {
         super();
     }
 
+    getRoomsWithQuery(isActive: boolean) {
+        return this.http.get<RoomsResponse>(this.apiUrl + '/user/rooms/roomStatus/' + isActive);
+    }
+
     /**
      * Retrieves all room IDs for a given user, but only if the room is still
      * active (room_status is true). One user can have multiple rooms,
      * and each room is identified by a unique room_id.
      */
     getRooms() {
-        return this.http.get<RoomsResponse>(this.apiUrl + 'user/rooms');
+        return this.http.get<RoomsResponse>(this.apiUrl + '/user/rooms');
     }
 
     /**

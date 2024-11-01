@@ -12,7 +12,7 @@ export interface CloseRoomResponse {
 
 export interface RoomsResponse {
     status: string;
-    data: string[];
+    data: RoomData[];
 }
 
 export interface CollabUser {
@@ -22,7 +22,7 @@ export interface CollabUser {
     isForfeit: boolean;
 }
 
-interface RoomData {
+export interface RoomData {
     room_id: string;
     users: CollabUser[];
     question: Question;
@@ -38,3 +38,20 @@ export interface awarenessData {
         colorLight: string;
     };
 }
+
+// export interface Question {
+//     _id: string;
+//     id: number;
+//     description: string;
+//     difficulty: string;
+//     title: string;
+//     topics: string[];
+// }
+
+// export interface Question {
+//     id: number;
+//     description: string;
+//     difficulty: string;
+//     title: string;
+//     topics?: string[];
+// }
