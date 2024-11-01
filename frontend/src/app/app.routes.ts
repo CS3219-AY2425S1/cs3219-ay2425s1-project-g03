@@ -33,4 +33,13 @@ export const routes: Routes = [
         component: HomeComponent,
         canActivate: [AuthGuardService],
     },
+    {
+        path: '**',
+        redirectTo: '/home',
+    },
+    {
+        path: '',
+        redirectTo: '/home',
+        pathMatch: 'full',
+    },
 ];

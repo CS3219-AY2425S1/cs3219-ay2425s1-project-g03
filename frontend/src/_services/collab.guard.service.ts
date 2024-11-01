@@ -22,7 +22,7 @@ export class CollabGuardService implements CanActivate {
         return combineLatest([roomId$, user$]).pipe(
             switchMap(([roomId, user]) => {
                 if (!roomId || !user) {
-                    this.router.navigate(['/matching']);
+                    this.router.navigate(['/home']);
                     return of(false);
                 }
 
@@ -33,13 +33,13 @@ export class CollabGuardService implements CanActivate {
                         const isForfeit = response.data.users.find(roomUser => roomUser?.id === user.id)?.isForfeit;
 
                         if (!isFound || !isOpen || isForfeit) {
-                            this.router.navigate(['/matching']);
+                            this.router.navigate(['/home']);
                             return false;
                         }
                         return true;
                     }),
                     catchError(() => {
-                        this.router.navigate(['/matching']);
+                        this.router.navigate(['/home']);
                         return of(false);
                     }),
                 );
