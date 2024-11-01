@@ -188,6 +188,7 @@ export const getRoomsByUserIdAndStatusController = async (req: Request, res: Res
 
         const roomDetails = rooms.map(room => ({
             room_id: room._id,
+            users: room.users,
             question: room.question,
             createdAt: room.createdAt,
             room_status: room.room_status,
