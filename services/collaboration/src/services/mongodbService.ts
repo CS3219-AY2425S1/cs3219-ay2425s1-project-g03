@@ -140,24 +140,28 @@ export const deleteYjsDocument = async (roomId: string) => {
 };
 
 /**
- * Find rooms by user ID where room_status is true
+ * Find rooms by user ID and room status
  * @param userId
+ * @param roomStatus - Room status filter (true for open, false for closed)
+ * @returns Array of Room objects
  */
-export const findRoomsByUserId = async (userId: string): Promise<WithId<Room>[]> => {
+export const findRoomsByUserId = async (userId: string, roomStatus: boolean): Promise<WithId<Room>[]> => {
     try {
         const db = await connectToRoomDB();
-        console.log(`Querying for rooms with user ID: ${userId}`);
+        console.log(`Querying for rooms with user ID: ${userId} and room status: ${roomStatus}`);
+
         const rooms = await db
             .collection<Room>('rooms')
             .find({
                 users: { $elemMatch: { id: userId } },
-                room_status: true,
+                room_status: roomStatus,
             })
             .toArray();
+
         console.log('Rooms found:', rooms);
         return rooms;
     } catch (error) {
-        console.error(`Error querying rooms for user ID ${userId}:`, error);
+        console.error(`Error querying rooms for user ID ${userId} with room status ${roomStatus}:`, error);
         throw error;
     }
 };
