@@ -2,7 +2,7 @@ import { AfterViewInit, Component, ElementRef, Input, ViewChild } from '@angular
 import * as Y from 'yjs';
 import { AuthenticationService } from '../../../_services/authentication.service';
 import { WebsocketProvider } from 'y-websocket';
-import {NgClass, NgForOf} from '@angular/common';
+import { NgClass, NgForOf } from '@angular/common';
 
 @Component({
   selector: 'app-chat-box',
@@ -19,8 +19,8 @@ export class ChatBoxComponent implements AfterViewInit {
   @ViewChild('chatInput') chatInput!: ElementRef;
   @ViewChild('messagesContainer') messagesContainer!: ElementRef;
 
-  messages: { text: string; sender: string }[] = [];
-  yChatArray!: Y.Array<{ text: string; sender: string }>;
+  messages: { text: string; sender: string; timestamp: string }[] = [];
+  yChatArray!: Y.Array<{ text: string; sender: string; timestamp: string }>;
   username!: string;
 
   constructor(private authService: AuthenticationService) {}
@@ -49,7 +49,15 @@ export class ChatBoxComponent implements AfterViewInit {
   sendMessage() {
     const message = this.chatInput.nativeElement.value.trim();
     if (message) {
-      const newMessage = { text: message, sender: this.username };
+      const timestamp = new Date().toLocaleString('en-SG', {
+        day: 'numeric',
+        month: 'numeric',
+        year: '2-digit',
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true,
+      });
+      const newMessage = { text: message, sender: this.username, timestamp };
       this.yChatArray.push([newMessage]);
       this.chatInput.nativeElement.value = '';
       this.scrollToBottom();
