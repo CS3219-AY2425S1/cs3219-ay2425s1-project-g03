@@ -26,9 +26,9 @@ docker compose down -v
 ## Overview
 
 The `Collaboration Service` manages the lifecycle of collaboration sessions, including room creation, retrieval, and
-closure. When
-a room is created, it is assigned to two users, a Yjs document is initialized for real-time collaboration, and the
-room’s status is set to `open`. Rooms are used to group users working together on a shared task, such as collaborative
+closure. When a room is created, it is assigned to two users, a Yjs document is initialized for real-time collaboration,
+and the room’s status is set to `open`. Rooms are used to group users working together on a shared task, such as
+collaborative
 coding, and are identified by a unique `room_id`. The room’s status can be updated to `closed` when users leave
 or forfeit the session, which also removes the Yjs document and its data from MongoDB to free resources.
 
@@ -105,7 +105,8 @@ not provided directly.
 
 ```bash
 curl -X GET http://localhost:8080/api/collaboration/room/user/rooms \
-     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3MjFhNWZiZWFlNjBjOGViMWU1ZWYzNCIsInVzZXJuYW1lIjoiVGVzdGluZyIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzMwMjU4NDI4LCJleHAiOjE3MzAzNDQ4Mjh9.DF9CaChoG3-UmeZgZG9SlpjtTknVzeVSBAJDJRdqGk0
+     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3MjRlOTZlNDNjMmNjNWQ5ODA5NmM2OSIsInVzZXJuYW1lIjoiVGVzdGluZzEiLCJyb2xlIjoidXNlciIsImlhdCI6MTczMDQ3MjMwMywiZXhwIjoxNzMwNTU4NzAzfQ.x92l-NIgWj_dpM-EC-xOKAGB8zrgGAdKbDpAu3UD5vE" \
+     -H "Content-Type: application/json"
 ```
 
 ### Example of Response Body for Success:
@@ -114,7 +115,7 @@ curl -X GET http://localhost:8080/api/collaboration/room/user/rooms \
 {
   "status": "Success",
   "data": [
-    "6721a64b0c4d990bc0feee4c"
+    "6724e9d892fb3e9f04c2e280"
   ]
 }
 ```
@@ -123,7 +124,7 @@ curl -X GET http://localhost:8080/api/collaboration/room/user/rooms \
 
 ## Get Room by Room ID
 
-This endpoint retrieves the details of a room by its room ID.
+This endpoint retrieves the details of a room by its room ID. The room status is set to `true` for open rooms.
 
 - **HTTP Method**: `GET`
 - **Endpoint**: `/room/{roomId}`
@@ -147,8 +148,9 @@ This endpoint requires a valid JWT token in the Authorization header.
 ### Command Line Example:
 
 ```bash
-curl -X GET http://localhost:8080/api/collaboration/room/6721a64b0c4d990bc0feee4c \
-     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3MjFhNWZiZWFlNjBjOGViMWU1ZWYzNCIsInVzZXJuYW1lIjoiVGVzdGluZyIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzMwMjU4NDI4LCJleHAiOjE3MzAzNDQ4Mjh9.DF9CaChoG3-UmeZgZG9SlpjtTknVzeVSBAJDJRdqGk0
+curl -X GET http://localhost:8080/api/collaboration/room/6724e9d892fb3e9f04c2e280 \
+     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3MjRlOTZlNDNjMmNjNWQ5ODA5NmM2OSIsInVzZXJuYW1lIjoiVGVzdGluZzEiLCJyb2xlIjoidXNlciIsImlhdCI6MTczMDQ3MjMwMywiZXhwIjoxNzMwNTU4NzAzfQ.x92l-NIgWj_dpM-EC-xOKAGB8zrgGAdKbDpAu3UD5vE" \
+     -H "Content-Type: application/json"
 ```
 
 ### Example of Response Body for Success:
@@ -157,25 +159,109 @@ curl -X GET http://localhost:8080/api/collaboration/room/6721a64b0c4d990bc0feee4
 {
   "status": "Success",
   "data": {
-    "room_id": "6721a64b0c4d990bc0feee4c",
+    "room_id": "6724e9d892fb3e9f04c2e280",
     "users": [
       {
-        "id": "6718b0050e24954ac125e5dd",
-        "username": "Testing",
-        "requestId": "6718b027a8144e99bbee17ce",
+        "id": "6724e96e43c2cc5d98096c69",
+        "username": "Testing1",
+        "requestId": "6724e9d7a752183798494a85",
         "isForfeit": false
       },
       {
-        "id": "6718b0070e24954ac125e5e1",
-        "username": "Testing1",
-        "requestId": "6718b026a8144e99bbee17c8",
+        "id": "6724e94843c2cc5d98096c63",
+        "username": "Testing",
+        "requestId": "6724e9d6a752183798494a80",
         "isForfeit": false
       }
     ],
-    "question_id": 2,
-    "createdAt": "2024-10-23T08:13:27.886Z",
+    "question": {
+      "_id": "6724e8b47cdb78e50482a119",
+      "id": 4,
+      "description": "Given two binary strings a and b, return their sum as a binary string.",
+      "difficulty": "Easy",
+      "title": "Add Binary",
+      "topics": [
+        "Bit Manipulation",
+        "Algorithms"
+      ]
+    },
+    "createdAt": "2024-11-01T14:46:48.085Z",
     "room_status": true
   }
+}
+```
+
+---
+
+## Get Rooms by User ID and Room Status
+
+This endpoint retrieves the details of rooms associated with the authenticated user, filtered by the specified room
+status.
+
+- **HTTP Method**: `GET`
+- **Endpoint**: `/user/rooms/roomStatus/{room_status}`
+
+### Authorization
+
+This endpoint requires a valid JWT token in the Authorization header.
+
+### Parameters:
+
+- `room_status` (Required) - The status of the room to filter by (`true` for open rooms, `false` for closed rooms).
+
+### Responses:
+
+| Response Code               | Explanation                                  |
+|-----------------------------|----------------------------------------------|
+| 200 (OK)                    | Success, room details returned.              |
+| 404 (Not Found)             | No rooms found for the user and room status. |
+| 500 (Internal Server Error) | Unexpected error in the server or database.  |
+
+### Command Line Example:
+
+```bash
+curl -X GET http://localhost:8080/api/collaboration/room/user/rooms/roomStatus/true \
+     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3MjFhNWZiZWFlNjBjOGViMWU1ZWYzNCIsInVzZXJuYW1lIjoiVGVzdGluZzEiLCJyb2xlIjoidXNlciIsImlhdCI6MTczMDQ3MjY2NCwiZXhwIjoxNzMwNTYxMDY0fQ.DF9CaChoG3-UmeZgZG9SlpjtTknVzeVSBAJDJRdqGk0" \
+     -H "Content-Type: application/json"
+```
+
+### Example of Response Body for Success:
+
+```json
+{
+  "status": "Success",
+  "data": [
+    {
+      "room_id": "6724e9d892fb3e9f04c2e280",
+      "users": [
+        {
+          "id": "6724e96e43c2cc5d98096c69",
+          "username": "Testing1",
+          "requestId": "6724e9d7a752183798494a85",
+          "isForfeit": false
+        },
+        {
+          "id": "6724e94843c2cc5d98096c63",
+          "username": "Testing",
+          "requestId": "6724e9d6a752183798494a80",
+          "isForfeit": false
+        }
+      ],
+      "question": {
+        "_id": "6724e8b47cdb78e50482a119",
+        "id": 4,
+        "description": "Given two binary strings a and b, return their sum as a binary string.",
+        "difficulty": "Easy",
+        "title": "Add Binary",
+        "topics": [
+          "Bit Manipulation",
+          "Algorithms"
+        ]
+      },
+      "createdAt": "2024-11-01T14:46:48.085Z",
+      "room_status": true
+    }
+  ]
 }
 ```
 
@@ -210,8 +296,8 @@ This endpoint requires a valid JWT token in the Authorization header. The userId
 ### Command Line Example:
 
 ```bash
-curl -X PATCH http://localhost:8080/api/collaboration/room/6721a64b0c4d990bc0feee4c/user/isForfeit \
-     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3MjFhNWZiZWFlNjBjOGViMWU1ZWYzNCIsInVzZXJuYW1lIjoiVGVzdGluZyIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzMwMjU4NDI4LCJleHAiOjE3MzAzNDQ4Mjh9.DF9CaChoG3-UmeZgZG9SlpjtTknVzeVSBAJDJRdqGk0" \
+ curl -X PATCH http://localhost:8080/api/collaboration/room/6724e9d892fb3e9f04c2e280/user/isForfeit \
+     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3MjRlOTZlNDNjMmNjNWQ5ODA5NmM2OSIsInVzZXJuYW1lIjoiVGVzdGluZzEiLCJyb2xlIjoidXNlciIsImlhdCI6MTczMDQ3MjMwMywiZXhwIjoxNzMwNTU4NzAzfQ.x92l-NIgWj_dpM-EC-xOKAGB8zrgGAdKbDpAu3UD5vE" \
      -H "Content-Type: application/json" \
      -d '{"isForfeit": true}'
 ```
@@ -222,25 +308,35 @@ curl -X PATCH http://localhost:8080/api/collaboration/room/6721a64b0c4d990bc0fee
 {
   "status": "Success",
   "data": {
-    "message": "User status updated successfully",
+    "message": "User isForfeit status updated successfully",
     "room": {
-      "room_id": "6721a64b0c4d990bc0feee4c",
+      "_id": "6724e9d892fb3e9f04c2e280",
       "users": [
         {
-          "id": "6718b0050e24954ac125e5dd",
-          "username": "Testing",
-          "requestId": "6718b027a8144e99bbee17ce",
-          "isForfeit": false
+          "id": "6724e96e43c2cc5d98096c69",
+          "username": "Testing1",
+          "requestId": "6724e9d7a752183798494a85",
+          "isForfeit": true
         },
         {
-          "id": "6718b0070e24954ac125e5e1",
-          "username": "Testing1",
-          "requestId": "6718b026a8144e99bbee17c8",
-          "isForfeit": true
+          "id": "6724e94843c2cc5d98096c63",
+          "username": "Testing",
+          "requestId": "6724e9d6a752183798494a80",
+          "isForfeit": false
         }
       ],
-      "question_id": 2,
-      "createdAt": "2024-10-23T08:13:27.886Z",
+      "question": {
+        "_id": "6724e8b47cdb78e50482a119",
+        "id": 4,
+        "description": "Given two binary strings a and b, return their sum as a binary string.",
+        "difficulty": "Easy",
+        "title": "Add Binary",
+        "topics": [
+          "Bit Manipulation",
+          "Algorithms"
+        ]
+      },
+      "createdAt": "2024-11-01T14:46:48.085Z",
       "room_status": true
     }
   }
@@ -275,8 +371,9 @@ This endpoint requires a valid JWT token in the Authorization header.
 ### Command Line Example:
 
 ```bash
-curl -X PATCH http://localhost:8080/api/collaboration/room/6721a64b0c4d990bc0feee4c/close \
-    -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3MjFhNWZiZWFlNjBjOGViMWU1ZWYzNCIsInVzZXJuYW1lIjoiVGVzdGluZyIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzMwMjU4NDI4LCJleHAiOjE3MzAzNDQ4Mjh9.DF9CaChoG3-UmeZgZG9SlpjtTknVzeVSBAJDJRdqGk0"
+curl -X PATCH http://localhost:8080/api/collaboration/room/6724e9d892fb3e9f04c2e280/close \
+     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3MjRlOTZlNDNjMmNjNWQ5ODA5NmM2OSIsInVzZXJuYW1lIjoiVGVzdGluZzEiLCJyb2xlIjoidXNlciIsImlhdCI6MTczMDQ3MjMwMywiZXhwIjoxNzMwNTU4NzAzfQ.x92l-NIgWj_dpM-EC-xOKAGB8zrgGAdKbDpAu3UD5vE" \
+     -H "Content-Type: application/json"
 ```
 
 ### Example of Response Body for Success:
@@ -284,7 +381,7 @@ curl -X PATCH http://localhost:8080/api/collaboration/room/6721a64b0c4d990bc0fee
 ```json
 {
   "status": "Success",
-  "data": "Room 6721a64b0c4d990bc0feee4c successfully closed"
+  "data": "Room 6724e9d892fb3e9f04c2e280 successfully closed"
 }
 ```
 
@@ -326,23 +423,24 @@ The producer will send a message to the `MATCH_FAILED` queue when a collaboratio
 
 - **Queue**: `MATCH_FAILED`
 - **Data Produced**
-  - `requestId1` (Required) - The first request ID associated with the match failure.
-  - `requestId2` (Required) - The second request ID associated with the match failure.
-  - `reason` (Required) - The error encountered.
+    - `requestId1` (Required) - The first request ID associated with the match failure.
+    - `requestId2` (Required) - The second request ID associated with the match failure.
+    - `reason` (Required) - The error encountered.
 
-  ```json
-    {
-      "requestId1": "6714d1806da8e6d033ac2be1",
-      "requestId2": "67144180cda8e610333e4b12",
-      "reason": "Failed to create room",
-    }
-  ```
+```json
+{
+  "requestId1": "6714d1806da8e6d033ac2be1",
+  "requestId2": "67144180cda8e610333e4b12",
+  "reason": "Failed to create room"
+}
+ ```
 
 ---
 
 ## Consumer
 
-The consumer will listen for messages on the `QUESTION_FOUND` queue and create a collaboration room when two users are matched.
+The consumer will listen for messages on the `QUESTION_FOUND` queue and create a collaboration room when two users are
+matched.
 
 - **Queue**: `QUESTION_FOUND`
 - **Data in the Message**:
@@ -367,7 +465,9 @@ The consumer will listen for messages on the `QUESTION_FOUND` queue and create a
     "id": 21,
     "title": "Reverse Integer",
     "description": "Given a signed 32-bit integer x, return x with its digits reversed.",
-    "topics": ["Math"],
+    "topics": [
+      "Math"
+    ],
     "difficulty": "Medium"
   }
 }
