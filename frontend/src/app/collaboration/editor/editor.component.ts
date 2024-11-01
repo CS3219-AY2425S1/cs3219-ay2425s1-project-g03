@@ -34,8 +34,9 @@ import * as prettier from 'prettier';
 import * as prettierPluginEstree from 'prettier/plugins/estree';
 import { oneDark } from '@codemirror/theme-one-dark';
 import { EditorState, Extension, StateEffect } from '@codemirror/state';
-import { basicSetup } from 'codemirror';
-import { EditorView } from 'codemirror';
+import { EditorView, basicSetup } from 'codemirror';
+import { keymap } from '@codemirror/view';
+import { indentWithTab } from '@codemirror/commands';
 import { yCollab } from 'y-codemirror.next';
 import * as Y from 'yjs';
 import { WebsocketProvider } from 'y-websocket';
@@ -201,6 +202,7 @@ export class EditorComponent implements AfterViewInit, OnInit {
         return [
             EditorView.lineWrapping,
             basicSetup,
+            keymap.of([indentWithTab]),
             languageMap[language],
             this.customTheme,
             oneDark,
