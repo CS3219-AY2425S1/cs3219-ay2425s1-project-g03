@@ -1,4 +1,10 @@
 <div class="grid w-full" style="height: calc(100vh - 80px)">
+    <p-progressSpinner
+        class="flex align-items-center justify-content-center h-screen"
+        *ngIf="loading"
+        styleClass="w-4rem h-4rem"
+        strokeWidth="8"
+        animationDuration=".5s" />
     <div class="col-12 lg:col-6 xl:col-6 flex align-items-center justify-content-center flex-order-2 lg:flex-order-1">
         <div class="flex flex-column align-items-center justify-content-center" style="width: 80%; height: auto">
             <img src="/pair-programming.png" alt="Web illustrations by Storyset" style="width: 100%; height: auto" />
@@ -26,43 +32,43 @@
                     <!-- @if (activeSessions.length > 0) { -->
                     <ng-template pTemplate="header">
                         <tr>
-                            <th style="width: 30%">Question</th>
+                            <th style="width: 35%">Question</th>
                             <th style="width: 20%">Difficulty</th>
-                            <th style="width: 25%">Peer</th>
+                            <th style="width: 20%">Peer</th>
                             <th style="width: 25%"></th>
                         </tr>
                     </ng-template>
                     <ng-template pTemplate="body" let-session>
                         <tr>
-                            <td>{{ session.questionTitle }}</td>
+                            <td>{{ session.question.title }}</td>
                             <td>
-                                @switch (session.difficulty) {
+                                @switch (session.question.difficulty) {
                                     @case (difficultyLevels.EASY) {
-                                        <p-chip class="easy-chip"> {{ session.difficulty }} </p-chip>
+                                        <p-chip class="easy-chip"> {{ session.question.difficulty }} </p-chip>
                                     }
                                     @case (difficultyLevels.MEDIUM) {
-                                        <p-chip class=".medium-chip"> {{ session.difficulty }} </p-chip>
+                                        <p-chip class="medium-chip"> {{ session.question.difficulty }} </p-chip>
                                     }
                                     @case (difficultyLevels.HARD) {
-                                        <p-chip class="hard-chip"> {{ session.difficulty }} </p-chip>
+                                        <p-chip class="hard-chip"> {{ session.question.difficulty }} </p-chip>
                                     }
                                     @default {
-                                        <p-chip class="easy-chip"> {{ session.difficulty }} </p-chip>
+                                        <p-chip class="easy-chip"> {{ session.question.difficulty }} </p-chip>
                                     }
                                 }
                             </td>
-                            <td>{{ session.peer }}</td>
+                            <td>{{ getPeer(session.users) }}</td>
                             <td>
                                 <p-button
                                     label="Join"
                                     severity="success"
                                     [outlined]="true"
                                     styleClass="w-full"
-                                    [text]="true" />
+                                    [text]="true"
+                                    (onClick)="goToCollab(session.room_id)" />
                             </td>
                         </tr>
                     </ng-template>
-                    <!-- } @else { -->
                     <ng-template pTemplate="footer">
                         <div class="flex flex-column w-full align-items-center justify-content-center px-4 pb-2">
                             @if (activeSessions.length === 0) {
@@ -72,17 +78,18 @@
                             }
                         </div>
                     </ng-template>
-                    <!-- } -->
                 </p-table>
             </div>
 
             <div class="col-12 m-0 p-0 w-full" style="width: 50%">
                 <p-button
                     label="Start Matching Now!"
-                    severity="success"
+                    severity="contrast"
                     [outlined]="true"
+                    (onClick)="goToMatch()"
                     styleClass="start-matching-button mt-5" />
             </div>
         </div>
     </div>
+    <p-toast position="top-right" [breakpoints]="{ '920px': { width: '80%' } }" styleClass="w-30rem" />
 </div>
