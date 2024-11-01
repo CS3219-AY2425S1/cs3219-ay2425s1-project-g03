@@ -20,6 +20,7 @@
     "@angular/platform-browser": "^18.2.0",
     "@angular/platform-browser-dynamic": "^18.2.0",
     "@angular/router": "^18.2.0",
+    "@codemirror/commands": "^6.7.1",
     "@codemirror/lang-angular": "^0.1.3",
     "@codemirror/lang-cpp": "^6.0.2",
     "@codemirror/lang-css": "github:codemirror/lang-css",
