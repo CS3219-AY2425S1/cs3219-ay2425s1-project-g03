@@ -9,19 +9,8 @@ import {
     Input,
 } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
-<<<<<<< HEAD
-<<<<<<< HEAD
 import { FormsModule } from '@angular/forms';
 import { DropdownModule } from 'primeng/dropdown';
-=======
-import { EditorView } from 'codemirror';
-import { java } from '@codemirror/lang-java';
-import { javascript } from '@codemirror/lang-javascript';
->>>>>>> 6aa266b (Fix css issues)
-=======
-import { FormsModule } from '@angular/forms';
-import { DropdownModule } from 'primeng/dropdown';
->>>>>>> a5a23c8 (Add more languages to codemirror)
 import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -44,11 +33,7 @@ import parserBabel from 'prettier/plugins/babel';
 import * as prettier from 'prettier';
 import * as prettierPluginEstree from 'prettier/plugins/estree';
 import { oneDark } from '@codemirror/theme-one-dark';
-<<<<<<< HEAD
 import { EditorState, Extension, StateEffect } from '@codemirror/state';
-=======
-import { EditorState, Extension } from '@codemirror/state';
->>>>>>> a5a23c8 (Add more languages to codemirror)
 import { basicSetup } from 'codemirror';
 import { EditorView } from 'codemirror';
 import { yCollab } from 'y-codemirror.next';
@@ -58,16 +43,7 @@ import { SubmitDialogComponent } from '../submit-dialog/submit-dialog.component'
 import { ForfeitDialogComponent } from '../forfeit-dialog/forfeit-dialog.component';
 import { languageMap, parserMap, LanguageOption } from './languages';
 import { awarenessData } from '../collab.model';
-<<<<<<< HEAD
-<<<<<<< HEAD
 import { usercolors } from './user-colors';
-=======
-// import { autocompletion, Completion, CompletionSource } from '@codemirror/autocomplete';
-// import { linter, Diagnostic } from '@codemirror/lint';
->>>>>>> 6aa266b (Fix css issues)
-=======
-import { usercolors } from './user-colors';
->>>>>>> a5a23c8 (Add more languages to codemirror)
 
 @Component({
     selector: 'app-editor',
@@ -107,15 +83,7 @@ export class EditorComponent implements AfterViewInit, OnInit {
     isInitiator = false;
     isForfeitClick = false;
     numUniqueUsers = 0;
-<<<<<<< HEAD
-<<<<<<< HEAD
     selectedLanguage!: string;
-=======
-    selectedLanguage = 'java';
->>>>>>> a5a23c8 (Add more languages to codemirror)
-=======
-    selectedLanguage!: string;
->>>>>>> e639b21 (Fix bug for language selection)
     languages: LanguageOption[] = [];
 
     constructor(
@@ -148,7 +116,6 @@ export class EditorComponent implements AfterViewInit, OnInit {
     }
 
     changeLanguage(language: string) {
-<<<<<<< HEAD
         this.selectedLanguage = language.toLowerCase();
         this.ylanguage.set('selected', language);
     }
@@ -163,24 +130,7 @@ export class EditorComponent implements AfterViewInit, OnInit {
             this.view.dispatch({
                 effects: StateEffect.reconfigure.of([this.getEditorExtensions(language)]),
             });
-=======
-        const languageExtension = languageMap[language];
-        this.selectedLanguage = language.toLowerCase();
-        this.ylanguage.set('selected', language);
-
-<<<<<<< HEAD
-            this.view.setState(this.state);
->>>>>>> a5a23c8 (Add more languages to codemirror)
-=======
-        if (languageExtension) {
-            this.updateEditor(language);
->>>>>>> df9690a (Update warning message for unsupported language)
         }
-    }
-
-    updateEditor(language: string) {
-        this.setEditorState(language);
-        this.view.setState(this.state);
     }
 
     initYdoc() {
@@ -189,7 +139,6 @@ export class EditorComponent implements AfterViewInit, OnInit {
         this.yforfeit = this.ydoc.getMap('forfeit');
         this.ylanguage = this.ydoc.getMap('language');
         this.undoManager = new Y.UndoManager(this.yeditorText);
-<<<<<<< HEAD
 
         const language = this.ylanguage.get('selection');
         if (language == undefined) {
@@ -197,102 +146,6 @@ export class EditorComponent implements AfterViewInit, OnInit {
             this.selectedLanguage = 'java';
         } else {
             this.selectedLanguage = language!;
-=======
-
-        const language = this.ylanguage.get('selection');
-        if (language == undefined) {
-            this.ylanguage.set('selected', 'java');
-            this.selectedLanguage = 'java';
-        } else {
-            this.selectedLanguage = language!;
-        }
-    }
-
-    initDoctListener() {
-        this.ylanguage.observe(() => {
-            this.selectedLanguage = this.ylanguage.entries().next().value[1];
-            this.updateEditor(this.selectedLanguage);
-        });
-    }
-
-    getNumOfConnectedUsers() {
-        this.wsProvider.awareness.on('change', () => {
-            const data = Array.from(this.wsProvider.awareness.getStates().values());
-            const uniqueIds = new Set(
-                data
-                    .map(x => (x as awarenessData).user?.userId)
-                    .filter((userId): userId is string => userId !== undefined),
-            );
-
-            this.numUniqueUsers = uniqueIds.size;
-
-            this.changeDetector.detectChanges();
-        });
-    }
-
-    showSubmitDialog() {
-        this.isSubmit = true;
-        this.isInitiator = true;
-    }
-
-    async format() {
-        try {
-            const selectedParser = parserMap[this.selectedLanguage.toLowerCase()];
-
-            if (selectedParser === undefined) {
-                this.messageService.add({
-                    severity: 'info',
-                    summary: 'Info Message',
-                    detail: `The selected language ${this.selectedLanguage.toLowerCase()} is currently not supported for auto formatting.`,
-                });
-
-                return;
-            }
-
-            const currentCode = this.view.state.doc.toString();
-            const formattedCode = prettier.format(currentCode, {
-                parser: selectedParser,
-                plugins: [
-                    parserBabel,
-                    prettierPluginJava,
-                    prettierPluginEstree,
-                    prettierPluginPhp,
-                    prettierPluginXml,
-                    prettierPluginRust,
-                    prettierPluginSql,
-                ],
-            });
-
-            this.view.dispatch({
-                changes: {
-                    from: 0,
-                    to: this.view.state.doc.length,
-                    insert: await formattedCode,
-                },
-            });
-
-            this.view.focus();
-<<<<<<< HEAD
-        } catch (e) {
-            console.error('Error formatting code:', e);
-            this.messageService.add({ severity: 'error', summary: 'Formatting Error' });
->>>>>>> a5a23c8 (Add more languages to codemirror)
-=======
-        } catch (error) {
-            if (error instanceof SyntaxError || error instanceof Error) {
-                this.messageService.add({
-                    severity: 'warn',
-                    summary: 'Formatting Error',
-                    detail: "There's a syntax error in your code. Please fix it and try formatting again.",
-                });
-            } else {
-                this.messageService.add({
-                    severity: 'warn',
-                    summary: 'Formatting Error',
-                    detail: 'An error occurred while formatting. Please check your code and try again.',
-                });
-            }
->>>>>>> df9690a (Update warning message for unsupported language)
         }
     }
 
@@ -322,25 +175,7 @@ export class EditorComponent implements AfterViewInit, OnInit {
         });
     }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
     setEditorState(language: string) {
-=======
-    setEditorState() {
-=======
-    setEditorState(language: string) {
->>>>>>> a5a23c8 (Add more languages to codemirror)
-        const undoManager = this.undoManager;
-        const myExt: Extension = [
-            EditorView.lineWrapping,
-            basicSetup,
-            languageMap[language],
-            this.customTheme,
-            oneDark,
-            yCollab(this.yeditorText, this.wsProvider.awareness, { undoManager }),
-        ];
-
->>>>>>> 6aa266b (Fix css issues)
         this.state = EditorState.create({
             doc: this.yeditorText.toString(),
             extensions: this.getEditorExtensions(language),
