@@ -125,14 +125,14 @@ export class SubmitDialogComponent implements AfterViewInit {
                 next: () => {
                     this.message = 'Successfully submitted. \n\n Redirecting you to homepage...';
                     setTimeout(() => {
-                        this.router.navigate(['/matching']);
+                        this.router.navigate(['/home']);
                     }, 1500);
                 },
             });
         }
 
         setTimeout(() => {
-            this.router.navigate(['/matching']);
+            this.router.navigate(['/home']);
         }, 1500);
     }
 

@@ -20,62 +20,62 @@
             <div class="col-12 container p-2">
                 <p-table
                     [value]="activeSessions"
+                    [alwaysShowPaginator]="false"
                     [paginator]="true"
                     [rows]="5"
-                    [rowsPerPageOptions]="[5, 10, 20]"
                     class="w-full">
                     <ng-template pTemplate="caption">
                         <div class="flex">
                             <h3 class="m-0">Active Sessions</h3>
                         </div>
                     </ng-template>
-                    <!-- @if (activeSessions.length > 0) { -->
-                    <ng-template pTemplate="header">
-                        <tr>
-                            <th style="width: 35%">Question</th>
-                            <th style="width: 20%">Difficulty</th>
-                            <th style="width: 20%">Peer</th>
-                            <th style="width: 25%"></th>
-                        </tr>
-                    </ng-template>
-                    <ng-template pTemplate="body" let-session>
-                        <tr>
-                            <td>{{ session.question.title }}</td>
-                            <td>
-                                @switch (session.question.difficulty) {
-                                    @case (difficultyLevels.EASY) {
-                                        <p-chip class="easy-chip"> {{ session.question.difficulty }} </p-chip>
+                    @if (activeSessions.length > 0) {
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th style="width: 35%">Question</th>
+                                <th style="width: 20%">Difficulty</th>
+                                <th style="width: 20%">Peer</th>
+                                <th style="width: 25%"></th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-session>
+                            <tr>
+                                <td>{{ session.question.title }}</td>
+                                <td>
+                                    @switch (session.question.difficulty) {
+                                        @case (difficultyLevels.EASY) {
+                                            <p-chip class="easy-chip"> {{ session.question.difficulty }} </p-chip>
+                                        }
+                                        @case (difficultyLevels.MEDIUM) {
+                                            <p-chip class="medium-chip"> {{ session.question.difficulty }} </p-chip>
+                                        }
+                                        @case (difficultyLevels.HARD) {
+                                            <p-chip class="hard-chip"> {{ session.question.difficulty }} </p-chip>
+                                        }
+                                        @default {
+                                            <p-chip class="easy-chip"> {{ session.question.difficulty }} </p-chip>
+                                        }
                                     }
-                                    @case (difficultyLevels.MEDIUM) {
-                                        <p-chip class="medium-chip"> {{ session.question.difficulty }} </p-chip>
-                                    }
-                                    @case (difficultyLevels.HARD) {
-                                        <p-chip class="hard-chip"> {{ session.question.difficulty }} </p-chip>
-                                    }
-                                    @default {
-                                        <p-chip class="easy-chip"> {{ session.question.difficulty }} </p-chip>
-                                    }
-                                }
-                            </td>
-                            <td>{{ getPeer(session.users) }}</td>
-                            <td>
-                                <p-button
-                                    label="Join"
-                                    severity="success"
-                                    [outlined]="true"
-                                    styleClass="w-full"
-                                    [text]="true"
-                                    (onClick)="goToCollab(session.room_id)" />
-                            </td>
-                        </tr>
-                    </ng-template>
+                                </td>
+                                <td>{{ getPeer(session.users) }}</td>
+                                <td>
+                                    <p-button
+                                        label="Join"
+                                        severity="success"
+                                        [outlined]="true"
+                                        styleClass="w-full"
+                                        [text]="true"
+                                        (onClick)="goToCollab(session.room_id)" />
+                                </td>
+                            </tr>
+                        </ng-template>
+                    }
                     <ng-template pTemplate="footer">
-                        <div class="flex flex-column w-full align-items-center justify-content-center px-4 pb-2">
-                            @if (activeSessions.length === 0) {
-                                <div>
-                                    <p>You currently have no active sessions.</p>
-                                </div>
-                            }
+                        <div class="flex flex-column w-full align-items-center justify-content-center px-4 pb-0 pt-2">
+                            <!-- @if (activeSessions.length === 0) { -->
+                            <div>
+                                <p>You currently have no active sessions.</p>
+                            </div>
                         </div>
                     </ng-template>
                 </p-table>

@@ -58,7 +58,7 @@ export class CollaborationComponent implements OnInit, OnDestroy {
         this.wsProvider.ws!.onclose = (event: { code: number; reason: string }) => {
             if (event.code === WebSocketCode.AUTH_FAILED || event.code === WebSocketCode.ROOM_CLOSED) {
                 console.error('WebSocket authorization failed:', event.reason);
-                this.router.navigate(['/matching']);
+                this.router.navigate(['/home']);
             }
         };
     }

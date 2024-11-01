@@ -45,6 +45,12 @@ export class NavigationBarComponent implements OnInit {
         if (this.authService.isLoggedIn) {
             this.items = [
                 {
+                    label: 'Home',
+                    icon: 'pi pi-home',
+                    routerLink: '/home',
+                    class: 'p-submenu-list',
+                },
+                {
                     label: 'Find Match',
                     icon: 'pi pi-users',
                     routerLink: '/matching',
