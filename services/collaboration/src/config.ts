@@ -7,7 +7,6 @@ const envSchema = z
         YJS_DB_CLOUD_URI: z.string().trim().optional(),
         YJS_DB_LOCAL_URI: z.string().trim().optional(),
         BROKER_URL: z.string().url(),
-        QUESTION_SERVICE_URL: z.string().url(),
         NODE_ENV: z.enum(['development', 'production']).default('development'),
         CORS_ORIGIN: z.union([z.string().url(), z.literal('*')]).default('*'),
         PORT: z.coerce.number().min(1024).default(8084),

@@ -11,6 +11,7 @@ export enum MatchRequestStatus {
     PENDING = 'PENDING',
     TIME_OUT = 'TIME_OUT',
     MATCH_FOUND = 'MATCH_FOUND',
+    MATCH_FAILED = 'MATCH_FAILED',
     COLLAB_CREATED = 'COLLAB_CREATED',
 }
 
@@ -24,6 +25,7 @@ export interface MatchRequest {
     updatedAt: Date;
     pairId: Types.ObjectId;
     collabId: Types.ObjectId;
+    hasError: boolean;
 }
 
 const matchRequestSchema = new Schema<MatchRequest>(
@@ -53,6 +55,10 @@ const matchRequestSchema = new Schema<MatchRequest>(
             type: Schema.Types.ObjectId,
             required: false,
         },
+        hasError: {
+            type: Boolean,
+            default: false,
+        },
     },
     { versionKey: false, timestamps: true },
 );
@@ -60,11 +66,15 @@ const matchRequestSchema = new Schema<MatchRequest>(
 export const MatchRequestModel = model<MatchRequest>('MatchRequest', matchRequestSchema);
 
 export function getStatus(matchRequest: MatchRequest): MatchRequestStatus {
-    return matchRequest.collabId
-        ? MatchRequestStatus.COLLAB_CREATED
-        : matchRequest.pairId
-          ? MatchRequestStatus.MATCH_FOUND
-          : matchRequest.updatedAt >= oneMinuteAgo()
-            ? MatchRequestStatus.PENDING
-            : MatchRequestStatus.TIME_OUT;
+    if (matchRequest.hasError) {
+        return MatchRequestStatus.MATCH_FAILED;
+    } else if (matchRequest.collabId) {
+        return MatchRequestStatus.COLLAB_CREATED;
+    } else if (matchRequest.pairId) {
+        return MatchRequestStatus.MATCH_FOUND;
+    } else if (matchRequest.updatedAt >= oneMinuteAgo()) {
+        return MatchRequestStatus.PENDING;
+    } else {
+        return MatchRequestStatus.TIME_OUT;
+    }
 }

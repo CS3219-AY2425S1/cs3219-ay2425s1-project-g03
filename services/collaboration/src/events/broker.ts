@@ -1,9 +1,13 @@
-import amqplib, { Channel, Connection } from 'amqplib';
+import client, { Channel, Connection } from 'amqplib';
 import config from '../config';
 
-class Broker {
-    private connection!: Connection;
-    private channel!: Channel;
+/**
+ * Adapated from
+ * https://hassanfouad.medium.com/using-rabbitmq-with-nodejs-and-typescript-8b33d56a62cc
+ */
+class MessageBroker {
+    connection!: Connection;
+    channel!: Channel;
     private connected = false;
 
     async connect(): Promise<void> {
@@ -12,7 +16,7 @@ class Broker {
         }
 
         try {
-            this.connection = await amqplib.connect(config.BROKER_URL);
+            this.connection = await client.connect(config.BROKER_URL);
             console.log('Connected to RabbitMQ');
             this.channel = await this.connection.createChannel();
             this.connected = true;
@@ -60,5 +64,5 @@ class Broker {
     }
 }
 
-const broker = new Broker();
-export default broker;
+const messageBroker = new MessageBroker();
+export default messageBroker;

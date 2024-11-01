@@ -61,12 +61,12 @@
         [userCriteria]="{ topics: topics, difficulty: difficulty }"
         [matchId]="matchId"
         [isVisible]="isProcessingMatch"
-        (matchFailed)="onMatchFailed()"
+        (matchTimeout)="onMatchTimeout()"
         (dialogClose)="onMatchDialogClose()" />
     <app-retry-matching
-        [matchId]="matchId"
-        [isVisible]="isMatchFailed"
-        (retryMatch)="onRetryMatchRequest()"
+        [matchRequest]="matchRequest"
+        [isVisible]="isMatchTimeout"
+        (retryMatch)="onRetryMatchRequest($event)"
         (dialogClose)="onRetryMatchDialogClose()" />
 
     <p-toast position="bottom-right" [breakpoints]="{ '920px': { width: '90%' } }" />

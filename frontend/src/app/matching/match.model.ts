@@ -9,6 +9,7 @@ export enum MatchStatus {
     PENDING = 'PENDING',
     TIME_OUT = 'TIME_OUT',
     MATCH_FOUND = 'MATCH_FOUND',
+    MATCH_FAILED = 'MATCH_FAILED',
     COLLAB_CREATED = 'COLLAB_CREATED',
 }
 

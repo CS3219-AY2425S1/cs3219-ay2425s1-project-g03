@@ -16,14 +16,6 @@ export async function createMatchRequest(userId: IdType, username: string, topic
     return await new MatchRequestModel({ userId, username, topics, difficulty }).save();
 }
 
-export async function findMatchRequestAndUpdate(id: IdType, userId: IdType) {
-    return await MatchRequestModel.findOneAndUpdate(
-        { _id: id, userId, pairId: null },
-        { $set: { updatedAt: Date.now() } },
-        { new: true },
-    );
-}
-
 export async function findMatchRequestAndDelete(id: IdType, userId: IdType) {
     return await MatchRequestModel.findOneAndDelete({ _id: id, userId, updatedAt: { $gte: oneMinuteAgo() } });
 }
@@ -62,4 +54,8 @@ export async function findMatchRequestByIdAndAssignPair(id: IdType, pairId: IdTy
 
 export async function findAndAssignCollab(requestId1: IdType, requestId2: IdType, collabId: IdType) {
     await MatchRequestModel.updateMany({ _id: { $in: [requestId1, requestId2] } }, { $set: { collabId } });
+}
+
+export async function findAndMarkError(requestId1: IdType, requestId2: IdType) {
+    await MatchRequestModel.updateMany({ _id: { $in: [requestId1, requestId2] } }, { $set: { hasError: true } });
 }

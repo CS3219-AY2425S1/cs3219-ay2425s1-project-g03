@@ -1,15 +1,13 @@
 import { Types } from 'mongoose';
 import { z } from 'zod';
 
-export type IdType = string | Types.ObjectId;
-
 export enum Role {
     Admin = 'admin',
     User = 'user',
 }
 
 export interface RequestUser {
-    id: IdType;
+    id: string;
     username: string;
     role: Role;
 }

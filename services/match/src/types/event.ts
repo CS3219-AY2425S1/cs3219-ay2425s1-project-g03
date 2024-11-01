@@ -32,3 +32,9 @@ export interface CollabCreatedEvent {
     requestId2: Types.ObjectId | string;
     collabId: Types.ObjectId | string;
 }
+
+export interface MatchFailedEvent {
+    requestId1: Types.ObjectId | string;
+    requestId2: Types.ObjectId | string;
+    reason: string;
+}

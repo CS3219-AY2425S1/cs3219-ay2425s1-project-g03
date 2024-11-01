@@ -6,6 +6,7 @@ const envSchema = z
         DB_PASSWORD: z.string().trim().min(1),
         DB_CLOUD_URI: z.string().trim().optional(),
         DB_LOCAL_URI: z.string().trim().optional(),
+        BROKER_URL: z.string().url(),
         NODE_ENV: z.enum(['development', 'production']).default('development'),
         CORS_ORIGIN: z.union([z.string().url(), z.literal('*')]).default('*'),
         JWT_SECRET: z.string().trim().min(32),

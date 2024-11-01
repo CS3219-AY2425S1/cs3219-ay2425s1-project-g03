@@ -1,5 +1,7 @@
 import app from './app';
 import config from './config';
+import messageBroker from './events/broker';
+import { initializeConsumers } from './events/consumer';
 import { connectToDB, upsertManyQuestions } from './models';
 import { getDemoQuestions } from './utils/data';
 import { initializeCounter } from './utils/sequence';
@@ -20,6 +22,8 @@ connectToDB()
         console.log('Question ID initialized successfully');
         app.listen(port, () => console.log(`Question service is listening on port ${port}.`));
     })
+    .then(async () => await messageBroker.connect())
+    .then(async () => await initializeConsumers())
     .catch(error => {
         console.error('Failed to start server');
         console.error(error);

@@ -3,6 +3,7 @@ import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { MatchService } from '../../../_services/match.service';
 import { MessageService } from 'primeng/api';
+import { MatchRequest } from '../match.model';
 
 @Component({
     selector: 'app-retry-matching',
@@ -13,10 +14,10 @@ import { MessageService } from 'primeng/api';
 })
 export class RetryMatchingComponent {
     @Input() isVisible = false;
-    @Input() matchId!: string;
+    @Input({ required: true }) matchRequest!: MatchRequest;
 
     @Output() dialogClose = new EventEmitter<void>();
-    @Output() retryMatch = new EventEmitter<void>();
+    @Output() retryMatch = new EventEmitter<string>();
 
     constructor(
         private matchService: MatchService,
@@ -28,7 +29,8 @@ export class RetryMatchingComponent {
     }
 
     onRetryMatch() {
-        this.matchService.updateMatchRequest(this.matchId).subscribe({
+        this.matchService.createMatchRequest(this.matchRequest).subscribe({
+            next: response => this.retryMatch.emit(response.data._id),
             error: () => {
                 this.messageService.add({
                     severity: 'error',
@@ -37,9 +39,6 @@ export class RetryMatchingComponent {
                     life: 3000,
                 });
                 this.closeDialog();
-            },
-            complete: () => {
-                this.retryMatch.emit();
             },
         });
     }

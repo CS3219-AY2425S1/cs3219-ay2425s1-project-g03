@@ -13,11 +13,6 @@ app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
 
-app.use((req, res, next) => {
-    console.log(`Incoming ${req.method} request to ${req.url}`);
-    next();
-});
-
 app.use(
     cors({
         origin: config.CORS_ORIGIN,

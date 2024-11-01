@@ -28,13 +28,6 @@ services:
     ports:
       - 27018:27017
 
-  collaboration:
-    command: npm run dev
-    ports:
-        - 8084:8084
-    volumes:
-      - /app/node_modules
-      - ./services/collaboration:/app
   match:
     command: npm run dev
     ports:
@@ -47,6 +40,14 @@ services:
     ports:
       - 27019:27017
   
+  collaboration:
+    command: npm run dev
+    ports:
+      - 8084:8084
+    volumes:
+      - /app/node_modules
+      - ./services/collaboration:/app
+  
   broker:
     ports:
       - 5672:5672
@@ -57,3 +58,4 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - 8000:8080
+    restart: always

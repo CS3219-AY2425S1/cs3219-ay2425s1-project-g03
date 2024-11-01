@@ -8,24 +8,14 @@ import {
     ChangeDetectorRef,
     Input,
 } from '@angular/core';
-import { oneDark } from '@codemirror/theme-one-dark';
-import { EditorState, Extension } from '@codemirror/state';
-import { basicSetup } from 'codemirror';
 import { DOCUMENT } from '@angular/common';
-import { EditorView } from 'codemirror';
-import { java } from '@codemirror/lang-java';
-import { javascript } from '@codemirror/lang-javascript';
+import { FormsModule } from '@angular/forms';
+import { DropdownModule } from 'primeng/dropdown';
 import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { ButtonModule } from 'primeng/button';
-import { MessageService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
-import * as Y from 'yjs';
-import { WebsocketProvider } from 'y-websocket';
-import { yCollab } from 'y-codemirror.next';
-import * as prettier from 'prettier';
-import * as prettierPluginEstree from 'prettier/plugins/estree';
-import { usercolors } from './user-colors';
+import { MessageService } from 'primeng/api';
 import { AuthenticationService } from '../../../_services/authentication.service';
 // The 'prettier-plugin-java' package does not provide TypeScript declaration files.
 // We are using '@ts-ignore' to bypass TypeScript's missing type declaration error.
@@ -33,11 +23,27 @@ import { AuthenticationService } from '../../../_services/authentication.service
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import prettierPluginJava from 'prettier-plugin-java';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import prettierPluginPhp from '@prettier/plugin-php';
+import prettierPluginXml from '@prettier/plugin-xml';
+import * as prettierPluginRust from 'prettier-plugin-rust';
+import prettierPluginSql from 'prettier-plugin-sql';
+import parserBabel from 'prettier/plugins/babel';
+import * as prettier from 'prettier';
+import * as prettierPluginEstree from 'prettier/plugins/estree';
+import { oneDark } from '@codemirror/theme-one-dark';
+import { EditorState, Extension, StateEffect } from '@codemirror/state';
+import { basicSetup } from 'codemirror';
+import { EditorView } from 'codemirror';
+import { yCollab } from 'y-codemirror.next';
+import * as Y from 'yjs';
+import { WebsocketProvider } from 'y-websocket';
 import { SubmitDialogComponent } from '../submit-dialog/submit-dialog.component';
 import { ForfeitDialogComponent } from '../forfeit-dialog/forfeit-dialog.component';
+import { languageMap, parserMap, LanguageOption } from './languages';
 import { awarenessData } from '../collab.model';
-// import { autocompletion, Completion, CompletionSource } from '@codemirror/autocomplete';
-// import { linter, Diagnostic } from '@codemirror/lint';
+import { usercolors } from './user-colors';
 
 @Component({
     selector: 'app-editor',
@@ -49,6 +55,8 @@ import { awarenessData } from '../collab.model';
         ToastModule,
         SubmitDialogComponent,
         ForfeitDialogComponent,
+        DropdownModule,
+        FormsModule,
     ],
     providers: [MessageService],
     templateUrl: './editor.component.html',
@@ -67,6 +75,7 @@ export class EditorComponent implements AfterViewInit, OnInit {
     yeditorText = new Y.Text('');
     ysubmit = new Y.Map<boolean>();
     yforfeit = new Y.Map<boolean>();
+    ylanguage = new Y.Map<string>();
     undoManager!: Y.UndoManager;
     customTheme!: Extension;
 
@@ -74,6 +83,8 @@ export class EditorComponent implements AfterViewInit, OnInit {
     isInitiator = false;
     isForfeitClick = false;
     numUniqueUsers = 0;
+    selectedLanguage!: string;
+    languages: LanguageOption[] = [];
 
     constructor(
         @Inject(DOCUMENT) private document: Document,
@@ -84,66 +95,73 @@ export class EditorComponent implements AfterViewInit, OnInit {
 
     ngOnInit() {
         this.initYdoc();
+        this.initDoctListener();
         this.getNumOfConnectedUsers();
+        this.populateLanguages();
     }
 
     ngAfterViewInit() {
         this.setTheme();
         this.setProvider();
-        this.setEditorState();
+        this.setEditorState(this.selectedLanguage);
         this.setEditorView();
         this.setCursorPosition();
+    }
+
+    populateLanguages() {
+        this.languages = Object.keys(languageMap).map(lang => ({
+            label: lang.charAt(0).toUpperCase() + lang.slice(1),
+            value: lang,
+        }));
+    }
+
+    changeLanguage(language: string) {
+        this.selectedLanguage = language.toLowerCase();
+        this.ylanguage.set('selected', language);
+    }
+
+    updateEditor(language: string) {
+        this.setEditorState(language);
+        this.view.setState(this.state);
+    }
+
+    updateLanguageExtension(language: string) {
+        if (languageMap[language]) {
+            this.view.dispatch({
+                effects: StateEffect.reconfigure.of([this.getEditorExtensions(language)]),
+            });
+        }
     }
 
     initYdoc() {
         this.yeditorText = this.ydoc.getText('editorText');
         this.ysubmit = this.ydoc.getMap('submit');
         this.yforfeit = this.ydoc.getMap('forfeit');
+        this.ylanguage = this.ydoc.getMap('language');
         this.undoManager = new Y.UndoManager(this.yeditorText);
-    }
 
-    getNumOfConnectedUsers() {
-        this.wsProvider.awareness.on('change', () => {
-            const data = Array.from(this.wsProvider.awareness.getStates().values());
-            const uniqueIds = new Set(
-                data
-                    .map(x => (x as awarenessData).user?.userId)
-                    .filter((userId): userId is string => userId !== undefined),
-            );
-
-            this.numUniqueUsers = uniqueIds.size;
-
-            this.changeDetector.detectChanges();
-        });
-    }
-
-    showSubmitDialog() {
-        this.isSubmit = true;
-        this.isInitiator = true;
-    }
-
-    async format() {
-        try {
-            const currentCode = this.view.state.doc.toString();
-
-            const formattedCode = prettier.format(currentCode, {
-                parser: 'java',
-                plugins: [prettierPluginJava, prettierPluginEstree], // Add necessary plugins
-            });
-
-            this.view.dispatch({
-                changes: {
-                    from: 0,
-                    to: this.view.state.doc.length,
-                    insert: await formattedCode,
-                },
-            });
-
-            this.view.focus();
-        } catch (e) {
-            console.error('Error formatting code:', e);
-            this.messageService.add({ severity: 'error', summary: 'Formatting Error' });
+        const language = this.ylanguage.get('selection');
+        if (language == undefined) {
+            this.ylanguage.set('selected', 'java');
+            this.selectedLanguage = 'java';
+        } else {
+            this.selectedLanguage = language!;
         }
+    }
+
+    initDoctListener() {
+        this.ylanguage.observe(ymapEvent => {
+            ymapEvent.changes.keys.forEach((change, key) => {
+                if (change.action === 'update') {
+                    this.selectedLanguage = this.ylanguage.get(key)!;
+                    const languageExtension = languageMap[this.selectedLanguage];
+
+                    if (languageExtension) {
+                        this.updateLanguageExtension(this.selectedLanguage);
+                    }
+                }
+            });
+        });
     }
 
     setProvider() {
@@ -157,22 +175,22 @@ export class EditorComponent implements AfterViewInit, OnInit {
         });
     }
 
-    setEditorState() {
-        const undoManager = this.undoManager;
-        const myExt: Extension = [
-            EditorView.lineWrapping,
-            basicSetup,
-            java(),
-            javascript(),
-            this.customTheme,
-            oneDark,
-            yCollab(this.yeditorText, this.wsProvider.awareness, { undoManager }),
-        ];
-
+    setEditorState(language: string) {
         this.state = EditorState.create({
             doc: this.yeditorText.toString(),
-            extensions: myExt,
+            extensions: this.getEditorExtensions(language),
         });
+    }
+
+    getEditorExtensions(language: string): Extension[] {
+        return [
+            EditorView.lineWrapping,
+            basicSetup,
+            languageMap[language],
+            this.customTheme,
+            oneDark,
+            yCollab(this.yeditorText, this.wsProvider.awareness, { undoManager: this.undoManager }),
+        ];
     }
 
     setEditorView() {
@@ -210,6 +228,89 @@ export class EditorComponent implements AfterViewInit, OnInit {
         });
 
         this.view.focus();
+    }
+
+    getNumOfConnectedUsers() {
+        this.wsProvider.awareness.on('change', () => {
+            const data = Array.from(this.wsProvider.awareness.getStates().values());
+            const uniqueIds = new Set(
+                data
+                    .map(x => (x as awarenessData).user?.userId)
+                    .filter((userId): userId is string => userId !== undefined),
+            );
+
+            this.numUniqueUsers = uniqueIds.size;
+
+            this.changeDetector.detectChanges();
+        });
+    }
+
+    async format() {
+        try {
+            const selectedParser = parserMap[this.selectedLanguage.toLowerCase()];
+
+            if (selectedParser === undefined) {
+                this.notifyUnsupported();
+                return;
+            }
+
+            const currentCode = this.view.state.doc.toString();
+            const formattedCode = this.prettierFormat(currentCode, selectedParser);
+
+            this.view.dispatch({
+                changes: {
+                    from: 0,
+                    to: this.view.state.doc.length,
+                    insert: await formattedCode,
+                },
+            });
+
+            this.view.focus();
+        } catch (error) {
+            if (error instanceof SyntaxError || error instanceof Error) {
+                this.notifyFormattingErr(
+                    "There's a syntax error in your code. Please fix it and try formatting again.",
+                );
+            } else {
+                this.notifyFormattingErr('An error occurred while formatting. Please check your code and try again.');
+            }
+        }
+    }
+
+    prettierFormat(currentCode: string, selectedParser: string): Promise<string> {
+        return prettier.format(currentCode, {
+            parser: selectedParser,
+            plugins: [
+                parserBabel,
+                prettierPluginJava,
+                prettierPluginEstree,
+                prettierPluginPhp,
+                prettierPluginXml,
+                prettierPluginRust,
+                prettierPluginSql,
+            ],
+        });
+    }
+
+    notifyFormattingErr(message: string) {
+        this.messageService.add({
+            severity: 'warn',
+            summary: 'Formatting Error',
+            detail: message,
+        });
+    }
+
+    notifyUnsupported() {
+        this.messageService.add({
+            severity: 'info',
+            summary: 'Info Message',
+            detail: `The selected language ${this.selectedLanguage.toLowerCase()} is currently not supported for auto formatting.`,
+        });
+    }
+
+    showSubmitDialog() {
+        this.isSubmit = true;
+        this.isInitiator = true;
     }
 
     onSubmitDialogClose(numForfeit: number) {

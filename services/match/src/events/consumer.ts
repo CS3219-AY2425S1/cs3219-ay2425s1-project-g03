@@ -1,9 +1,10 @@
 import {
     findAndAssignCollab,
+    findAndMarkError,
     findMatchRequestAndAssignPair,
     findMatchRequestByIdAndAssignPair,
 } from '../models/repository';
-import { CollabCreatedEvent, MatchUpdatedEvent } from '../types/event';
+import { CollabCreatedEvent, MatchFailedEvent, MatchUpdatedEvent } from '../types/event';
 import { logQueueStatus } from '../utils/logger';
 import messageBroker from './broker';
 import { produceMatchFound } from './producer';
@@ -47,7 +48,14 @@ async function consumeCollabCreated(msg: CollabCreatedEvent) {
     await findAndAssignCollab(requestId1, requestId2, collabId);
 }
 
+async function consumeMatchFailed(msg: MatchFailedEvent) {
+    console.log('Processing MatchFailedEvent:', msg);
+    const { requestId1, requestId2 } = msg;
+    await findAndMarkError(requestId1, requestId2);
+}
+
 export async function initializeConsumers() {
     messageBroker.consume(Queues.MATCH_REQUEST_UPDATED, consumeMatchUpdated);
     messageBroker.consume(Queues.COLLAB_CREATED, consumeCollabCreated);
+    messageBroker.consume(Queues.MATCH_FAILED, consumeMatchFailed);
 }

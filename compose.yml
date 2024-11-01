@@ -23,6 +23,7 @@ services:
       - collaboration
     networks:
       - gateway-network
+    restart: always
 
   question:
     container_name: question
@@ -35,11 +36,14 @@ services:
       DB_LOCAL_URI: ${QUESTION_DB_LOCAL_URI}
       DB_USERNAME: ${QUESTION_DB_USERNAME}
       DB_PASSWORD: ${QUESTION_DB_PASSWORD}
+      BROKER_URL: ${BROKER_URL}
       JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      broker:
+        condition: service_healthy
     networks:
       - gateway-network
       - question-db-network
-      - collaboration-network
     restart: always
 
   question-db:
@@ -132,6 +136,7 @@ services:
       timeout: 30s
       retries: 10
       start_period: 30s
+    restart: always
 
   collaboration:
     container_name: collaboration
@@ -146,15 +151,12 @@ services:
       YJS_DB_LOCAL_URI: ${YJS_DB_LOCAL_URI}
       BROKER_URL: ${BROKER_URL}
       JWT_SECRET: ${JWT_SECRET}
-      QUESTION_SERVICE_URL: ${QUESTION_SERVICE_URL}
     depends_on:
       broker:
         condition: service_healthy
     networks:
       - gateway-network
       - collaboration-db-network
-      - match-db-network
-      - collaboration-network
     restart: always
 
   collaboration-db:
@@ -180,8 +182,6 @@ networks:
   user-db-network:
     driver: bridge
   match-db-network:
-    driver: bridge
-  collaboration-network:
     driver: bridge
   collaboration-db-network:
     driver: bridge

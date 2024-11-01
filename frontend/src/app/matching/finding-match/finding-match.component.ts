@@ -24,8 +24,7 @@ export class FindingMatchComponent {
     @Input() isVisible = false;
 
     @Output() dialogClose = new EventEmitter<void>();
-    @Output() matchFailed = new EventEmitter<void>();
-    @Output() matchSuccess = new EventEmitter<void>();
+    @Output() matchTimeout = new EventEmitter<void>();
 
     protected isFindingMatch = true;
     protected matchTimeLeft = 0;
@@ -40,15 +39,23 @@ export class FindingMatchComponent {
     ) {}
 
     onMatchFailed() {
+        this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Something went wrong while matching. Please try again later.',
+            life: 3000,
+        });
+        this.closeDialog();
+    }
+
+    onMatchTimeout() {
         this.stopTimer();
-        this.matchFailed.emit();
+        this.matchTimeout.emit();
     }
 
     onMatchSuccess() {
         this.stopTimer();
         this.isFindingMatch = false;
-        this.matchSuccess.emit();
-        // Possible to handle routing to workspace here.
     }
 
     onDialogShow() {
@@ -57,7 +64,7 @@ export class FindingMatchComponent {
     }
 
     startPolling(interval: number): Observable<MatchResponse | null> {
-        return timer(0, interval).pipe(switchMap(() => this.requestData()));
+        return timer(5000, interval).pipe(switchMap(() => this.requestData()));
     }
 
     requestData() {
@@ -66,6 +73,10 @@ export class FindingMatchComponent {
                 console.log(response);
                 const status: MatchStatus = response.data.status || MatchStatus.PENDING;
                 switch (status) {
+                    case MatchStatus.MATCH_FAILED:
+                        this.stopPolling$.next(false);
+                        this.onMatchFailed();
+                        break;
                     case MatchStatus.MATCH_FOUND:
                         this.onMatchSuccess();
                         break;
@@ -78,18 +89,12 @@ export class FindingMatchComponent {
                         break;
                     case MatchStatus.TIME_OUT:
                         this.stopPolling$.next(false);
-                        this.onMatchFailed();
+                        this.onMatchTimeout();
                         break;
                 }
             }),
             catchError(() => {
-                this.messageService.add({
-                    severity: 'error',
-                    summary: 'Error',
-                    detail: `Something went wrong while matching.`,
-                    life: 3000,
-                });
-                this.closeDialog();
+                this.onMatchFailed();
                 return of(null);
             }),
         );

@@ -1,4 +1,5 @@
 import { ObjectId } from 'mongodb';
+import { Question } from './roomController';
 
 /**
  * @fileoverview Types for the collaboration service.
@@ -14,7 +15,7 @@ export interface User {
 export interface Room {
     _id: ObjectId;
     users: User[];
-    question_id: number;
+    question: Question;
     createdAt: Date;
     room_status: boolean;
 }
