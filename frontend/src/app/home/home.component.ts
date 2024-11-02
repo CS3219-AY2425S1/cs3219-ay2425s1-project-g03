@@ -50,21 +50,21 @@ export class HomeComponent implements OnInit {
     }
 
     getActiveSessions() {
-        // this.collabService.getRoomsWithQuery(true).subscribe({
-        //     next: response => {
-        //         this.activeSessions = response.data;
-        //     },
-        //     error: () => {
-        //         this.messageService.add({
-        //             severity: 'error',
-        //             summary: 'Error',
-        //             detail: 'Failed to retrieve room data',
-        //             life: 3000,
-        //         });
-        //     },
-        //     complete: () => {
-        //         this.loading = false;
-        //     },
-        // });
+        this.collabService.getRoomsWithQuery(true).subscribe({
+            next: response => {
+                this.activeSessions = response.data;
+            },
+            error: () => {
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: 'Failed to retrieve room data',
+                    life: 3000,
+                });
+            },
+            complete: () => {
+                this.loading = false;
+            },
+        });
     }
 }
