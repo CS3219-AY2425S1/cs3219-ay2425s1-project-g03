@@ -51,7 +51,7 @@ export class CollaborationComponent implements OnInit, OnDestroy {
         const websocketUrl = WEBSOCKET_CONFIG.baseUrl + 'collaboration/';
         this.wsProvider = new WebsocketProvider(websocketUrl, this.roomId, this.ydoc, {
             params: {
-              accessToken: this.authService.userValue?.accessToken || '',
+                accessToken: this.authService.userValue?.accessToken || '',
             },
         });
 

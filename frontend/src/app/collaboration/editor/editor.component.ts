@@ -165,21 +165,6 @@ export class EditorComponent implements AfterViewInit, OnInit {
         });
     }
 
-    initDoctListener() {
-        this.ylanguage.observe(ymapEvent => {
-            ymapEvent.changes.keys.forEach((change, key) => {
-                if (change.action === 'update') {
-                    this.selectedLanguage = this.ylanguage.get(key)!;
-                    const languageExtension = languageMap[this.selectedLanguage];
-
-                    if (languageExtension) {
-                        this.updateLanguageExtension(this.selectedLanguage);
-                    }
-                }
-            });
-        });
-    }
-
     setProvider() {
         const randomIndex = Math.floor(Math.random() * usercolors.length);
 
@@ -203,17 +188,6 @@ export class EditorComponent implements AfterViewInit, OnInit {
             EditorView.lineWrapping,
             basicSetup,
             keymap.of([indentWithTab]),
-            languageMap[language],
-            this.customTheme,
-            oneDark,
-            yCollab(this.yeditorText, this.wsProvider.awareness, { undoManager: this.undoManager }),
-        ];
-    }
-
-    getEditorExtensions(language: string): Extension[] {
-        return [
-            EditorView.lineWrapping,
-            basicSetup,
             languageMap[language],
             this.customTheme,
             oneDark,

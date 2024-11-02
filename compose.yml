@@ -124,10 +124,11 @@ services:
       - match-db-network
     restart: always
 
-  match-broker:
-    container_name: match-broker
-    hostname: match-broker
-    image: rabbitmq:management-alpine
+  broker:
+    container_name: broker
+    hostname: broker
+    image: rabbitmq:4.0.2
+    user: rabbitmq
     networks:
       - match-db-network
     ports:
