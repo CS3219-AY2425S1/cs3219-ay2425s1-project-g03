@@ -80,32 +80,34 @@ collaboration service. It enables creating rooms, retrieving room details, and m
 
 ---
 
-## Get Room IDs by User (JWT Authentication)
+## Get Room Details by Room ID
 
-This endpoint retrieves all active room IDs associated with the authenticated user. Only rooms where `room_status`
-is `true` will be retrieved.
+This endpoint retrieves detailed information for rooms by its Room ID.
 
 - **HTTP Method**: `GET`
-- **Endpoint**: `/api/collaboration/room/user/rooms`
+- **Endpoint**: `/api/collaboration/room/{roomId}`
 
 ### Authorization
 
-This endpoint requires a valid JWT token in the `Authorization` header. The `userId` is derived from the token and is
-not provided directly.
+This endpoint requires a valid JWT token in the Authorization header.
+
+### Parameters:
+
+- `roomId` (Required) - The unique identifier of the room to retrieve details for.
 
 ### Responses:
 
 | Response Code               | Explanation                                 |
 |-----------------------------|---------------------------------------------|
-| 200 (OK)                    | Success, room IDs retrieved.                |
-| 404 (Not Found)             | No rooms found for the user.                |
+| 200 (OK)                    | Success, room details returned.             |
+| 404 (Not Found)             | Room not found.                             |
 | 500 (Internal Server Error) | Unexpected error in the server or database. |
 
 ### Command Line Example:
 
 ```bash
-curl -X GET http://localhost:8080/api/collaboration/room/user/rooms \
-     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3MjRlOTZlNDNjMmNjNWQ5ODA5NmM2OSIsInVzZXJuYW1lIjoiVGVzdGluZzEiLCJyb2xlIjoidXNlciIsImlhdCI6MTczMDQ3MjMwMywiZXhwIjoxNzMwNTU4NzAzfQ.x92l-NIgWj_dpM-EC-xOKAGB8zrgGAdKbDpAu3UD5vE" \
+curl -X GET "http://localhost:8080/api/collaboration/room/67277d28b6335f6dc76f599a" \
+     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3MjFhNWZiZWFlNjBjOGViMWU1ZWYzNCIsInVzZXJuYW1lIjoiVGVzdGluZzEiLCJyb2xlIjoidXNlciIsImlhdCI6MTczMDQ3MjY2NCwiZXhwIjoxNzMwNTYxMDY0fQ.DF9CaChoG3-UmeZgZG9SlpjtTknVzeVSBAJDJRdqGk0" \
      -H "Content-Type: application/json"
 ```
 
@@ -114,15 +116,41 @@ curl -X GET http://localhost:8080/api/collaboration/room/user/rooms \
 ```json
 {
   "status": "Success",
-  "data": [
-    "6724e9d892fb3e9f04c2e280"
-  ]
+  "data": {
+    "room_id": "67277d28b6335f6dc76f599a",
+    "users": [
+      {
+        "id": "67277d044012b8a652616454",
+        "username": "Testing",
+        "requestId": "67277d2850d5e18cfc11cd79",
+        "isForfeit": true
+      },
+      {
+        "id": "67277d104012b8a65261645a",
+        "username": "Testing1",
+        "requestId": "67277d2450d5e18cfc11cd74",
+        "isForfeit": true
+      }
+    ],
+    "question": {
+      "_id": "67277cec70d0a5c9b36304fc",
+      "id": 3,
+      "description": "Given a roman numeral, convert it to an integer.",
+      "difficulty": "Easy",
+      "title": "Roman to Integer",
+      "topics": [
+        "Algorithms"
+      ]
+    },
+    "createdAt": "2024-11-03T13:39:52.591Z",
+    "room_status": false
+  }
 }
 ```
 
 ---
 
-## Get Rooms by User ID, Room Status, and User's isForfeit status
+## Get Rooms by Room Status and User Forfeit status
 
 This endpoint retrieves the details of rooms associated with the authenticated user, filtered by the specified room
 status and isForfeit status using query parameters.
