@@ -69,7 +69,7 @@ export class ForfeitDialogComponent implements OnInit {
                     this.isForfeit = true;
                     this.hideButtons = true;
                     setTimeout(() => {
-                        this.router.navigate(['/matching']);
+                        this.router.navigate(['/home']);
                     }, 1500);
                 },
             });

@@ -17,6 +17,8 @@ import { QuestionService } from '../../_services/question.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { QuestionDialogComponent } from './question-dialog.component';
 import { Column } from './column.model';
+import { AuthenticationService } from '../../_services/authentication.service';
+import { User } from '../../_models/user.model';
 
 @Component({
     selector: 'app-questions',
@@ -44,21 +46,20 @@ import { Column } from './column.model';
 })
 export class QuestionsComponent implements OnInit {
     loading = true;
-
     questions: Question[] = [];
-
     cols: Column[] = [];
-
     question!: Question;
-
     selectedQuestions!: Question[] | null;
-
     isDialogVisible = false;
+    isAdmin = false;
+    isPanelVisible = false;
+    clickedOnQuestion: Question | null = null;
 
     constructor(
         private questionService: QuestionService,
         private messageService: MessageService,
         private confirmationService: ConfirmationService,
+        private AuthenticationService: AuthenticationService,
     ) {}
 
     ngOnInit() {
@@ -67,6 +68,9 @@ export class QuestionsComponent implements OnInit {
 
         // fetch data from API call
         this.handleInitData();
+
+        // check if user is admin
+        this.checkIfAdmin();
     }
 
     openNewQuestion() {
@@ -77,6 +81,7 @@ export class QuestionsComponent implements OnInit {
     editQuestion(question: Question) {
         this.question = question;
         this.isDialogVisible = true;
+        this.isPanelVisible = false;
     }
 
     deleteSelectedQuestions() {
@@ -129,6 +134,18 @@ export class QuestionsComponent implements OnInit {
         this.isDialogVisible = false;
     }
 
+    onRowSelect(question: Question) {
+        this.clickedOnQuestion = question;
+        if (!this.isDialogVisible) {
+            this.isPanelVisible = true;
+        }
+    }
+
+    closePanel() {
+        this.isPanelVisible = false;
+        this.clickedOnQuestion = null;
+    }
+
     onQuestionUpdate(question: Question) {
         this.questions[this.questions.findIndex(x => x.id == question.id)] = question;
         this.questions = [...this.questions];
@@ -153,6 +170,12 @@ export class QuestionsComponent implements OnInit {
             summary: 'Successful',
             detail: successMessage,
             life: 3000,
+        });
+    }
+
+    checkIfAdmin() {
+        this.AuthenticationService.getUserDetails().subscribe((userData: User | null) => {
+            this.isAdmin = userData?.isAdmin ?? false;
         });
     }
 }

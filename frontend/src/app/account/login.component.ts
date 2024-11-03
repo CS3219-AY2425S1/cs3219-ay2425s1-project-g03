@@ -26,7 +26,7 @@ export class LoginComponent {
     ) {
         //redirect to home if already logged in
         if (this.authenticationService.userValue) {
-            this.router.navigate(['/matching']);
+            this.router.navigate(['/home']);
         }
     }
 
@@ -44,7 +44,7 @@ export class LoginComponent {
             // authenticationService returns an observable that we can subscribe to
             this.authenticationService.login(this.userForm.username, this.userForm.password).subscribe({
                 next: () => {
-                    this.router.navigate(['/matching']);
+                    this.router.navigate(['/home']);
                 },
                 error: error => {
                     this.isProcessingLogin = false;

@@ -1,80 +1,103 @@
 <div class="card mx-8">
-    <p-progressSpinner
-        class="flex align-items-center justify-content-center h-screen"
-        *ngIf="loading"
-        styleClass="w-4rem h-4rem"
-        strokeWidth="8"
-        animationDuration=".5s" />
-    <p-toast />
-    <ng-container *ngIf="!loading">
-        <p-toolbar styleClass="mt-4 mb-2 gap-2">
-            <div class="p-justify-end">
-                <p-button
-                    icon="pi pi-plus"
-                    severity="primary"
-                    [outlined]="true"
-                    label="New"
-                    class="mr-2"
-                    (onClick)="openNewQuestion()" />
-                <p-button
-                    icon="pi pi-trash"
-                    severity="danger"
-                    label="Delete"
-                    (onClick)="deleteSelectedQuestions()"
-                    [disabled]="!selectedQuestions || !selectedQuestions.length" />
-            </div>
-        </p-toolbar>
-        <p-table
-            sortField="id"
-            [sortOrder]="1"
-            [columns]="cols"
-            [value]="questions"
-            [(selection)]="selectedQuestions"
-            datakey="id"
-            [tableStyle]="{ 'min-width': '50rem' }"
-            [paginator]="true"
-            [rows]="5"
-            [rowsPerPageOptions]="[5, 10, 20]"
-            styleClass="p-datatable-gridlines-striped">
-            <ng-template pTemplate="caption">
-                <div class="flex">
-                    <h3 class="m-0">Manage Questions</h3>
+    @if (loading) {
+        <p-progressSpinner
+            class="flex align-items-center justify-content-center h-screen"
+            styleClass="w-4rem h-4rem"
+            strokeWidth="8"
+            animationDuration=".5s" />
+        <p-toast />
+    } @else {
+        <ng-container>
+            <div
+                [ngStyle]="
+                    isAdmin ? { 'max-width': '1150px', margin: '0 auto' } : { 'max-width': '900px', margin: '0 auto' }
+                ">
+                @if (isAdmin) {
+                    <p-toolbar styleClass="mt-4 mb-2 gap-2">
+                        <div class="p-justify-end">
+                            <p-button
+                                icon="pi pi-plus"
+                                severity="primary"
+                                [outlined]="true"
+                                label="New"
+                                class="mr-2"
+                                (onClick)="openNewQuestion()" />
+                            <p-button
+                                icon="pi pi-trash"
+                                severity="danger"
+                                label="Delete"
+                                (onClick)="deleteSelectedQuestions()"
+                                [disabled]="!selectedQuestions || !selectedQuestions.length" />
+                        </div>
+                    </p-toolbar>
+                } @else {
+                    <div style="height: 50px"></div>
+                }
+                <div class="table-container">
+                    <p-table
+                        sortField="id"
+                        [sortOrder]="1"
+                        [columns]="cols"
+                        [value]="questions"
+                        [(selection)]="selectedQuestions"
+                        datakey="id"
+                        [tableStyle]="{ 'table-layout': 'fixed', width: '100%', 'text-align': 'center' }"
+                        [paginator]="true"
+                        [rows]="10"
+                        [rowsPerPageOptions]="[10, 25, 50]"
+                        styleClass="p-datatable-gridlines-striped">
+                        <ng-template pTemplate="caption">
+                            <div class="flex">
+                                <h3 class="m-0">Questions</h3>
+                            </div>
+                        </ng-template>
+                        <ng-template pTemplate="header" let-columns>
+                            <tr>
+                                @if (isAdmin) {
+                                    <th style="width: 10%"><p-tableHeaderCheckbox /></th>
+                                    <th pSortableColumn="id" style="width: 13%">Id<p-sortIcon field="id" /></th>
+                                    <th style="width: 27%">Title</th>
+                                    <th style="width: 30%">Topics</th>
+                                    <th style="width: 10%">Difficulty</th>
+                                    <th style="width: 10%"></th>
+                                } @else {
+                                    <th style="width: 15%">Id</th>
+                                    <th style="width: 35%">Title</th>
+                                    <th style="width: 37%">Topics</th>
+                                    <th style="width: 13%">Difficulty</th>
+                                }
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-question>
+                            <tr (click)="onRowSelect(question)">
+                                @if (isAdmin) {
+                                    <td><p-tableCheckbox [value]="question" /></td>
+                                    <td>{{ question.id }}</td>
+                                    <td>{{ question.title }}</td>
+                                    <td>{{ question.topics.join(', ') }}</td>
+                                    <td>{{ question.difficulty }}</td>
+                                    <td>
+                                        <p-button
+                                            label="Edit"
+                                            severity="primary"
+                                            icon="pi pi-file-edit"
+                                            class="mr-2"
+                                            [text]="true"
+                                            (onClick)="editQuestion(question)" />
+                                    </td>
+                                } @else {
+                                    <td>{{ question.id }}</td>
+                                    <td>{{ question.title }}</td>
+                                    <td>{{ question.topics.join(', ') }}</td>
+                                    <td>{{ question.difficulty }}</td>
+                                }
+                            </tr>
+                        </ng-template>
+                    </p-table>
                 </div>
-            </ng-template>
-            <ng-template pTemplate="header" let-columns>
-                <tr>
-                    <th style="width: 10%"><p-tableHeaderCheckbox /></th>
-                    <th pSortableColumn="id" style="width: 10%">Id <p-sortIcon field="id" /></th>
-                    <th style="width: 10%">Title</th>
-                    <th style="width: 40%">Description</th>
-                    <th style="width: 10%">Topics</th>
-                    <th style="width: 10%">Difficulty</th>
-                    <th style="width: 10%"></th>
-                </tr>
-            </ng-template>
-            <ng-template pTemplate="body" let-question>
-                <tr>
-                    <td>
-                        <p-tableCheckbox [value]="question" />
-                    </td>
-                    <td>{{ question.id }}</td>
-                    <td>{{ question.title }}</td>
-                    <td style="white-space: pre-wrap">{{ question.description }}</td>
-                    <td>{{ question.topics.join(', ') }}</td>
-                    <td>{{ question.difficulty }}</td>
-                    <td>
-                        <p-button
-                            label="Edit"
-                            severity="primary"
-                            icon="pi pi-file-edit"
-                            class="mr-2"
-                            [text]="true"
-                            (onClick)="editQuestion(question)" />
-                    </td>
-                </tr>
-            </ng-template>
-        </p-table>
-    </ng-container>
+            </div>
+        </ng-container>
+    }
     <app-question-dialog
         [isDialogVisible]="isDialogVisible"
         [question]="question"
@@ -85,4 +108,18 @@
         (successfulRequest)="onSuccessfulRequest($event)">
     </app-question-dialog>
     <p-confirmDialog [style]="{ width: '450px' }" />
+    <div class="sliding-panel" [class.open]="isPanelVisible">
+        <div class="panel-header">
+            <h4>{{ clickedOnQuestion?.title }}</h4>
+            <p-button
+                icon="pi pi-times"
+                severity="secondary"
+                label="Close"
+                (onClick)="closePanel()"
+                class="p-button-text" />
+        </div>
+        <div class="panel-content">
+            <p style="white-space: pre-wrap">{{ clickedOnQuestion?.description }}</p>
+        </div>
+    </div>
 </div>

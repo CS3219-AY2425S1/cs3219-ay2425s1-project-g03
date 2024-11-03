@@ -1,0 +1,104 @@
+<div class="grid w-full" style="height: calc(100vh - 80px)">
+    @if (loading) {
+        <p-progressSpinner
+            class="flex col-12 align-items-center justify-content-center"
+            styleClass="w-4rem h-4rem"
+            strokeWidth="8"
+            animationDuration=".5s" />
+    } @else {
+        <div
+            class="col-12 lg:col-6 xl:col-6 flex align-items-center justify-content-center flex-order-2 lg:flex-order-1">
+            <div class="flex flex-column align-items-center justify-content-center" style="width: 80%; height: auto">
+                <img
+                    src="/pair-programming.png"
+                    srcset="/pair-programming.png 600w, /pair-programming.png 1000w, /pair-programming.png 2000w"
+                    sizes="(max-width: 600px) 600px, (max-width: 1000px) 1000px, 2000px"
+                    alt="Web illustrations by Storyset"
+                    style="width: 100%; height: auto" />
+                <!-- <a lass="align-items-center justify-content-center" href="https://storyset.com/web">Web illustrations by Storyset</a> -->
+            </div>
+        </div>
+        <div
+            class="col-12 lg:col-6 xl:col-6 flex align-items-center justify-content-center flex-order-1 lg:flex-order-2 custom-height-lg">
+            <div class="col-10" style="padding: 20px">
+                <div class="flex w-full align-items-center justify-content-center text-center">
+                    <h1 class="title">Welcome to PeerPrep!</h1>
+                </div>
+                <div class="col-12 container p-2">
+                    <p-table
+                        [value]="activeSessions"
+                        [alwaysShowPaginator]="false"
+                        [paginator]="true"
+                        [rows]="5"
+                        class="w-full">
+                        <ng-template pTemplate="caption">
+                            <div class="flex">
+                                <h3 class="m-0">Active Sessions</h3>
+                            </div>
+                        </ng-template>
+                        @if (activeSessions.length > 0) {
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th style="width: 35%">Question</th>
+                                    <th style="width: 20%">Difficulty</th>
+                                    <th style="width: 20%">Peer</th>
+                                    <th style="width: 25%"></th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-session>
+                                <tr>
+                                    <td>{{ session.question.title }}</td>
+                                    <td>
+                                        @switch (session.question.difficulty) {
+                                            @case (difficultyLevels.EASY) {
+                                                <p-chip class="easy-chip"> {{ session.question.difficulty }} </p-chip>
+                                            }
+                                            @case (difficultyLevels.MEDIUM) {
+                                                <p-chip class="medium-chip"> {{ session.question.difficulty }} </p-chip>
+                                            }
+                                            @case (difficultyLevels.HARD) {
+                                                <p-chip class="hard-chip"> {{ session.question.difficulty }} </p-chip>
+                                            }
+                                            @default {
+                                                <p-chip class="easy-chip"> {{ session.question.difficulty }} </p-chip>
+                                            }
+                                        }
+                                    </td>
+                                    <td>{{ getPeer(session.users) }}</td>
+                                    <td>
+                                        <p-button
+                                            label="Join"
+                                            severity="success"
+                                            [outlined]="true"
+                                            styleClass="w-full"
+                                            [text]="true"
+                                            (onClick)="goToCollab(session.room_id)" />
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        } @else {
+                            <ng-template pTemplate="footer">
+                                <div
+                                    class="flex flex-column w-full align-items-center justify-content-center px-4 pb-0 pt-2">
+                                    <div>
+                                        <p>You currently have no active sessions.</p>
+                                    </div>
+                                </div>
+                            </ng-template>
+                        }
+                    </p-table>
+                </div>
+                <div class="col-12 m-0 p-0 w-full" style="width: 50%">
+                    <p-button
+                        label="Start Matching Now!"
+                        severity="contrast"
+                        [outlined]="true"
+                        (onClick)="goToMatch()"
+                        styleClass="start-matching-button mt-5" />
+                </div>
+            </div>
+        </div>
+    }
+
+    <p-toast position="top-right" [breakpoints]="{ '920px': { width: '80%' } }" styleClass="w-30rem" />
+</div>

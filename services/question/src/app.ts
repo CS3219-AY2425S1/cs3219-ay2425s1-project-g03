@@ -23,6 +23,6 @@ app.use(
 
 // Routes
 app.use('/', router);
-app.use('/api/question', questionRouter);
+app.use('/api/question/questions', questionRouter);
 
 export default app;

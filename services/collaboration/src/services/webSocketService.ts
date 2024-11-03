@@ -12,7 +12,7 @@ const { setPersistence, setupWSConnection } = require('../utils/utility.js');
 const URL_REGEX = /^.*\/([0-9a-f]{24})\?accessToken=([a-zA-Z0-9\-._~%]{1,})$/;
 
 const authorize = async (ws: WebSocket, request: IncomingMessage): Promise<boolean> => {
-    const url = request.url;
+    const url = request.url ?? '';
     const match = url?.match(URL_REGEX);
     if (!match) {
         handleAuthFailed(ws, 'Authorization failed: Invalid format');

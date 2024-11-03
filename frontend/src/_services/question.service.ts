@@ -14,7 +14,7 @@ import { ApiService } from './api.service';
     providedIn: 'root',
 })
 export class QuestionService extends ApiService {
-    protected apiPath = 'question';
+    protected apiPath = 'question/questions';
 
     private httpOptions = {
         headers: new HttpHeaders({

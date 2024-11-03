@@ -1,0 +1,41 @@
+<div class="card flex flex-column" style="height: calc(100vh - 73px - 50vh)">
+    <div class="container flex flex-1 flex-column overflow-hidden">
+        <div class="flex-1 overflow-hidden w-full p-3">
+            <div class="card flex flex-column" style="height: 100%">
+                <div class="flex flex-1 flex-column overflow-hidden">
+                    <div #messagesContainer class="messages mt-0 px-0">
+                        <div *ngFor="let message of messages" class="message-container">
+                            <div
+                                [ngClass]="{
+                                    'username-right': message.sender === username,
+                                    'username-left': message.sender !== username,
+                                    'username-system-left': message.sender === 'System',
+                                }">
+                                {{ message.sender }}
+                            </div>
+                            <div
+                                [ngClass]="{
+                                    'message-right': message.sender === username,
+                                    'message-left': message.sender !== username,
+                                    'username-system-right': message.sender === 'System',
+                                }">
+                                <div class="message-box">{{ message.text }}</div>
+                                <div class="timestamp">{{ message.timestamp }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-container pb-0">
+                        <input
+                            #chatInput
+                            type="text"
+                            placeholder="Type a message..."
+                            (keyup.enter)="sendMessage()"
+                            [disabled]="isMuted" />
+                        <button (click)="sendMessage()" [disabled]="isMuted">Send</button>
+                        <button (click)="toggleMute()">{{ isMuted ? 'Unmute' : 'Mute' }}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

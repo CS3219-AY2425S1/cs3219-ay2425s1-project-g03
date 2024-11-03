@@ -1,7 +1,7 @@
-<div class="card flex flex-column" style="height: calc(100vh - 80px)">
-    <div class="container flex flex-1 flex-column overflow-hidden pb-2 m-4" style="height: 95vh">
-        <div class="flex-1 overflow-hidden w-full p-4">
-            <p-scrollPanel [style]="{ height: 'calc(95vh - 60px)' }" class="w-full overflow-auto mb-4">
+<div class="card flex flex-column" style="height: calc(100vh - 80px - 50vh)">
+    <div class="container flex flex-1 flex-column overflow-hidden pb-2 mb-0">
+        <div class="flex-1 overflow-hidden w-full p-3">
+            <p-scrollPanel [style]="{ height: 'calc(100%)' }" class="w-full overflow-auto mb-4">
                 <h1 class="m-0 mb-4">{{ question.title }}</h1>
                 <div class="mb-4 flex gap-2 flex-wrap">
                     @switch (question.difficulty) {
@@ -9,7 +9,7 @@
                             <p-chip class="easy-chip"> {{ question.difficulty }} </p-chip>
                         }
                         @case (difficultyLevels.MEDIUM) {
-                            <p-chip class=".medium-chip"> {{ question.difficulty }} </p-chip>
+                            <p-chip class="medium-chip"> {{ question.difficulty }} </p-chip>
                         }
                         @case (difficultyLevels.HARD) {
                             <p-chip class="hard-chip"> {{ question.difficulty }} </p-chip>
@@ -23,8 +23,10 @@
                         <p-chip> {{ topic }}</p-chip>
                     }
                 </div>
-                <p class="m-0 mb-4 line-height-2" style="white-space: pre-wrap">{{ question.description }}</p>
-            </p-scrollPanel>
+                <p class="m-0 mb-4 line-height-2" style="white-space: pre-wrap">
+                    {{ question.description }}
+                </p></p-scrollPanel
+            >
         </div>
     </div>
 </div>

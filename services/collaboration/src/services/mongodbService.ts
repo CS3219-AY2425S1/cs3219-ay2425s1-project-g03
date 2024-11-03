@@ -67,8 +67,10 @@ export const startMongoDB = async (): Promise<void> => {
 
 /**
  * Save room data in the MongoDB rooms database and create a Yjs document
- * @param roomData
  * @returns roomId
+ * @param user1
+ * @param user2
+ * @param question
  */
 export const createRoomInDB = async (user1: any, user2: any, question: Question): Promise<string> => {
     try {
@@ -140,24 +142,38 @@ export const deleteYjsDocument = async (roomId: string) => {
 };
 
 /**
- * Find rooms by user ID where room_status is true
+ * Find rooms by user ID and room status
  * @param userId
+ * @param roomStatus
+ * @param isForfeit
+ * @returns
  */
-export const findRoomsByUserId = async (userId: string): Promise<WithId<Room>[]> => {
+export const findRoomsByUserId = async (
+    userId: string,
+    roomStatus: boolean,
+    isForfeit: boolean,
+): Promise<WithId<Room>[]> => {
     try {
         const db = await connectToRoomDB();
-        console.log(`Querying for rooms with user ID: ${userId}`);
+        console.log(
+            `Querying for rooms with user ID: ${userId}, room status: ${roomStatus} and isForfeit status; ${isForfeit}`,
+        );
+
         const rooms = await db
             .collection<Room>('rooms')
             .find({
-                users: { $elemMatch: { id: userId } },
-                room_status: true,
+                users: { $elemMatch: { id: userId, isForfeit: isForfeit } },
+                room_status: roomStatus,
             })
             .toArray();
+
         console.log('Rooms found:', rooms);
         return rooms;
     } catch (error) {
-        console.error(`Error querying rooms for user ID ${userId}:`, error);
+        console.error(
+            `Error querying rooms for user ID ${userId} with room status ${roomStatus} and isForfeit status; ${isForfeit}:`,
+            error,
+        );
         throw error;
     }
 };

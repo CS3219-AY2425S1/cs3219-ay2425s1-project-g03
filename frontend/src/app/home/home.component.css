@@ -1,0 +1,51 @@
+@import '../collaboration/question-box/question-box.component.css';
+
+:host .grid {
+    margin-right: 0rem;
+    margin-left: 0rem;
+    margin-top: 0rem;
+}
+
+:host ::ng-deep .container {
+    background-color: var(--surface-section);
+    border-radius: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+:host ::ng-deep .round {
+    background-color: var(--surface-section);
+    border-radius: 0.75rem;
+}
+
+:host ::ng-deep .full-width-button {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+:host ::ng-deep h1.title {
+    font-family: "Poppins", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    font-size: 3rem;
+    color: white;
+}
+
+:host ::ng-deep .start-matching-button {
+    width: 100%;
+    padding: 13px;
+    border-radius: 19px;
+    /* color: white; */
+    font-size: 1.1rem;
+    font-family: "Poppins", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+}
+
+@media (min-width: 992px) {
+    .custom-height-lg {
+        height: calc(100% - 34px);
+    }
+}

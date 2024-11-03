@@ -5,3 +5,43 @@
 .p-sortable-column:not(.p-highlight):hover {
     background-color: #181818 !important;
 }
+
+.sliding-panel {
+    position: fixed;
+    top: 0;
+    right: -600px; /* Adjust the width as needed */
+    width: 600px;
+    height: 100%;
+    background-color: #181818 !important;
+    color: var(--text-color); /* Use theme variable */
+    box-shadow: -2px 0 5px rgba(0,0,0,0.5);
+    transition: right 0.3s ease;
+    z-index: 1000;
+}
+
+.sliding-panel.open {
+    right: 0;
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background-color: #181818 !important;
+    border-bottom: 1px solid #000000; /* Use theme variable */
+}
+
+.panel-content {
+    padding: 1rem;
+    line-height: 1.6; /* Adjust line height for better readability */
+    color: #ffffff; /* Ensure text color is readable */
+}
+
+.panel-content p {
+    margin-bottom: 1rem; /* Add margin to paragraphs for spacing */
+}
+
+tr:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
