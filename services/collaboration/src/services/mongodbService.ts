@@ -145,6 +145,7 @@ export const deleteYjsDocument = async (roomId: string) => {
  * Find rooms by user ID and room status
  * @param userId
  * @param roomStatus
+ * @param isForfeit
  * @returns
  */
 export const findRoomsByUserId = async (

@@ -106,7 +106,7 @@ export const closeRoomController = async (req: Request, res: Response) => {
 };
 
 /**
- * Controller function to update user status in a room
+ * Controller function to update user isForfeit status in a room
  * @param req
  * @param res
  */
@@ -125,9 +125,23 @@ export const updateUserStatusInRoomController = async (req: Request, res: Respon
             return handleHttpNotFound(res, 'Room not found');
         }
 
-        const updatedRoom = await updateRoomUserStatus(roomId, userId, isForfeit);
+        const updatedRoom: Room | null = await updateRoomUserStatus(roomId, userId, isForfeit);
         if (!updatedRoom) {
             return handleHttpNotFound(res, 'User not found in room');
+        }
+
+        const allUsersForfeited = updatedRoom.users.every(user => user.isForfeit === true);
+        if (allUsersForfeited) {
+            const result = await closeRoomById(roomId);
+            if (result.modifiedCount === 0) {
+                return handleHttpNotFound(res, 'Room not found');
+            }
+            await deleteYjsDocument(roomId);
+            console.log(`Room ${roomId} closed and Yjs document removed`);
+            return handleHttpSuccess(res, {
+                message: 'Both users forfeited. Room has been closed.',
+                room: updatedRoom,
+            });
         }
 
         return handleHttpSuccess(res, {
