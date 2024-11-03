@@ -348,7 +348,7 @@ curl -X PATCH http://localhost:8080/api/collaboration/room/6724e9d892fb3e9f04c2e
 ## Documentation on Queue (RabbitMQ)
 
 The collaboration service uses RabbitMQ as a message broker to facilitate communication between microservices (such as
-the `matching service` and `collaboration service`) in an asynchronous manner. The system consists of a consumer and two
+the `matching service` and `collaboration service`) in an asynchronous manner. The system consists of a consumer and four
 producers:
 
 ### Queues Used
@@ -356,6 +356,8 @@ producers:
 - `QUESTION_FOUND`: Handles messages related to matching users and creating collaboration rooms.
 - `COLLAB_CREATED`: Sends messages indicating that a collaboration room has been successfully created.
 - `MATCH_FAILED`: Sends messages indicating that a collaboration room could not be created.
+- `CREATE_HISTORY`: Sends messages requesting that user history be created for the new collaboration room.
+- `UPDATE_HISTORY`: Sends messages requesting that user history be updated for the new collaboration room.
 
 ---
 
@@ -392,6 +394,53 @@ The producer will send a message to the `MATCH_FAILED` queue when a collaboratio
   "reason": "Failed to create room"
 }
  ```
+
+The producer will send a message to the `CREATE_HISTORY` queue when a collaboration room was created successfully.
+
+- **Queue**: `CREATE_HISTORY`
+- **Data Produced**
+  - `roomId` - The ID of the collaboration room.
+  - `user1` - The first user associated with the collaboration room.
+  - `user2` - The second user associated with the collaboration room.
+  - `question` - The question associated with the collaboration room.
+
+  ```json
+    {
+      "roomId": "67234d29aa52f2376973f96a",
+      "user1": {
+        "username": "user123",
+        "_id": "671a064a6f536e9af46b0017"
+      },
+      "user2": {
+        "username": "userabc",
+        "_id": "671a06526f536e9af46b001f"
+      },
+      "question": {
+        "id": 1,
+        "title": "Roman to Integer",
+        "description": "Given a roman numeral, convert it to an integer.",
+        "topics": [ "Algorithms" ],
+        "difficulty": "Easy",
+        "_id": "671a0615dc63fe2d5f3bbae5"
+      },
+    },
+  ```
+
+The producer will send a message to the `UPDATE_HISTORY` queue when a user forfeits or completes a collaborative session.
+
+- **Queue**: `UPDATE_HISTORY`
+- **Data Produced**
+  - `roomId` - The ID of the collaboration room.
+  - `userId` - The user associated with the update.
+  - `status` - The new status associated with the collaboration room. It may be `"IN_PROGRESS"`, `"FORFEITED"`, or `"COMPLETED"`.
+
+  ```json
+    {
+      "roomId": "67234d29aa52f2376973f96a",
+      "userId": "671a064a6f536e9af46b0017",
+      "status": "FORFEITED"
+    },
+  ```
 
 ---
 

@@ -1,4 +1,5 @@
 import { CollabCreatedEvent, IdType, MatchFailedEvent, Question } from '../types/event';
+import { CreateHistoryMessage, HistoryStatus, UpdateHistoryMessage, User } from '../types/message';
 import messageBroker from './broker';
 import { Queues } from './queues';
 
@@ -17,4 +18,14 @@ export async function produceCollabCreated(
 export async function produceCollabCreateFailedEvent(requestId1: IdType, requestId2: IdType) {
     const message: MatchFailedEvent = { requestId1, requestId2, reason: COLLAB_CREATED_ERROR };
     await messageBroker.produce(Queues.MATCH_FAILED, message);
+}
+
+export async function produceCreateHistory(roomId: IdType, user1: User, user2: User, question: Question) {
+    const message: CreateHistoryMessage = { roomId, user1, user2, question };
+    await messageBroker.produce(Queues.CREATE_HISTORY, message);
+}
+
+export async function produceUpdateHistory(roomId: IdType, userId: IdType, status: HistoryStatus) {
+    const message: UpdateHistoryMessage = { roomId, userId, status };
+    await messageBroker.produce(Queues.UPDATE_HISTORY, message);
 }

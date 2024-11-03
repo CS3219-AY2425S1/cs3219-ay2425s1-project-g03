@@ -52,6 +52,22 @@ services:
     ports:
       - 27020:27017
   
+  collaboration-db:
+    ports:
+      - 27020:27017
+  
+  history:
+    command: npm run dev
+    ports:
+      - 8086:8086
+    volumes:
+      - /app/node_modules
+      - ./services/history:/app
+  
+  history-db:
+    ports:
+      - 27021:27017
+  
   broker:
     ports:
       - 5672:5672
