@@ -2,15 +2,8 @@ name: Deploy Backend Services
 
 on:
   push:
-    branches: [ 'main' ]
-    paths: [
-      'services/question/**',
-      'services/user/**',
-      'services/match/**',
-      'services/collaboration/**',
-    ]
+    branches: [ 'production' ]
 
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 permissions:
@@ -35,17 +28,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Check for changes in ${{ matrix.service }} directory
-        uses: dorny/paths-filter@v3
-        id: changes
-        with:
-          filters: |
-            service:
-              - '.services/${{ matrix.service }}/**'
-
       - name: Configure AWS credentials
         id: aws-configure
-        if: steps.changes.output.service == 'true'
         uses: aws-actions/configure-aws-credentials@v4.0.2
         with:
           role-to-assume: ${{ secrets.AWS_BACKEND_ROLE }}
@@ -54,12 +38,10 @@ jobs:
 
       - name: Login to AWS ECR
         id: login-ecr
-        if: steps.changes.output.service == 'true'
         uses: aws-actions/amazon-ecr-login@v2.0.1
 
       - name: Build and push ${{ matrix.service }} image to AWS ECR
         id: build-image
-        if: steps.changes.output.service == 'true'
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ matrix.service }}
@@ -71,7 +53,6 @@ jobs:
 
       - name: Update AWS Service (${{ matrix.service }}) # Trigger re-deployment with latest image
         id: update-service
-        if: steps.changes.output.service == 'true'
         env:
           ECS_SERVICE: ${{ matrix.service }}-service
         run: |
