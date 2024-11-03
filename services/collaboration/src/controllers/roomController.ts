@@ -73,7 +73,8 @@ export const getRoomByRoomIdController = async (req: Request, res: Response) => 
 };
 
 /**
- * Controller function to close a room and delete its Yjs document
+ * Controller function to close a room and delete its Yjs document.
+ * This function is generally used when a room session ends successfully.
  * @param req
  * @param res
  */
@@ -87,17 +88,22 @@ export const closeRoomController = async (req: Request, res: Response) => {
             return handleHttpNotFound(res, 'Room not found');
         }
 
+        // Check if the room is already closed
         if (!room.room_status) {
             console.log(`Room ${roomId} is already closed.`);
             return handleHttpSuccess(res, `Room ${roomId} is already closed`);
         }
 
+        // Close the room by setting its status to false
         const result = await closeRoomById(roomId);
         if (result.modifiedCount === 0) {
             return handleHttpNotFound(res, 'Room not found');
         }
 
+        // Delete the Yjs document associated with the room
         await deleteYjsDocument(roomId);
+
+        // Mark history as completed for users who did not forfeit
         await Promise.all(
             room.users
                 .filter(user => !user.isForfeit)
@@ -114,7 +120,9 @@ export const closeRoomController = async (req: Request, res: Response) => {
 };
 
 /**
- * Controller function to update user isForfeit status in a room
+ * Controller function to update the isForfeit status of a user in a room.
+ * This function is typically triggered when a user forfeits from an ongoing session.
+ * If all users in the room forfeit, the room is closed automatically.
  * @param req
  * @param res
  */
@@ -123,36 +131,47 @@ export const updateUserStatusInRoomController = async (req: Request, res: Respon
     const { roomId } = req.params;
     const { isForfeit } = req.body;
 
+    // Validate that isForfeit is a boolean value
     if (typeof isForfeit !== 'boolean') {
         return handleHttpBadRequest(res, 'Invalid isForfeit value. Must be true or false.');
     }
 
     try {
+        // Fetch room details to verify access and room status
         const room = await findRoomById(roomId, userId);
         if (!room) {
             return handleHttpNotFound(res, 'Room not found');
         }
 
+        // Update the user's isForfeit status in the room
         const updatedRoom: Room | null = await updateRoomUserStatus(roomId, userId, isForfeit);
         if (!updatedRoom) {
             return handleHttpNotFound(res, 'User not found in room');
         }
 
+        // Record the forfeited status in the user's history
         await produceUpdateHistory(roomId, userId, HistoryStatus.FORFEITED);
+
+        // Check if all users in the room have forfeited
         const allUsersForfeited = updatedRoom.users.every(user => user.isForfeit === true);
         if (allUsersForfeited) {
+            // Close the room if both users have forfeited
             const result = await closeRoomById(roomId);
             if (result.modifiedCount === 0) {
                 return handleHttpNotFound(res, 'Room not found');
             }
+
+            // Delete the Yjs document associated with the room
             await deleteYjsDocument(roomId);
             console.log(`Room ${roomId} closed and Yjs document removed`);
+
             return handleHttpSuccess(res, {
                 message: 'Both users forfeited. Room has been closed.',
                 room: updatedRoom,
             });
         }
 
+        // Return success if only the single user's isForfeit status was updated
         return handleHttpSuccess(res, {
             message: 'User isForfeit status updated successfully',
             room: updatedRoom,
