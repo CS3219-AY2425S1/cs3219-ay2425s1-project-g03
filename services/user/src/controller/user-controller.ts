@@ -14,11 +14,14 @@ import {
 import { Request, Response } from 'express';
 import { User } from '../model/user-model';
 import { handleBadRequest, handleConflict, handleInternalError, handleNotFound, handleSuccess } from '../utils/helper';
+import { userSchema, UserValidationErrors } from '../types/custom';
 
 export async function createUser(req: Request, res: Response) {
     try {
-        const { username, email, password } = req.body;
-        if (username && email && password) {
+        const parseResult = userSchema.safeParse(req.body);
+
+        if (parseResult.success) {
+            const { username, email, password } = req.body;
             const existingUser = await _findUserByUsernameOrEmail(username, email);
             if (existingUser) {
                 handleConflict(res, 'username or email already exists');
@@ -29,7 +32,13 @@ export async function createUser(req: Request, res: Response) {
             const createdUser = await _createUser(username, email, hashedPassword);
             handleSuccess(res, 201, `Created new user ${username} successfully`, formatUserResponse(createdUser));
         } else {
-            handleBadRequest(res, 'username and/or email and/or password are missing');
+            const required_errors = parseResult.error.errors.filter(
+                err => err.message == UserValidationErrors.REQUIRED,
+            );
+            if (required_errors.length > 0) {
+                handleBadRequest(res, 'username and/or email and/or password are missing');
+            }
+            handleBadRequest(res, 'invalid username and/or email and/or password');
         }
     } catch (err) {
         console.error(err);
