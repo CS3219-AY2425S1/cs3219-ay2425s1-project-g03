@@ -76,20 +76,20 @@ export class SubmitDialogComponent implements AfterViewInit {
 
         this.yshow.observe(() => {
             const isShow = this.yshow.get('show');
-
             if (isShow) {
                 this.isVisible = true;
             } else {
                 this.dialogClose.emit(this.numForfeit);
                 this.isVisible = false;
+                this.isInitiator = false;
                 this.ysubmit.clear();
             }
         });
     }
 
     onDialogShow() {
-        this.yshow.set('show', true);
         if (this.isInitiator) {
+            this.yshow.set('show', true);
             if (this.numForfeit == 0 && this.numUniqueUsers == 2) {
                 this.message = "Waiting for the other user's decision...";
                 this.ysubmit.set(this.userId!, true);
@@ -139,6 +139,7 @@ export class SubmitDialogComponent implements AfterViewInit {
     cancel() {
         this.yshow.set('show', false);
         this.ysubmit.clear();
+        this.isInitiator = false;
     }
 
     showSubmitDialog() {

@@ -323,7 +323,7 @@ export class EditorComponent implements AfterViewInit, OnInit {
                 detail: 'Submission failed: Not all participants agreed. Please try again.',
             });
         }
-
+        this.isInitiator = false;
         this.isSubmit = false;
     }
 
