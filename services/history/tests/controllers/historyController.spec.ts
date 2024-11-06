@@ -33,7 +33,7 @@ describe('History Controller', function () {
 
         it('Should return history with token', done => {
             chai.request(app)
-                .get(`/api/history`)
+                .get(`/api/history/history`)
                 .set('Authorization', `Bearer ${user1Token}`)
                 .end((err, res) => {
                     expect(res).to.have.status(200);
@@ -45,7 +45,7 @@ describe('History Controller', function () {
 
         it('Should return empty history for different token', done => {
             chai.request(app)
-                .get(`/api/history`)
+                .get(`/api/history/history`)
                 .set('Authorization', `Bearer ${user3Token}`)
                 .end((err, res) => {
                     expect(res).to.have.status(200);
@@ -57,7 +57,7 @@ describe('History Controller', function () {
 
         it('Should return 401 without accessToken', done => {
             chai.request(app)
-                .get(`/api/history`)
+                .get(`/api/history/history`)
                 .end((err, res) => {
                     expect(res).to.have.status(401);
                     expect(res.body).to.have.property('message');
