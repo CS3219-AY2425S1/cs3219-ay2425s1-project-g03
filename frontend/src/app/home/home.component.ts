@@ -11,12 +11,11 @@ import { ToastModule } from 'primeng/toast';
 import { AuthenticationService } from '../../_services/authentication.service';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { ToastService } from '../../_services/toast.service';
-import { NgOptimizedImage } from '@angular/common';
 
 @Component({
     selector: 'app-home',
     standalone: true,
-    imports: [TableModule, ButtonModule, ChipModule, ToastModule, ProgressSpinnerModule, NgOptimizedImage],
+    imports: [TableModule, ButtonModule, ChipModule, ToastModule, ProgressSpinnerModule],
     providers: [CollabService, MessageService],
     templateUrl: './home.component.html',
     styleUrl: './home.component.css',
