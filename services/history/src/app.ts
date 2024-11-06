@@ -25,6 +25,6 @@ app.use(
 
 // Routes
 app.use('/', router);
-app.use('/api/history', verifyAccessToken, historyRouter);
+app.use('/api/history/history', verifyAccessToken, historyRouter);
 
 export default app;
