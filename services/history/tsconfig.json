@@ -3,14 +3,14 @@
   "compilerOptions": {
     "target": "es2016",
     "module": "CommonJS",
+    "rootDir": "./src",
     "outDir": "./dist",
-    "types": ["mocha"],
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,    
   },
-  "include": ["src/**/*.ts", "tests/**/*.ts"],
+  "include": ["src/**/*.ts"],
   "exclude": ["node_modules"],
   "ts-node": {
     "files": true
