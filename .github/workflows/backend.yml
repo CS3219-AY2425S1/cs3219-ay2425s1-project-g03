@@ -22,7 +22,7 @@ jobs:
 
     strategy:
       matrix:
-        service: [ 'question', 'user', 'match', 'collaboration' ]
+        service: [ 'question', 'user', 'match', 'collaboration', 'history' ]
 
     steps:
       - name: Checkout
