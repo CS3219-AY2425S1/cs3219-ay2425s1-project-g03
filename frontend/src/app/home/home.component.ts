@@ -25,7 +25,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     activeSessions: RoomData[] = [];
     difficultyLevels = DifficultyLevels;
     userId!: string;
-    errorMessage!: string;
+    message!: string;
 
     constructor(
         private collabService: CollabService,
@@ -72,17 +72,17 @@ export class HomeComponent implements OnInit, OnDestroy {
             next: response => {
                 this.activeSessions = Array.isArray(response.data) ? response.data : [];
                 if (this.activeSessions.length == 0) {
-                    this.errorMessage = 'You currently have no active sessions.';
+                    this.message = 'You currently have no active sessions.';
                 }
             },
             error: () => {
                 this.loading = false;
-                this.errorMessage = 'Unable to retrieve session data. Please try again later.';
+                this.message = 'Unable to retrieve session data. Please try again later.';
 
                 this.messageService.add({
                     severity: 'error',
                     summary: 'Error',
-                    detail: this.errorMessage,
+                    detail: this.message,
                     life: 3000,
                 });
             },
