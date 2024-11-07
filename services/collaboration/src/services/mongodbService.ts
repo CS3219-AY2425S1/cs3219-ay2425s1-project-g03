@@ -18,7 +18,7 @@ const connectToRoomDB = async (): Promise<Db> => {
         if (!roomDb) {
             const client = new MongoClient(config.COLLAB_DB_URI);
             await client.connect();
-            roomDb = client.db('collaboration-service');
+            roomDb = client.db();
             console.log('Connected to the collaboration-service (room) database');
         }
         return roomDb;
@@ -41,7 +41,7 @@ const connectToYJSDB = async (): Promise<Db> => {
 
             const client = new MongoClient(config.YJS_DB_URI);
             await client.connect();
-            yjsDb = client.db('yjs-documents');
+            yjsDb = client.db();
             console.log('Connected to the YJS database');
         }
         return yjsDb;
