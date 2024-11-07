@@ -3,19 +3,12 @@
   "compilerOptions": {
     "target": "es2016",
     "module": "CommonJS",
-    "rootDir": "./src",
-    "outDir": "./dist",
+    "outDir": "../dist",
+    "composite": true,
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,    
   },
-  "references": [
-    { "path": "./src" },
-    { "path": "./tests" }
-  ],
-  "exclude": ["node_modules"],
-  "ts-node": {
-    "files": true
-  }
+  "include": ["**/*.ts"]
 }
