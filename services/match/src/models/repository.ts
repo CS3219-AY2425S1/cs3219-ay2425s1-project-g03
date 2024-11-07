@@ -5,11 +5,7 @@ import config from '../config';
 import { IdType } from '../types/request';
 
 export async function connectToDB() {
-    await mongoose.connect(config.DB_URI, {
-        authSource: 'admin',
-        user: config.DB_USERNAME,
-        pass: config.DB_PASSWORD,
-    });
+    await mongoose.connect(config.DB_URI);
 }
 
 export async function createMatchRequest(userId: IdType, username: string, topics: string[], difficulty: Difficulty) {

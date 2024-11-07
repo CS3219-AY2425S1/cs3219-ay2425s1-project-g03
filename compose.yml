@@ -50,8 +50,6 @@ services:
     environment:
       DB_CLOUD_URI: ${QUESTION_DB_CLOUD_URI}
       DB_LOCAL_URI: ${QUESTION_DB_LOCAL_URI}
-      DB_USERNAME: ${QUESTION_DB_USERNAME}
-      DB_PASSWORD: ${QUESTION_DB_PASSWORD}
       BROKER_URL: ${BROKER_URL}
       JWT_SECRET: ${JWT_SECRET}
     depends_on:
@@ -65,12 +63,8 @@ services:
   question-db:
     container_name: question-db
     image: mongo:7.0.14
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${QUESTION_DB_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${QUESTION_DB_PASSWORD}
     volumes:
       - question-db:/data/db
-      - ./services/question/init-mongo/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js
     networks:
       - question-db-network
     command: --quiet
@@ -85,8 +79,6 @@ services:
     environment:
       DB_CLOUD_URI: ${USER_DB_CLOUD_URI}
       DB_LOCAL_URI: ${USER_DB_LOCAL_URI}
-      DB_USERNAME: ${USER_DB_USERNAME}
-      DB_PASSWORD: ${USER_DB_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
     networks:
       - gateway-network
@@ -96,9 +88,6 @@ services:
   user-db:
     container_name: user-db
     image: mongo:7.0.14
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${USER_DB_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${USER_DB_PASSWORD}
     volumes:
       - user-db:/data/db
     networks:
@@ -115,8 +104,6 @@ services:
     environment:
       DB_CLOUD_URI: ${MATCH_DB_CLOUD_URI}
       DB_LOCAL_URI: ${MATCH_DB_LOCAL_URI}
-      DB_USERNAME: ${MATCH_DB_USERNAME}
-      DB_PASSWORD: ${MATCH_DB_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
       BROKER_URL: ${BROKER_URL}
     depends_on:
@@ -130,9 +117,6 @@ services:
   match-db:
     container_name: match-db
     image: mongo:7.0.14
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MATCH_DB_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MATCH_DB_PASSWORD}
     volumes:
       - match-db:/data/db
     networks:

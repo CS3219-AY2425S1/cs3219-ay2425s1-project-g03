@@ -65,8 +65,6 @@ Here are the key environment variables used in the `.env` file:
 | `COLLAB_LOCAL_MONGO_URI` | URI for connecting to the local MongoDB database for the collaboration service (room) |
 | `YJS_CLOUD_MONGO_URI`    | URI for connecting to the MongoDB Atlas database for Yjs document persistence         |
 | `YJS_LOCAL_MONGO_URI`    | URI for connecting to the local MongoDB database for Yjs document persistence         |
-| `DB_USERNAME`            | Username for the MongoDB databases (for both cloud and local environments)            |
-| `DB_PASSWORD`            | Password for the MongoDB databases (for both cloud and local environments)            |
 | `CORS_ORIGIN`            | Allowed origins for CORS (default: * to allow all origins)                            |
 | `PORT`                   | Port for the Room and Collaboration Service (default: 8084)                           |
 | `ENV`                    | Environment setting (`development` or `production`)                                   |

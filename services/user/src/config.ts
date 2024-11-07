@@ -2,8 +2,6 @@ import { z } from 'zod';
 
 const envSchema = z
     .object({
-        DB_USERNAME: z.string().trim().min(1),
-        DB_PASSWORD: z.string().trim().min(1),
         DB_CLOUD_URI: z.string().trim().optional(),
         DB_LOCAL_URI: z.string().trim().optional(),
         NODE_ENV: z.enum(['development', 'production']).default('development'),
