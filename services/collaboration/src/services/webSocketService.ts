@@ -11,6 +11,14 @@ const { setPersistence, setupWSConnection } = require('../utils/utility.js');
 
 const URL_REGEX = /^.*\/([0-9a-f]{24})\?accessToken=([a-zA-Z0-9\-._~%]{1,})$/;
 
+/**
+ * Verifies the user's access to a specific room by validating the JWT token,
+ * checking the room's status, and ensuring the user has not forfeited.
+ * Returns `roomId` if the access is authorized, or `null` otherwise.
+ * @param ws
+ * @param request
+ * @returns
+ */
 const authorize = async (ws: WebSocket, request: IncomingMessage): Promise<string | null> => {
     const url = request.url ?? '';
     const match = url?.match(URL_REGEX);
@@ -63,16 +71,15 @@ const authorize = async (ws: WebSocket, request: IncomingMessage): Promise<strin
  */
 export const startWebSocketServer = (server: Server) => {
     const wss = new WebSocketServer({ server });
-    let roomId: string | null;
 
     wss.on('connection', async (conn: WebSocket, req: IncomingMessage) => {
-        roomId = await authorize(conn, req);
+        const roomId = await authorize(conn, req);
         if (!roomId) {
             return;
         }
 
         try {
-            setupWSConnection(conn, req);
+            setupWSConnection(conn, req, { docName: roomId });
         } catch (error) {
             console.error('Failed to set up WebSocket connection:', error);
             handleAuthFailed(conn, 'Authorization failed');
@@ -82,27 +89,22 @@ export const startWebSocketServer = (server: Server) => {
     setPersistence({
         bindState: async (docName: string, ydoc: Y.Doc) => {
             try {
-                console.log('Using roomId:', roomId);
-                if (roomId != null) {
-                    const persistedYdoc = await mdb.getYDoc(roomId);
-                    console.log(`Loaded persisted document for ${roomId}`);
+                const persistedYdoc = await mdb.getYDoc(docName);
+                console.log(`Loaded persisted document for ${docName}`);
 
-                    const newUpdates = Y.encodeStateAsUpdate(ydoc);
-                    await mdb.storeUpdate(roomId, newUpdates);
+                const newUpdates = Y.encodeStateAsUpdate(ydoc);
+                await mdb.storeUpdate(docName, newUpdates);
 
-                    Y.applyUpdate(ydoc, Y.encodeStateAsUpdate(persistedYdoc));
+                Y.applyUpdate(ydoc, Y.encodeStateAsUpdate(persistedYdoc));
 
-                    ydoc.on('update', async update => {
-                        if (roomId != null) {
-                            await mdb.storeUpdate(roomId, update);
-                        }
-                    });
-                }
+                ydoc.on('update', async update => {
+                    await mdb.storeUpdate(docName, update);
+                });
             } catch (error) {
-                console.error(`Error loading document ${roomId}:`, error);
+                console.error(`Error loading document ${docName}:`, error);
             }
         },
-        writeState: async (roomId: string, ydoc: Y.Doc) => {
+        writeState: async (docName: string, ydoc: Y.Doc) => {
             return new Promise(resolve => {
                 resolve(true);
             });
