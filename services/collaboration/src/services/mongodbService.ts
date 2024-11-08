@@ -108,22 +108,6 @@ export const findRoomById = async (roomId: string, userId: string): Promise<With
 };
 
 /**
- * Check if a Yjs document exists in the MongoDB Yjs database
- * @param roomId
- * @returns {Promise<boolean>}
- */
-export const yjsDocumentExists = async (roomId: string): Promise<boolean> => {
-    try {
-        const db = await connectToYJSDB();
-        const collectionInfo = await db.collection(roomId).findOne({});
-        return collectionInfo !== null;
-    } catch (error) {
-        console.error(`Error checking for Yjs document existence for room ID ${roomId}:`, error);
-        throw error;
-    }
-};
-
-/**
  * Create and bind a Yjs document using the room_id as the document name
  * @param roomId
  * @returns
