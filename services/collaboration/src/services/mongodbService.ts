@@ -108,6 +108,22 @@ export const findRoomById = async (roomId: string, userId: string): Promise<With
 };
 
 /**
+ * Check if a Yjs document exists in the MongoDB Yjs database
+ * @param roomId
+ * @returns {Promise<boolean>}
+ */
+export const yjsDocumentExists = async (roomId: string): Promise<boolean> => {
+    try {
+        const db = await connectToYJSDB();
+        const collectionInfo = await db.collection(roomId).findOne({});
+        return collectionInfo !== null;
+    } catch (error) {
+        console.error(`Error checking for Yjs document existence for room ID ${roomId}:`, error);
+        throw error;
+    }
+};
+
+/**
  * Create and bind a Yjs document using the room_id as the document name
  * @param roomId
  * @returns
@@ -132,9 +148,10 @@ export const createYjsDocument = async (roomId: string) => {
  */
 export const deleteYjsDocument = async (roomId: string) => {
     try {
+        console.log(`Attempting to delete Yjs document collection for room: ${roomId}`);
         const db = await connectToYJSDB();
-        await db.collection(roomId).drop();
-        console.log(`Yjs document collection for room ${roomId} deleted`);
+        const result = await db.collection(roomId).drop();
+        console.log(`Yjs document collection for room ${roomId} deleted successfully: ${result}`);
     } catch (error) {
         console.error(`Failed to delete Yjs document for room ${roomId}:`, error);
         throw error;
@@ -196,6 +213,12 @@ export const closeRoomById = async (roomId: string) => {
     }
 };
 
+/**
+ * Update the user isForfeit status in a room
+ * @param roomId
+ * @param userId
+ * @param isForfeit
+ */
 export const updateRoomUserStatus = async (roomId: string, userId: string, isForfeit: boolean) => {
     try {
         const db = await connectToRoomDB();

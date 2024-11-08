@@ -154,6 +154,7 @@ export const updateUserStatusInRoomController = async (req: Request, res: Respon
 
         // Check if all users in the room have forfeited
         const allUsersForfeited = updatedRoom.users.every(user => user.isForfeit === true);
+        console.log('All users forfeited check:', allUsersForfeited, updatedRoom.users);
         if (allUsersForfeited) {
             // Close the room if both users have forfeited
             const result = await closeRoomById(roomId);

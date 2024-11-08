@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import { IncomingMessage, Server } from 'http';
 import { WebSocketServer, WebSocket } from 'ws';
 import * as Y from 'yjs';
-import { findRoomById, mdb } from './mongodbService';
+import { findRoomById, mdb, yjsDocumentExists } from './mongodbService';
 import { handleAuthFailed, handleRoomClosed } from '../utils/helper';
 import config from '../config';
 import { RequestUser, userSchema } from '../middleware/request';
@@ -34,6 +34,12 @@ const authorize = async (ws: WebSocket, request: IncomingMessage): Promise<boole
     });
     if (!user) {
         handleAuthFailed(ws, 'Authorization failed: Invalid token');
+        return false;
+    }
+
+    const docExists = await yjsDocumentExists(roomId);
+    if (!docExists) {
+        handleAuthFailed(ws, 'Authorization failed: Yjs document does not exist');
         return false;
     }
 
@@ -78,25 +84,33 @@ export const startWebSocketServer = (server: Server) => {
         }
     });
 
+    const cleanDocName = (docName: string) => {
+        return docName.replace(/^.*\//, '');
+    };
+
     setPersistence({
         bindState: async (docName: string, ydoc: Y.Doc) => {
             try {
-                const persistedYdoc = await mdb.getYDoc(docName);
-                console.log(`Loaded persisted document for ${docName}`);
+                console.log('Original DocName: ', docName);
+                const cleanedDocName = cleanDocName(docName);
+
+                const persistedYdoc = await mdb.getYDoc(cleanedDocName);
+                console.log(`Loaded persisted document for ${cleanedDocName}`);
 
                 const newUpdates = Y.encodeStateAsUpdate(ydoc);
-                mdb.storeUpdate(docName, newUpdates);
+                await mdb.storeUpdate(cleanedDocName, newUpdates);
 
                 Y.applyUpdate(ydoc, Y.encodeStateAsUpdate(persistedYdoc));
 
                 ydoc.on('update', async update => {
-                    await mdb.storeUpdate(docName, update);
+                    await mdb.storeUpdate(cleanedDocName, update);
                 });
             } catch (error) {
                 console.error(`Error loading document ${docName}:`, error);
             }
         },
         writeState: async (docName: string, ydoc: Y.Doc) => {
+            const cleanedDocName = cleanDocName(docName);
             return new Promise(resolve => {
                 resolve(true);
             });
