@@ -7,6 +7,7 @@ This script allows you to set the desired number of tasks for each backend servi
 Before using this script, ensure that you have the following:
 
 1. **AWS CLI**: You must have the AWS CLI installed on your machine to interact with AWS services. You may install AWS CLI [here](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html).
+
 2. **Access Keys**: You may obtain the AWS environment variables from the AWS Access Portal.
 
 ## Running the Script
@@ -17,6 +18,7 @@ Before using this script, ensure that you have the following:
 - Log in to the **AWS Access Console**.
 - Click on **Access keys**.
 - Copy the AWS environment variables into your terminal:
+
 ```bash
 export AWS_ACCESS_KEY_ID=<AccessKeyId>
 export AWS_SECRET_ACCESS_KEY=<SecretAccessKey>
@@ -50,6 +52,3 @@ export AWS_SESSION_TOKEN=<SessionToken>
 ```bash
 chmod +x deploy-backend.sh
 ```
-
-
-
