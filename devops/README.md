@@ -13,13 +13,23 @@ Before using this script, ensure that you have the following:
 
 1. Open a terminal and navigate to the `devops/` directory where the script is located.
 
-2. To scale the services to **1 task** (i.e., start the services), run the following command:
+2. Obtain your AWS Access Keys:
+- Log in to the **AWS Access Console**.
+- Click on **Access keys**.
+- Copy the AWS environment variables into your terminal:
+```bash
+export AWS_ACCESS_KEY_ID=<AccessKeyId>
+export AWS_SECRET_ACCESS_KEY=<SecretAccessKey>
+export AWS_SESSION_TOKEN=<SessionToken>
+```
+
+3. To scale the services to **1 task** (i.e., start the services), run the following command:
 
 ```bash
 ./deploy-backend.sh 1
 ```
 
-3. To scale the services to **0 tasks** (i.e., stop the services), run the following command:
+4. To scale the services to **0 tasks** (i.e., stop the services), run the following command:
 
 ```bash
 ./deploy-backend.sh 0
