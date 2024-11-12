@@ -7,6 +7,7 @@ import { map, switchMap } from 'rxjs/operators';
 import { UServRes } from '../_models/user.service.model';
 import { User } from '../_models/user.model';
 import { ApiService } from './api.service';
+import { ToastService } from './toast.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService extends ApiService {
@@ -18,6 +19,7 @@ export class AuthenticationService extends ApiService {
     constructor(
         private router: Router,
         private http: HttpClient,
+        private toastService: ToastService,
     ) {
         super();
         const userData = localStorage.getItem('user');
@@ -53,6 +55,8 @@ export class AuthenticationService extends ApiService {
                     }
                     localStorage.setItem('user', JSON.stringify(user));
                     this.userSubject.next(user);
+                    this.startTokenExpiryCheck();
+
                     return user;
                 }),
             );
@@ -98,5 +102,36 @@ export class AuthenticationService extends ApiService {
                 return null;
             }),
         );
+    }
+    public startTokenExpiryCheck(): void {
+        const tokenExpirationTime = this.getTokenExpiration();
+
+        if (!tokenExpirationTime) {
+            this.logout();
+            return;
+        }
+
+        const oneMinute = 60 * 1000;
+        const checkInterval = oneMinute;
+
+        setInterval(() => {
+            const now = Date.now();
+            const timeLeft = tokenExpirationTime - now;
+
+            if (timeLeft <= 0) {
+                this.toastService.showToast('Your session has expired. Please log in again.');
+                this.logout();
+            } else if (timeLeft < 5 * oneMinute) {
+                this.toastService.showToast('Your session will expire in less than 5 minutes. Please log in again');
+            }
+        }, checkInterval);
+    }
+
+    private getTokenExpiration() {
+        const user = this.userValue;
+        if (!user || !user.accessToken) return null;
+
+        const tokenPayload = JSON.parse(atob(user.accessToken.split('.')[1]));
+        return tokenPayload.exp ? tokenPayload.exp * 1000 : null;
     }
 }
