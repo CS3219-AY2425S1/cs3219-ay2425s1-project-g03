@@ -119,7 +119,7 @@ export class AuthenticationService extends ApiService {
             const timeLeft = tokenExpirationTime - now;
 
             if (timeLeft <= 0) {
-                this.toastService.showToast('Your session has expired. Please log in again.');
+                alert('Your session has expired. Please log in again.');
                 this.logout();
             } else if (timeLeft < 5 * oneMinute) {
                 this.toastService.showToast('Your session will expire in less than 5 minutes. Please log in again');
