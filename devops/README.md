@@ -52,3 +52,9 @@ export AWS_SESSION_TOKEN=<SessionToken>
 ```bash
 chmod +x deploy-backend.sh
 ```
+
+---
+
+**Q: The script worked before but doesn't work anymore**
+
+**A:** This could be due to the environment variables expiring. Copy a new set of environment variables as shown above.
