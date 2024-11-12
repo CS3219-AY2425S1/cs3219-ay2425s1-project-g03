@@ -8,7 +8,7 @@ const envSchema = z
         NODE_ENV: z.enum(['development', 'production']).default('development'),
         CORS_ORIGIN: z.union([z.string().url(), z.literal('*')]).default('*'),
         JWT_SECRET: z.string().trim().min(32),
-        PORT: z.coerce.number().min(1024).default(8086),
+        PORT: z.coerce.number().min(1024).default(8085),
     })
     .superRefine((data, ctx) => {
         const isUrl = z.string().url();

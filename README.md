@@ -62,8 +62,7 @@ docker compose -f compose.yml -f compose.dev.yml up -d
 | User Service                 | 8082 |
 | Match Service                | 8083 |
 | Collaboration & Room Service | 8084 |
-| Chat Service                 | 8085 |
-| History Service              | 8086 |
+| History Service              | 8085 |
 
 **Step 4: Stop the Docker containers**
 
