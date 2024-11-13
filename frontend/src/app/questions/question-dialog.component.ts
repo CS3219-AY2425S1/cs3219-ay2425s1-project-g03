@@ -130,7 +130,7 @@ export class QuestionDialogComponent implements OnInit {
                 this.questionUpdate.emit(response.data);
             },
             error: (error: HttpErrorResponse) => {
-                this.errorReceive.emit(error.error.message);
+                this.errorReceive.emit(error.message);
             },
             complete: () => {
                 this.question = {} as Question;
@@ -145,7 +145,7 @@ export class QuestionDialogComponent implements OnInit {
                 this.questionAdd.emit(response.data);
             },
             error: (error: HttpErrorResponse) => {
-                this.errorReceive.emit('Failed to add new question. ' + error.error.message);
+                this.errorReceive.emit('Failed to add new question. ' + error.message);
             },
             complete: () => {
                 this.question = {} as Question;
@@ -182,7 +182,7 @@ export class QuestionDialogComponent implements OnInit {
             },
             error: (error: HttpErrorResponse) => {
                 this.topics = [];
-                this.errorReceive.emit('Failed to load topics. ' + error.error.message);
+                this.errorReceive.emit('Failed to load topics. ' + error.message);
             },
         });
     }
