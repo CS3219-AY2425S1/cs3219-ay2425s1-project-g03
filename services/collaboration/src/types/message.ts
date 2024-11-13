@@ -7,6 +7,11 @@ export enum HistoryStatus {
     COMPLETED = 'COMPLETED',
 }
 
+export interface Snapshot {
+    language: string;
+    code: string;
+}
+
 export interface User {
     _id: Types.ObjectId | string;
     username: string;
@@ -23,4 +28,5 @@ export interface UpdateHistoryMessage {
     roomId: IdType;
     userId: IdType;
     status: HistoryStatus;
+    snapshot: Snapshot;
 }

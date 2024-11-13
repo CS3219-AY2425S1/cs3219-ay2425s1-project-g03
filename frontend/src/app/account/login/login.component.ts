@@ -7,7 +7,7 @@ import { PasswordModule } from 'primeng/password';
 import { ButtonModule } from 'primeng/button';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
-import { AuthenticationService } from '../../_services/authentication.service';
+import { AuthenticationService } from '../../../_services/authentication.service';
 
 @Component({
     selector: 'app-login',
@@ -15,7 +15,7 @@ import { AuthenticationService } from '../../_services/authentication.service';
     imports: [RouterLink, FormsModule, InputTextModule, ButtonModule, SelectButtonModule, PasswordModule, ToastModule],
     providers: [MessageService],
     templateUrl: './login.component.html',
-    styleUrl: './account.component.css',
+    styleUrl: '../account.component.css',
 })
 export class LoginComponent {
     constructor(

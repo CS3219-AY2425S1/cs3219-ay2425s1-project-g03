@@ -18,10 +18,10 @@ async function consumeCreateHistory(msg: CreateHistoryMessage) {
 
 async function consumeUpdateHistory(msg: UpdateHistoryMessage) {
     console.log('Processing UpdateHistoryMessage:', msg);
-    const { roomId, userId, status } = msg;
+    const { roomId, userId, status, snapshot } = msg;
 
     try {
-        await updateHistory(roomId, userId, status);
+        await updateHistory(roomId, userId, status, snapshot);
     } catch (error) {
         console.log('Unable to add history:', error);
     }

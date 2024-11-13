@@ -7,25 +7,13 @@ import {
     findRoomsByUserId,
     closeRoomById,
     updateRoomUserStatus,
+    mdb,
+    retrieveSnapshot,
 } from '../services/mongodbService';
 import { handleHttpNotFound, handleHttpSuccess, handleHttpServerError, handleHttpBadRequest } from '../utils/helper';
-import { Room } from './types';
+import { Room, Question } from '../types/collab';
 import { produceUpdateHistory } from '../events/producer';
 import { HistoryStatus } from '../types/message';
-
-export enum Difficulty {
-    Easy = 'Easy',
-    Medium = 'Medium',
-    Hard = 'Hard',
-}
-
-export interface Question {
-    id: number;
-    description: string;
-    difficulty: Difficulty;
-    title: string;
-    topics?: string[];
-}
 
 /**
  * Create a room with users, question details, and Yjs document
@@ -100,6 +88,9 @@ export const closeRoomController = async (req: Request, res: Response) => {
             return handleHttpNotFound(res, 'Room not found');
         }
 
+        // Obtain code and language
+        const snapshot = await retrieveSnapshot(roomId);
+
         // Delete the Yjs document associated with the room
         await deleteYjsDocument(roomId);
 
@@ -107,7 +98,7 @@ export const closeRoomController = async (req: Request, res: Response) => {
         await Promise.all(
             room.users
                 .filter(user => !user.isForfeit)
-                .map(user => produceUpdateHistory(roomId, user.id, HistoryStatus.COMPLETED)),
+                .map(user => produceUpdateHistory(roomId, user.id, HistoryStatus.COMPLETED, snapshot)),
         );
 
         console.log(`Room ${roomId} closed and Yjs document removed`);
@@ -149,8 +140,11 @@ export const updateUserStatusInRoomController = async (req: Request, res: Respon
             return handleHttpNotFound(res, 'User not found in room');
         }
 
+        // Obtain code and language
+        const snapshot = await retrieveSnapshot(roomId);
+
         // Record the forfeited status in the user's history
-        await produceUpdateHistory(roomId, userId, HistoryStatus.FORFEITED);
+        await produceUpdateHistory(roomId, userId, HistoryStatus.FORFEITED, snapshot);
 
         // Check if all users in the room have forfeited
         const allUsersForfeited = updatedRoom.users.every(user => user.isForfeit === true);

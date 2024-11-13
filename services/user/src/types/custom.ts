@@ -13,26 +13,46 @@ export interface RequestUser {
     isAdmin: boolean;
 }
 
-export const userSchema = z.object({
-    username: z
-        .string({
-            invalid_type_error: UserValidationErrors.INVALID,
-            required_error: UserValidationErrors.REQUIRED,
-        })
-        .regex(/^[a-zA-Z0-9._-]+$/, UserValidationErrors.INVALID),
-    email: z
-        .string({
-            invalid_type_error: UserValidationErrors.INVALID,
-            required_error: UserValidationErrors.REQUIRED,
-        })
-        .email(UserValidationErrors.INVALID),
-    password: z
-        .string({
-            invalid_type_error: UserValidationErrors.INVALID,
-            required_error: UserValidationErrors.REQUIRED,
-        })
-        .regex(
-            /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})(?=.*[!"#$%&'()*+,-.:;<=>?@\\/\\[\]^_`{|}~])/,
-            UserValidationErrors.INVALID,
-        ),
+export const usernameSchema = z
+    .string({
+        invalid_type_error: UserValidationErrors.INVALID,
+        required_error: UserValidationErrors.REQUIRED,
+    })
+    .regex(/^[a-zA-Z0-9._-]+$/, UserValidationErrors.INVALID);
+
+export const emailSchema = z
+    .string({
+        invalid_type_error: UserValidationErrors.INVALID,
+        required_error: UserValidationErrors.REQUIRED,
+    })
+    .email(UserValidationErrors.INVALID);
+
+export const passwordSchema = z
+    .string({
+        invalid_type_error: UserValidationErrors.INVALID,
+        required_error: UserValidationErrors.REQUIRED,
+    })
+    .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})(?=.*[!"#$%&'()*+,-.:;<=>?@\\/\\[\]^_`{|}~])/,
+        UserValidationErrors.INVALID,
+    );
+
+export const registrationSchema = z.object({
+    username: usernameSchema,
+    email: emailSchema,
+    password: passwordSchema,
+});
+
+export const updateUsernameAndEmailSchema = z.object({
+    username: usernameSchema,
+    email: emailSchema,
+    password: z.string({
+        invalid_type_error: UserValidationErrors.INVALID,
+        required_error: UserValidationErrors.REQUIRED,
+    }),
+});
+
+export const updatePasswordSchema = z.object({
+    oldPassword: passwordSchema,
+    newPassword: passwordSchema,
 });

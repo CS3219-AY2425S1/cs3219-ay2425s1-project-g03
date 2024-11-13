@@ -33,6 +33,12 @@ export interface History {
     collaborator: User;
     question: Question;
     status: HistoryStatus;
+    snapshot: Snapshot;
+}
+
+export interface Snapshot {
+    language: string;
+    code: string;
 }
 
 const userSchema = new Schema<User>({
@@ -66,6 +72,17 @@ const questionSchema = new Schema<Question>({
     },
 });
 
+const snapshotSchema = new Schema<Snapshot>({
+    language: {
+        type: String,
+        required: true,
+    },
+    code: {
+        type: String,
+        required: true,
+    },
+});
+
 const historySchema = new Schema<History>(
     {
         roomId: {
@@ -80,6 +97,7 @@ const historySchema = new Schema<History>(
             enum: Object.values(HistoryStatus),
             default: HistoryStatus.IN_PROGRESS,
         },
+        snapshot: snapshotSchema,
     },
     { versionKey: false, timestamps: true },
 );

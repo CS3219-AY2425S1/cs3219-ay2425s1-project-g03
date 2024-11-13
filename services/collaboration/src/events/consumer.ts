@@ -4,6 +4,10 @@ import { createRoomWithQuestion } from '../controllers/roomController';
 import { QuestionFoundEvent } from '../types/event';
 import { produceCollabCreated, produceCollabCreateFailedEvent, produceCreateHistory } from './producer';
 
+/**
+ * Consume the question found event and create a room
+ * @param message
+ */
 async function consumeQuestionFound(message: QuestionFoundEvent) {
     console.log('Attempting to create room:', message);
     const { user1, user2, question } = message;
@@ -27,6 +31,9 @@ async function consumeQuestionFound(message: QuestionFoundEvent) {
     }
 }
 
+/**
+ * Initialize the consumers for the collaboration service
+ */
 export async function initializeConsumers() {
     messageBroker.consume(Queues.QUESTION_FOUND, consumeQuestionFound);
 }

@@ -64,7 +64,9 @@ export class ForfeitDialogComponent implements OnInit {
         if (userId) {
             this.collabService.forfeit(this.roomId).subscribe({
                 next: () => {
-                    this.yforfeit.set(userId, true);
+                    if (this.yforfeit.size == 0) {
+                        this.yforfeit.set(userId, true);
+                    }
                     this.message = 'You have forfeited. \n\n Redirecting you to homepage...';
                     this.isForfeit = true;
                     this.hideButtons = true;

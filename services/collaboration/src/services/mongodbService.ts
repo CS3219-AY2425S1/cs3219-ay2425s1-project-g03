@@ -2,11 +2,12 @@ import { MongoClient, Db, ObjectId, WithId } from 'mongodb';
 import { MongodbPersistence } from 'y-mongodb-provider';
 import * as Y from 'yjs';
 import config from '../config';
-import { Question } from '../controllers/roomController';
-import { Room } from '../controllers/types';
+import { Question, Room } from '../types/collab';
+import { Snapshot } from '../types/message';
 
 let roomDb: Db | null = null;
 let yjsDb: Db | null = null;
+
 /** Yjs MongoDB persistence provider for Yjs documents */
 export let mdb!: MongodbPersistence;
 
@@ -29,7 +30,7 @@ const connectToRoomDB = async (): Promise<Db> => {
 };
 
 /**
- * Connect to the YJS database
+ * Connect to the Yjs Document database
  */
 const connectToYJSDB = async (): Promise<Db> => {
     try {
@@ -66,7 +67,7 @@ export const startMongoDB = async (): Promise<void> => {
 };
 
 /**
- * Save room data in the MongoDB rooms database and create a Yjs document
+ * Create a room in the database
  * @returns roomId
  * @param user1
  * @param user2
@@ -108,7 +109,7 @@ export const findRoomById = async (roomId: string, userId: string): Promise<With
 };
 
 /**
- * Create and bind a Yjs document using the room_id as the document name
+ * Create and bind a Yjs document using the room_id as the collection name
  * @param roomId
  * @returns
  */
@@ -225,4 +226,11 @@ export const updateRoomUserStatus = async (roomId: string, userId: string, isFor
         console.error(`Error updating user isForfeit status for user ID ${userId} in room ${roomId}:`, error);
         throw error;
     }
+};
+
+export const retrieveSnapshot = async (roomId: string): Promise<Snapshot> => {
+    const yDoc = await mdb.getYDoc(roomId);
+    const code = yDoc.getText('editorText').toString();
+    const language = yDoc.getMap('language').toJSON()['selected'];
+    return { code, language };
 };
