@@ -10,10 +10,10 @@ import {
     addQuestion,
     updateQuestion,
     deleteQuestion,
+    deleteQuestions,
 } from '../../src/controllers/questionController';
 import { Question } from '../../src/models/questionModel';
 import * as seq from '../../src/utils/sequence';
-import { getNextSequenceValue } from '../../src/utils/sequence';
 
 chai.use(sinonChai);
 
@@ -807,6 +807,329 @@ describe('addQuestion', () => {
         expect(res.json).to.have.been.calledWith({
             status: 'Error',
             message: 'Failed to add question',
+        });
+    });
+});
+
+// Testing function updateQuestion
+describe('updateQuestion', () => {
+    let req: Partial<Request>;
+    let res: Partial<Response>;
+    let findOneStub: SinonStub;
+    let findOneAndUpdateStub: SinonStub;
+    let collationStub: SinonStub;
+
+    beforeEach(() => {
+        req = {
+            params: {},
+            body: {},
+        };
+        res = {
+            status: sinon.stub().returnsThis(),
+            json: sinon.stub(),
+        };
+        findOneStub = sinon.stub(Question, 'findOne');
+        findOneAndUpdateStub = sinon.stub(Question, 'findOneAndUpdate');
+        collationStub = sinon.stub().returnsThis();
+        findOneStub.returns({ collation: collationStub });
+    });
+
+    afterEach(() => {
+        sinon.restore();
+    });
+
+    it('should update a question successfully', async () => {
+        req.params = { id: '1' };
+        req.body = {
+            title: 'Updated Title',
+            description: 'Updated Description',
+            topics: ['topic1'],
+            difficulty: 'medium',
+        };
+
+        collationStub.resolves(null);
+        findOneAndUpdateStub.resolves({
+            id: 1,
+            title: 'Updated Title',
+            description: 'Updated Description',
+            topics: ['topic1'],
+            difficulty: 'medium',
+        });
+
+        await updateQuestion(req as Request, res as Response);
+
+        expect(findOneStub).to.have.been.calledWith({
+            $and: [{ $or: [{ title: 'Updated Title' }, { description: 'Updated Description' }] }, { id: { $ne: 1 } }],
+        });
+        expect(findOneAndUpdateStub).to.have.been.calledWith(
+            { id: 1 },
+            { title: 'Updated Title', description: 'Updated Description', topics: ['topic1'], difficulty: 'medium' },
+            { new: true, runValidators: true },
+        );
+        expect(res.status).to.have.been.calledWith(200);
+        expect(res.json).to.have.been.calledWith({
+            status: 'Success',
+            message: 'Question updated successfully',
+            data: {
+                id: 1,
+                title: 'Updated Title',
+                description: 'Updated Description',
+                topics: ['topic1'],
+                difficulty: 'medium',
+            },
+        });
+    });
+
+    it('should return bad request if ID is in updates', async () => {
+        req.params = { id: '1' };
+        req.body = { id: '2', title: 'Updated Title' };
+
+        await updateQuestion(req as Request, res as Response);
+
+        expect(res.status).to.have.been.calledWith(400);
+        expect(res.json).to.have.been.calledWith({
+            status: 'Error',
+            message: 'ID cannot be updated',
+        });
+    });
+
+    it('should return bad request if a question with the same title or description exists', async () => {
+        req.params = { id: '1' };
+        req.body = { title: 'Existing Title', description: 'Updated Description' };
+
+        collationStub.resolves({
+            id: 2,
+            title: 'Existing Title',
+            description: 'Existing Description',
+        });
+
+        await updateQuestion(req as Request, res as Response);
+
+        expect(findOneStub).to.have.been.calledWith({
+            $and: [{ $or: [{ title: 'Existing Title' }, { description: 'Updated Description' }] }, { id: { $ne: 1 } }],
+        });
+        expect(res.status).to.have.been.calledWith(400);
+        expect(res.json).to.have.been.calledWith({
+            status: 'Error',
+            message: 'A question with the same title or description already exists.',
+        });
+    });
+
+    it('should return not found if the question does not exist', async () => {
+        req.params = { id: '1' };
+        req.body = { title: 'Updated Title', description: 'Updated Description' };
+
+        collationStub.resolves(null);
+        findOneAndUpdateStub.resolves(null);
+
+        await updateQuestion(req as Request, res as Response);
+
+        expect(findOneAndUpdateStub).to.have.been.calledWith(
+            { id: 1 },
+            { title: 'Updated Title', description: 'Updated Description' },
+            { new: true, runValidators: true },
+        );
+        expect(res.status).to.have.been.calledWith(404);
+        expect(res.json).to.have.been.calledWith({
+            status: 'Error',
+            message: 'Question not found',
+        });
+    });
+
+    it('should handle errors during the update process', async () => {
+        req.params = { id: '1' };
+        req.body = { title: 'Updated Title', description: 'Updated Description' };
+
+        const error = new Error('Database error');
+        findOneStub.rejects(error);
+
+        await updateQuestion(req as Request, res as Response);
+
+        expect(findOneStub).to.have.been.calledWith({
+            $and: [{ $or: [{ title: 'Updated Title' }, { description: 'Updated Description' }] }, { id: { $ne: 1 } }],
+        });
+        expect(res.status).to.have.been.calledWith(500);
+        expect(res.json).to.have.been.calledWith({
+            status: 'Error',
+            message: 'Failed to update question',
+        });
+    });
+});
+
+// Testing function deleteQuestion
+describe('deleteQuestion', () => {
+    let req: Partial<Request>;
+    let res: Partial<Response>;
+    let findOneAndDeleteStub: SinonStub;
+
+    beforeEach(() => {
+        req = {
+            params: {},
+        };
+        res = {
+            status: sinon.stub().returnsThis(),
+            json: sinon.stub(),
+        };
+        findOneAndDeleteStub = sinon.stub(Question, 'findOneAndDelete');
+    });
+
+    afterEach(() => {
+        sinon.restore();
+    });
+
+    it('should delete a question successfully', async () => {
+        req.params = { id: '1' };
+
+        findOneAndDeleteStub.resolves({
+            id: 1,
+            title: 'Question 1',
+            description: 'Description 1',
+            topics: ['topic1'],
+            difficulty: 'easy',
+        });
+
+        await deleteQuestion(req as Request, res as Response);
+
+        expect(findOneAndDeleteStub).to.have.been.calledWith({ id: 1 });
+        expect(res.status).to.have.been.calledWith(200);
+        expect(res.json).to.have.been.calledWith({
+            status: 'Success',
+            message: 'Question deleted successfully',
+            data: {
+                id: 1,
+                title: 'Question 1',
+                description: 'Description 1',
+                topics: ['topic1'],
+                difficulty: 'easy',
+            },
+        });
+    });
+
+    it('should return not found if the question does not exist', async () => {
+        req.params = { id: '1' };
+
+        findOneAndDeleteStub.resolves(null);
+
+        await deleteQuestion(req as Request, res as Response);
+
+        expect(findOneAndDeleteStub).to.have.been.calledWith({ id: 1 });
+        expect(res.status).to.have.been.calledWith(404);
+        expect(res.json).to.have.been.calledWith({
+            status: 'Error',
+            message: 'Question not found',
+        });
+    });
+
+    it('should handle errors during the deletion process', async () => {
+        req.params = { id: '1' };
+
+        const error = new Error('Database error');
+        findOneAndDeleteStub.rejects(error);
+
+        await deleteQuestion(req as Request, res as Response);
+
+        expect(findOneAndDeleteStub).to.have.been.calledWith({ id: 1 });
+        expect(res.status).to.have.been.calledWith(500);
+        expect(res.json).to.have.been.calledWith({
+            status: 'Error',
+            message: 'Failed to delete question',
+        });
+    });
+});
+
+// Testing function deleteQuestions
+describe('deleteQuestions', () => {
+    let req: Partial<Request>;
+    let res: Partial<Response>;
+    let countDocumentsStub: SinonStub;
+    let deleteManyStub: SinonStub;
+
+    beforeEach(() => {
+        req = {
+            body: {},
+        };
+        res = {
+            status: sinon.stub().returnsThis(),
+            json: sinon.stub(),
+        };
+        countDocumentsStub = sinon.stub(Question, 'countDocuments');
+        deleteManyStub = sinon.stub(Question, 'deleteMany');
+    });
+
+    afterEach(() => {
+        sinon.restore();
+    });
+
+    it('should delete multiple questions successfully', async () => {
+        req.body = { ids: ['1', '2', '3'] };
+
+        countDocumentsStub.resolves(3);
+        deleteManyStub.resolves({ deletedCount: 3 });
+
+        await deleteQuestions(req as Request, res as Response);
+
+        expect(countDocumentsStub).to.have.been.calledWith({ id: { $in: [1, 2, 3] } });
+        expect(deleteManyStub).to.have.been.calledWith({ id: { $in: [1, 2, 3] } });
+        expect(res.status).to.have.been.calledWith(200);
+        expect(res.json).to.have.been.calledWith({
+            status: 'Success',
+            message: 'Questions deleted successfully',
+            data: null,
+        });
+    });
+
+    it('should return bad request if IDs are missing or not an array', async () => {
+        req.body = { ids: '1,2,3' };
+
+        await deleteQuestions(req as Request, res as Response);
+
+        expect(res.status).to.have.been.calledWith(400);
+        expect(res.json).to.have.been.calledWith({
+            status: 'Error',
+            message: 'IDs are missing or not specified as an array',
+        });
+    });
+
+    it('should return bad request if any ID is invalid', async () => {
+        req.body = { ids: ['1', 'invalid', '3'] };
+
+        await deleteQuestions(req as Request, res as Response);
+
+        expect(res.status).to.have.been.calledWith(400);
+        expect(res.json).to.have.been.calledWith({
+            status: 'Error',
+            message: 'Invalid question ID',
+        });
+    });
+
+    it('should return not found if some questions do not exist', async () => {
+        req.body = { ids: ['1', '2', '3'] };
+
+        countDocumentsStub.resolves(2);
+
+        await deleteQuestions(req as Request, res as Response);
+
+        expect(countDocumentsStub).to.have.been.calledWith({ id: { $in: [1, 2, 3] } });
+        expect(res.status).to.have.been.calledWith(404);
+        expect(res.json).to.have.been.calledWith({
+            status: 'Error',
+            message: 'Question not found',
+        });
+    });
+
+    it('should handle errors during the deletion process', async () => {
+        req.body = { ids: ['1', '2', '3'] };
+
+        const error = new Error('Database error');
+        countDocumentsStub.rejects(error);
+
+        await deleteQuestions(req as Request, res as Response);
+
+        expect(countDocumentsStub).to.have.been.calledWith({ id: { $in: [1, 2, 3] } });
+        expect(res.status).to.have.been.calledWith(500);
+        expect(res.json).to.have.been.calledWith({
+            status: 'Error',
+            message: 'Failed to delete questions',
         });
     });
 });
