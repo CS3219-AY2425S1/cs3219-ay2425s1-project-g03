@@ -106,9 +106,7 @@ export class AuthenticationService extends ApiService {
     }
 
     displaySessionExpiryWarning(): void {
-        this.toastService.showToast(
-            'Your session will expire in less than 5 minutes. Please log in again.',
-        );
+        this.toastService.showToast('Your session will expire in less than 5 minutes. Please log in again.');
     }
 
     public startTokenExpiryCheck(): void {
