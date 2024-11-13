@@ -48,6 +48,10 @@ services:
       - /app/node_modules
       - ./services/collaboration:/app
   
+  collaboration-db:
+    ports:
+      - 27020:27017
+  
   history:
     command: npm run dev
     ports:
