@@ -23,7 +23,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        service: [frontend, services/question, services/user, services/match, services/collaboration]
+        service: [frontend, services/user, services/match]
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js
@@ -38,9 +38,13 @@ jobs:
         run: cd ${{ matrix.service }} && npm run build
 
           
-  build-history:
+  build-service-and-test:
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        service: [services/question, services/collaboration, services/history]
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js
@@ -48,10 +52,10 @@ jobs:
         with:
           node-version: ${{ env.node-version }}
       - name: Install Node Modules
-        run: cd services/history && npm ci
+        run: cd ${{ matrix.service }} && npm ci
       - name: Linting
-        run: cd services/history && npm run lint
+        run: cd ${{ matrix.service }} && npm run lint
       - name: Build App
-        run: cd services/history && npm run build
+        run: cd ${{ matrix.service }} && npm run build
       - name: Run tests
-        run: cd services/history && npm run test
+        run: cd ${{ matrix.service }} && npm run test
