@@ -2,7 +2,8 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, timer } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { map, switchMap } from 'rxjs/operators';
 import { UServRes } from '../_models/user.service.model';
 import { User } from '../_models/user.model';
@@ -112,19 +113,26 @@ export class AuthenticationService extends ApiService {
         }
 
         const oneMinute = 60 * 1000;
-        const checkInterval = oneMinute;
 
-        setInterval(() => {
-            const now = Date.now();
-            const timeLeft = tokenExpirationTime - now;
+        const timeLeft = tokenExpirationTime - Date.now();
+        console.log(timeLeft);
 
-            if (timeLeft <= 0) {
+        if (timeLeft > 5 * oneMinute) {
+            timer(timeLeft - 5 * oneMinute)
+                .pipe(takeUntilDestroyed())
+                .subscribe(() => {
+                    this.toastService.showToast(
+                        'Your session will expire in less than 5 minutes. Please log in again.',
+                    );
+                });
+        }
+
+        timer(timeLeft)
+            .pipe(takeUntilDestroyed())
+            .subscribe(() => {
                 alert('Your session has expired. Please log in again.');
                 this.logout();
-            } else if (timeLeft < 5 * oneMinute) {
-                this.toastService.showToast('Your session will expire in less than 5 minutes. Please log in again');
-            }
-        }, checkInterval);
+            });
     }
 
     private getTokenExpiration() {
