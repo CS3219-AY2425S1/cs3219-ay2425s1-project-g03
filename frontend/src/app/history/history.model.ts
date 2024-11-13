@@ -1,4 +1,4 @@
-import { DifficultyLevels } from '../../questions/difficulty-levels.enum';
+import { DifficultyLevels } from '../questions/difficulty-levels.enum';
 
 export enum HistoryStatus {
     COMPLETED = 'COMPLETED',

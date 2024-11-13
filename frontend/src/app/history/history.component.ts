@@ -2,16 +2,16 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { TableModule } from 'primeng/table';
 import { CommonModule, DatePipe } from '@angular/common';
 import { HistoryStatus, MatchingHistory } from './history.model';
-import { HistoryService } from '../../../_services/history.service';
+import { HistoryService } from '../../_services/history.service';
 import { MessageService } from 'primeng/api';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { oneDark } from '@codemirror/theme-one-dark';
-import { EditorState } from '@codemirror/state';
+import { EditorState, Extension } from '@codemirror/state';
 import { EditorView, basicSetup } from 'codemirror';
-import { languageMap } from '../../collaboration/editor/languages';
+import { languageMap } from '../collaboration/editor/languages';
 import { ToastModule } from 'primeng/toast';
 import { Router } from '@angular/router';
 
@@ -30,6 +30,7 @@ export class HistoryComponent implements OnInit {
     isPanelVisible = false;
     panelHistory: MatchingHistory | null = null;
     editorView: EditorView | null = null;
+    customTheme!: Extension;
 
     constructor(
         private historyService: HistoryService,
@@ -80,10 +81,29 @@ export class HistoryComponent implements OnInit {
             this.editorView.destroy();
         }
 
+        const customTheme = EditorView.theme(
+            {
+                '&': {
+                    backgroundColor: 'var(--surface-section)',
+                },
+                '.cm-gutters': {
+                    backgroundColor: 'var(--surface-section)',
+                },
+            },
+            { dark: true },
+        );
+
         const languageExtension = languageMap[language] || languageMap['java'];
         const state = EditorState.create({
             doc: code,
-            extensions: [basicSetup, languageExtension, oneDark, EditorView.editable.of(false)],
+            extensions: [
+                basicSetup,
+                languageExtension,
+                customTheme,
+                oneDark,
+                EditorView.lineWrapping,
+                EditorView.editable.of(false),
+            ],
         });
 
         this.editorView = new EditorView({
