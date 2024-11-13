@@ -51,7 +51,7 @@
     {
       "username": "SampleUserName",
       "email": "sample@gmail.com",
-      "password": "SecurePassword"
+      "password": "SecurePassword@3219"
     }
     ```
 
@@ -63,6 +63,9 @@
     | 400 (Bad Request)           | Missing fields                                        |
     | 409 (Conflict)              | Duplicate username or email encountered               |
     | 500 (Internal Server Error) | Database or server error                              |
+
+- Input Validation
+  - This endpoint validates whether the [username](#password), [email](#email) and [password](#password) supplied are of the correct format.
 
 ### Get User
 
@@ -140,7 +143,7 @@
     {
       "username": "SampleUserName",
       "email": "sample@gmail.com",
-      "password": "SecurePassword"
+      "password": "SecurePassword@8"
     }
     ```
 
@@ -157,12 +160,103 @@
     | Response Code               | Explanation                                             |
     |-----------------------------|---------------------------------------------------------|
     | 200 (OK)                    | User updated successfully, updated user data returned   |
-    | 400 (Bad Request)           | Missing fields                                          |
+    | 400 (Bad Request)           | Missing/invalid fields                                  |
     | 401 (Unauthorized)          | Access denied due to missing/invalid/expired JWT        |
     | 403 (Forbidden)             | Access denied for non-admin users updating others' data |
     | 404 (Not Found)             | User with the specified ID not found                    |
     | 409 (Conflict)              | Duplicate username or email encountered                 |
     | 500 (Internal Server Error) | Database or server error                                |
+
+- Input Validation
+  - This endpoint validates whether the [username](#password), [email](#email) or [password](#password) supplied are of the correct format.
+
+### Update Username and Email
+
+- This endpoint allows updating a user's username and email using the user's ID given the correct password.
+
+- HTTP Method: `PATCH`
+
+- Endpoint: http://localhost:8082/api/user/users/username-email/{userId}
+
+- Parameters
+  - Required: `userId` path parameter
+
+- Body
+  - All of the following fields are required: `username` (string), `email` (string), `password` (string)
+
+    ```json
+    {
+      "username": "SampleUserName",
+      "email": "sample@gmail.com",
+      "password": "SecurePassword@3219"
+    }
+    ```
+
+- Headers
+    - Required: `Authorization: Bearer <JWT_ACCESS_TOKEN>`
+    - Auth Rules:
+
+        - Admin users: Cannot update any user's data as it requires the user's password to authorize the request. Admin users should update user details via http://localhost:8082/api/user/users/{userId} instead.
+          
+        - Non-admin users: Can only update their own data. The server checks if the user ID in the request URL matches the ID of the user associated with the JWT token. If it matches and the user supplies their own password correctly, the server updates the user's own data.
+
+- Responses:
+
+    | Response Code               | Explanation                                                                 |
+    |-----------------------------|-----------------------------------------------------------------------------|
+    | 200 (OK)                    | User updated successfully, updated user data returned                       |
+    | 400 (Bad Request)           | Missing/invalid fields                                                      |
+    | 401 (Unauthorized)          | Access denied due to missing/invalid/expired JWT or wrong password          |
+    | 403 (Forbidden)             | Access denied for non-admin users updating others' data                     |
+    | 404 (Not Found)             | User with the specified ID not found                                        |
+    | 409 (Conflict)              | Duplicate username or email encountered                                     |
+    | 500 (Internal Server Error) | Database or server error                                                    |
+
+- Input Validation
+  - This endpoint validates whether the [username](#username) and [email](#email) supplied are of the correct format.
+
+### Update Password
+
+- This endpoint allows updating a user's password given the correct old/original password.
+
+- HTTP Method: `PATCH`
+
+- Endpoint: http://localhost:8082/api/user/users/password/{userId}
+
+- Parameters
+  - Required: `userId` path parameter
+
+- Body
+  - All of the following fields are required: `oldPassword` (string), `newPassword` (string)
+
+    ```json
+    {
+      "oldPassword": "SecurePassword",
+      "newPassword": "SecurePassword@3219",
+    }
+    ```
+
+- Headers
+    - Required: `Authorization: Bearer <JWT_ACCESS_TOKEN>`
+    - Auth Rules:
+
+        - Admin users: Cannot update any user's data as it requires the user's password to authorize the request. Admin users should update user details via http://localhost:8082/api/user/users/{userId} instead.
+          
+        - Non-admin users: Can only update their own data. The server checks if the user ID in the request URL matches the ID of the user associated with the JWT token. If it matches and the user supplies their own password correctly, the server updates the user's password.
+
+- Responses:
+
+    | Response Code               | Explanation                                                                 |
+    |-----------------------------|-----------------------------------------------------------------------------|
+    | 200 (OK)                    | User updated successfully, updated user data returned                       |
+    | 400 (Bad Request)           | Missing/invalid fields                                                      |
+    | 401 (Unauthorized)          | Access denied due to missing/invalid/expired JWT or wrong original password |
+    | 403 (Forbidden)             | Access denied for non-admin users updating others' data                     |
+    | 404 (Not Found)             | User with the specified ID not found                                        |
+    | 500 (Internal Server Error) | Database or server error                                                    |
+
+- Input Validation
+  - This endpoint validates whether the [new password](#password) supplied is of the correct format.
 
 ### Update User Privilege
 
@@ -242,7 +336,7 @@
     ```json
     {
       "username": "sample123",
-      "password": "SecurePassword"
+      "password": "SecurePassword@3219"
     }
     ```
 
@@ -270,3 +364,58 @@
     | 200 (OK)                    | Token verified, authenticated user's data returned |
     | 401 (Unauthorized)          | Missing/invalid/expired JWT                        |
     | 500 (Internal Server Error) | Database or server error                           |
+
+## User Service Input Validation
+
+This section outlines how the user service validates user details when creating or updating a user.
+
+### Username
+- Requirement(s)
+  - The username can only contain alphanumeric characters.
+
+- Regex Used for Validation
+  - ```regex
+    /^[a-zA-Z0-9._-]+$/
+    ```
+
+- Valid Example
+    - ```
+      sampleUsername
+      ```
+
+### Email
+- Requirement(s)
+  - The email cannot start with a period.
+  - The local part of the email cannot contain consecutive periods.
+  - The local part may include alphanumeric and specific special characters (`+_-.'`).
+  - The domain must start with an alphanumeric character
+  - The domain part must be alphanumeric and can include hyphens but not as the first or last character.
+  - The top-level domain must be composed of letters only and have at least 2 characters.
+
+- Regex Used for Validation (Based on [zod's emailRegex](https://github.com/colinhacks/zod/blob/main/src/types.ts))
+  - ```
+    /^(?!\.)(?!.*\.\.)([A-Z0-9_'+\-\.]*)[A-Z0-9_+-]@([A-Z0-9][A-Z0-9\-]*\.)+[A-Z]{2,}$/i
+    ```
+
+- Valid Example
+    - ```
+      sample@gmail.com
+      ```
+
+### Password
+- Requirement(s)
+  - The password must contain at least one lowercase letter.
+  - The password must contain at least one uppercase letter.
+  - The password must contain at least one digit.
+  - The password must contain at least one special character (``?=.*[!"#$%&'()*+,-.:;<=>?@\\/\\[\]^_`{|}~]``).
+  - The password must be at least 8 characters long.
+
+- Regex Used for Validation
+  - ```
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})(?=.*[!"#$%&'()*+,-.:;<=>?@\\/\\[\]^_`{|}~])/
+    ```
+
+- Valid Example
+    - ```
+      SecurePassword@3219
+      ```
