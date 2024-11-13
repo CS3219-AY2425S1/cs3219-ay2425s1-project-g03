@@ -6,8 +6,8 @@ import config from '../config';
  * https://hassanfouad.medium.com/using-rabbitmq-with-nodejs-and-typescript-8b33d56a62cc
  */
 class MessageBroker {
-    connection!: Connection;
-    channel!: Channel;
+    connection: Connection | undefined;
+    channel: Channel | undefined;
     private connected = false;
 
     async connect(): Promise<void> {
@@ -32,7 +32,11 @@ class MessageBroker {
                 await this.connect();
             }
 
-            this.channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)));
+            if (this.channel) {
+                this.channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)));
+            } else {
+                throw new Error('Channel is not initialized');
+            }
         } catch (error) {
             console.error('Failed to produce message:', error);
             throw error;
@@ -45,7 +49,11 @@ class MessageBroker {
                 await this.connect();
             }
 
-            await this.channel.assertQueue(queue, { durable: true });
+            if (this.channel) {
+                await this.channel.assertQueue(queue, { durable: true });
+            } else {
+                throw new Error('Channel is not initialized');
+            }
 
             this.channel.consume(
                 queue,
@@ -53,7 +61,11 @@ class MessageBroker {
                     if (!msg) return console.error('Invalid message from queue', queue);
 
                     onMessage(JSON.parse(msg.content.toString()) as T);
-                    this.channel.ack(msg);
+                    if (this.channel) {
+                        this.channel.ack(msg);
+                    } else {
+                        console.error('Channel is not initialized');
+                    }
                 },
                 { noAck: false },
             );
