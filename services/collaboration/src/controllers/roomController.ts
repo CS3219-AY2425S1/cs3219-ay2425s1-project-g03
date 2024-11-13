@@ -120,7 +120,7 @@ export const closeRoomController = async (req: Request, res: Response) => {
 export const updateUserStatusInRoomController = async (req: Request, res: Response) => {
     const userId = req.user.id;
     const { roomId } = req.params;
-    const { isForfeit, snapshot } = req.body;
+    const { isForfeit } = req.body;
 
     // Validate that isForfeit is a boolean value
     if (typeof isForfeit !== 'boolean') {
@@ -139,6 +139,9 @@ export const updateUserStatusInRoomController = async (req: Request, res: Respon
         if (!updatedRoom) {
             return handleHttpNotFound(res, 'User not found in room');
         }
+
+        // Obtain code and language
+        const snapshot = await retrieveSnapshot(roomId);
 
         // Record the forfeited status in the user's history
         await produceUpdateHistory(roomId, userId, HistoryStatus.FORFEITED, snapshot);
