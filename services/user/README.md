@@ -46,7 +46,7 @@
 
 - Body
   - Required: `username` (string), `email` (string), `password` (string)
-
+  - This endpoint validates whether the [username](#password), [email](#email) and [password](#password) supplied are of the correct format.
     ```json
     {
       "username": "SampleUserName",
@@ -63,9 +63,6 @@
     | 400 (Bad Request)           | Missing fields                                        |
     | 409 (Conflict)              | Duplicate username or email encountered               |
     | 500 (Internal Server Error) | Database or server error                              |
-
-- Input Validation
-  - This endpoint validates whether the [username](#password), [email](#email) and [password](#password) supplied are of the correct format.
 
 ### Get User
 
@@ -138,6 +135,7 @@
 
 - Body
   - At least one of the following fields is required: `username` (string), `email` (string), `password` (string)
+  - This endpoint validates whether the [username](#password), [email](#email) or [password](#password) supplied are of the correct format.
 
     ```json
     {
@@ -167,9 +165,6 @@
     | 409 (Conflict)              | Duplicate username or email encountered                 |
     | 500 (Internal Server Error) | Database or server error                                |
 
-- Input Validation
-  - This endpoint validates whether the [username](#password), [email](#email) or [password](#password) supplied are of the correct format.
-
 ### Update Username and Email
 
 - This endpoint allows updating a user's username and email using the user's ID given the correct password.
@@ -183,7 +178,8 @@
 
 - Body
   - All of the following fields are required: `username` (string), `email` (string), `password` (string)
-
+  - This endpoint validates whether the [username](#username) and [email](#email) supplied are of the correct format.
+  
     ```json
     {
       "username": "SampleUserName",
@@ -212,9 +208,6 @@
     | 409 (Conflict)              | Duplicate username or email encountered                                     |
     | 500 (Internal Server Error) | Database or server error                                                    |
 
-- Input Validation
-  - This endpoint validates whether the [username](#username) and [email](#email) supplied are of the correct format.
-
 ### Update Password
 
 - This endpoint allows updating a user's password given the correct old/original password.
@@ -228,6 +221,7 @@
 
 - Body
   - All of the following fields are required: `oldPassword` (string), `newPassword` (string)
+  - This endpoint validates whether the [new password](#password) supplied is of the correct format.
 
     ```json
     {
@@ -254,9 +248,6 @@
     | 403 (Forbidden)             | Access denied for non-admin users updating others' data                     |
     | 404 (Not Found)             | User with the specified ID not found                                        |
     | 500 (Internal Server Error) | Database or server error                                                    |
-
-- Input Validation
-  - This endpoint validates whether the [new password](#password) supplied is of the correct format.
 
 ### Update User Privilege
 
