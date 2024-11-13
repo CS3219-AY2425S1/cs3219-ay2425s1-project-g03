@@ -1,5 +1,5 @@
 // Modified from https://jasonwatmore.com/post/2022/11/15/angular-14-jwt-authentication-example-tutorial#login-component-ts
-import { Injectable } from '@angular/core';
+import { DestroyRef, inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, timer } from 'rxjs';
@@ -13,6 +13,8 @@ import { ToastService } from './toast.service';
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService extends ApiService {
     protected apiPath = 'user';
+
+    private destroyRef = inject(DestroyRef);
 
     private userSubject: BehaviorSubject<User | null>;
     public user$: Observable<User | null>;
@@ -140,14 +142,14 @@ export class AuthenticationService extends ApiService {
         const timeLeft = tokenExpirationTime - Date.now();
         if (timeLeft > 5 * oneMinute) {
             timer(timeLeft - 5 * oneMinute)
-                .pipe(takeUntilDestroyed())
+                .pipe(takeUntilDestroyed(this.destroyRef))
                 .subscribe(() => this.displaySessionExpiryWarning());
         } else {
             this.displaySessionExpiryWarning();
         }
 
         timer(timeLeft)
-            .pipe(takeUntilDestroyed())
+            .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(() => {
                 alert('Your session has expired. Please log in again.');
                 this.logout();
