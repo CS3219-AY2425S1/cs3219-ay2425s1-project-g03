@@ -69,7 +69,7 @@ export class NavigationBarComponent implements OnInit {
                     class: 'p-submenu-list',
                 },
                 {
-                    label: 'View Match History',
+                    label: 'Match History',
                     icon: 'pi pi-trophy',
                     // routerLink: '',
                     class: 'p-submenu-list',
