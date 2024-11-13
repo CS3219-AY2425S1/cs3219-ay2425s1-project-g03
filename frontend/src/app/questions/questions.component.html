@@ -108,18 +108,17 @@
         (successfulRequest)="onSuccessfulRequest($event)">
     </app-question-dialog>
     <p-confirmDialog [style]="{ width: '450px' }" />
-    <div class="sliding-panel" [class.open]="isPanelVisible">
-        <div class="panel-header">
-            <h4>{{ clickedOnQuestion?.title }}</h4>
-            <p-button
-                icon="pi pi-times"
-                severity="secondary"
-                label="Close"
-                (onClick)="closePanel()"
-                class="p-button-text" />
-        </div>
+    <p-sidebar
+        [(visible)]="isPanelVisible"
+        position="right"
+        [blockScroll]="true"
+        styleClass="w-10 md:w-4"
+        transitionOptions="300ms cubic-bezier(0, 0, 0.2, 1)">
+        <ng-template pTemplate="header">
+            <h3>{{ clickedOnQuestion?.title }}</h3>
+        </ng-template>
         <div class="panel-content">
             <p style="white-space: pre-wrap">{{ clickedOnQuestion?.description }}</p>
         </div>
-    </div>
+    </p-sidebar>
 </div>
