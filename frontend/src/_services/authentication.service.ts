@@ -104,27 +104,28 @@ export class AuthenticationService extends ApiService {
             }),
         );
     }
+
+    displaySessionExpiryWarning(): void {
+        this.toastService.showToast(
+            'Your session will expire in less than 5 minutes. Please log in again.',
+        );
+    }
+
     public startTokenExpiryCheck(): void {
         const tokenExpirationTime = this.getTokenExpiration();
-
         if (!tokenExpirationTime) {
             this.logout();
             return;
         }
 
         const oneMinute = 60 * 1000;
-
         const timeLeft = tokenExpirationTime - Date.now();
-        console.log(timeLeft);
-
         if (timeLeft > 5 * oneMinute) {
             timer(timeLeft - 5 * oneMinute)
                 .pipe(takeUntilDestroyed())
-                .subscribe(() => {
-                    this.toastService.showToast(
-                        'Your session will expire in less than 5 minutes. Please log in again.',
-                    );
-                });
+                .subscribe(() => this.displaySessionExpiryWarning());
+        } else {
+            this.displaySessionExpiryWarning();
         }
 
         timer(timeLeft)
