@@ -87,7 +87,6 @@ export class HistoryComponent implements OnInit {
 
     sortTableData(event: SortEvent) {
         event.data?.sort((data1, data2) => {
-            console.log(event.field);
             const value1 = data1[event.field ?? ''] ?? null;
             const value2 = data2[event.field ?? ''] ?? null;
             let result = 0;
@@ -100,7 +99,6 @@ export class HistoryComponent implements OnInit {
             } else if (value1 === null && value2 === null) {
                 result = 0;
             } else if (event.field == 'time') {
-                console.log(new Date(value1));
                 result = new Date(value1) >= new Date(value2) ? 1 : -1;
             } else if (typeof value1 === 'string' && typeof value2 === 'string') {
                 // String comparison
