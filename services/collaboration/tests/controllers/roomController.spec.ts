@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-dotenv.config({path: "../../.env.sample"});
+dotenv.config({ path: "../../.env.sample" });
 import chai, { expect } from "chai";
 import sinon, { SinonStub } from "sinon";
 import sinonChai from "sinon-chai";
