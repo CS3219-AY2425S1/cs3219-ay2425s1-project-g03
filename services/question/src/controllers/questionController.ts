@@ -161,7 +161,7 @@ export const addQuestion = async (req: Request, res: Response) => {
         const existingQuestion = await Question.findOne({
             $or: [{ title: title }, { description: description }],
         }).collation({ locale: 'en', strength: 2 });
-        console.log('existingQuestion:', existingQuestion);
+
         if (existingQuestion) {
             return handleBadRequest(res, `A question with the same title or description already exists.`);
         }

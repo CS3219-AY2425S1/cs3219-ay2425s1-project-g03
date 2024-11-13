@@ -497,6 +497,7 @@ describe('addQuestion', () => {
     let saveStub: SinonStub;
     let findOneStub: SinonStub;
     let getNextSequenceValueStub: SinonStub;
+    let collationStub: SinonStub;
 
     beforeEach(() => {
         req = {
@@ -509,6 +510,8 @@ describe('addQuestion', () => {
         saveStub = sinon.stub(Question.prototype, 'save');
         findOneStub = sinon.stub(Question, 'findOne');
         getNextSequenceValueStub = sinon.stub(seq, 'getNextSequenceValue');
+        collationStub = sinon.stub().returnsThis();
+        findOneStub.returns({ collation: collationStub });
     });
 
     afterEach(() => {
@@ -523,7 +526,7 @@ describe('addQuestion', () => {
             difficulty: 'easy',
         };
 
-        findOneStub.resolves(null);
+        collationStub.resolves(null);
         getNextSequenceValueStub.resolves(1);
         saveStub.resolves({
             id: 1,
@@ -627,7 +630,7 @@ describe('addQuestion', () => {
             difficulty: 'easy',
         };
 
-        findOneStub.resolves({
+        collationStub.resolves({
             id: 1,
             title: 'Existing Question',
             description: 'Existing Description',
@@ -655,10 +658,10 @@ describe('addQuestion', () => {
             difficulty: 'easy',
         };
 
-        findOneStub.resolves({
+        collationStub.resolves({
             id: 1,
             title: 'Existing Question',
-            description: 'Existing Description',
+            description: 'Exiing Dstescription',
             topics: ['topic1'],
             difficulty: 'easy',
         });
@@ -668,7 +671,7 @@ describe('addQuestion', () => {
         expect(findOneStub).to.have.been.calledWith({
             $or: [{ title: 'Non-Existing Question' }, { description: 'Existing Description' }],
         });
-        expect(res.status).to.have.been.calledWith(500);
+        expect(res.status).to.have.been.calledWith(400);
         expect(res.json).to.have.been.calledWith({
             status: 'Error',
             message: 'A question with the same title or description already exists.',
@@ -692,29 +695,6 @@ describe('addQuestion', () => {
         expect(res.json).to.have.been.calledWith({
             status: 'Error',
             message: 'Failed to add question',
-        });
-    });
-
-    it('should add a new question successfully', async () => {
-        await addQuestion(req as Request, res as Response);
-
-        expect(findOneStub).to.have.been.calledWith({
-            $or: [{ title: 'New Question' }, { description: 'New Description' }],
-        });
-        expect(getNextSequenceValueStub).to.have.been.calledWith('questionId');
-        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-        expect(saveStub).to.have.been.calledOnce;
-        expect(res.status).to.have.been.calledWith(201);
-        expect(res.json).to.have.been.calledWith({
-            status: 'Success',
-            message: 'Question created successfully',
-            data: {
-                id: 1,
-                title: 'New Question',
-                description: 'New Description',
-                topics: ['topic1'],
-                difficulty: 'easy',
-            },
         });
     });
 
@@ -790,7 +770,7 @@ describe('addQuestion', () => {
             difficulty: 'easy',
         };
 
-        findOneStub.resolves({
+        collationStub.resolves({
             id: 1,
             title: 'Existing Question',
             description: 'Existing Description',
