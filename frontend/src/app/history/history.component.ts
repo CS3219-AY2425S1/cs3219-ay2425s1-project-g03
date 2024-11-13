@@ -71,7 +71,7 @@ export class HistoryComponent implements OnInit {
         });
     }
 
-    customSort(event: SortEvent) {
+    customSort(event: Required<SortEvent>) {
         if (this.isSorted == null || this.isSorted === undefined) {
             this.isSorted = true;
             this.sortTableData(event);
@@ -81,11 +81,11 @@ export class HistoryComponent implements OnInit {
         } else if (this.isSorted == false) {
             this.isSorted = null;
             this.histories = [...this.initialValue];
-            this.dt.reset();
+            this.dt?.reset();
         }
     }
 
-    sortTableData(event: SortEvent) {
+    sortTableData(event: Required<SortEvent>) {
         event.data?.sort((data1, data2) => {
             const value1 = data1[event.field ?? ''] ?? null;
             const value2 = data2[event.field ?? ''] ?? null;
