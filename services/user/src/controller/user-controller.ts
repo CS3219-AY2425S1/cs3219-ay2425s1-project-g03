@@ -45,10 +45,8 @@ export async function createUser(req: Request, res: Response) {
             const createdUser = await _createUser(username, email, hashedPassword);
             handleSuccess(res, 201, `Created new user ${username} successfully`, formatUserResponse(createdUser));
         } else {
-            const required_errors = parseResult.error.errors.filter(
-                err => err.message == UserValidationErrors.REQUIRED,
-            );
-            if (required_errors.length > 0) {
+            const requiredErrors = parseResult.error.errors.filter(err => err.message == UserValidationErrors.REQUIRED);
+            if (requiredErrors.length > 0) {
                 handleBadRequest(res, 'username and/or email and/or password are missing');
             }
             handleBadRequest(res, 'invalid username and/or email and/or password');
@@ -129,10 +127,8 @@ export async function updateUsernameAndEmail(req: Request, res: Response) {
             handleSuccess(res, 200, `Updated data for user ${userId}`, formatUserResponse(updatedUser));
         } else {
             console.log(parseResult.error.errors);
-            const required_errors = parseResult.error.errors.filter(
-                err => err.message == UserValidationErrors.REQUIRED,
-            );
-            if (required_errors.length > 0) {
+            const requiredErrors = parseResult.error.errors.filter(err => err.message == UserValidationErrors.REQUIRED);
+            if (requiredErrors.length > 0) {
                 handleBadRequest(res, 'username and/or email and/or password are missing');
                 return;
             }
@@ -178,10 +174,8 @@ export async function updatePassword(req: Request, res: Response) {
             )) as User;
             handleSuccess(res, 200, `Updated data for user ${userId}`, formatUserResponse(updatedUser));
         } else {
-            const required_errors = parseResult.error.errors.filter(
-                err => err.message == UserValidationErrors.REQUIRED,
-            );
-            if (required_errors.length > 0) {
+            const requiredErrors = parseResult.error.errors.filter(err => err.message == UserValidationErrors.REQUIRED);
+            if (requiredErrors.length > 0) {
                 handleBadRequest(res, 'No field to update: username and email and password are all missing!');
             }
             handleBadRequest(res, 'invalid password');
@@ -197,10 +191,8 @@ export async function updateUser(req: Request, res: Response) {
     try {
         const parseResult = updateUserSchema.safeParse(req.body);
         if (!parseResult.success) {
-            const required_errors = parseResult.error.errors.filter(
-                err => err.message == UserValidationErrors.REQUIRED,
-            );
-            if (required_errors.length > 0) {
+            const requiredErrors = parseResult.error.errors.filter(err => err.message == UserValidationErrors.REQUIRED);
+            if (requiredErrors.length > 0) {
                 handleBadRequest(res, 'No field to update: username and email and password are all missing!');
                 return;
             }
