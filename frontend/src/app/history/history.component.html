@@ -63,21 +63,21 @@
             </ng-template>
         </p-table>
     </div>
-    <div class="sliding-panel" [class.open]="isPanelVisible">
-        <div class="panel-header">
+    <p-sidebar
+        [(visible)]="isPanelVisible"
+        position="right"
+        [blockScroll]="true"
+        styleClass="w-10 md:w-4"
+        transitionOptions="200ms cubic-bezier(0, 0, 0.2, 1)"
+        (onHide)="closePanel()">
+        <ng-template pTemplate="header">
             <h3>{{ panelHistory?.question?.title }}</h3>
-            <p-button
-                icon="pi pi-times"
-                severity="secondary"
-                label="Close"
-                (onClick)="closePanel()"
-                class="p-button-text" />
-        </div>
+        </ng-template>
         <div class="panel-content">
             <p style="white-space: pre-wrap">{{ panelHistory?.question?.description }}</p>
             <h4>Submitted Solution</h4>
             <div #editor class="editor-content text-lg"></div>
         </div>
-    </div>
+    </p-sidebar>
     <p-toast position="bottom-right" [breakpoints]="{ '920px': { width: '90%' } }" />
 </div>

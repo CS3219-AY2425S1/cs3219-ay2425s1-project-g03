@@ -13,11 +13,21 @@ import { EditorState, Extension } from '@codemirror/state';
 import { EditorView, basicSetup } from 'codemirror';
 import { languageMap } from '../collaboration/editor/languages';
 import { ToastModule } from 'primeng/toast';
+import { SidebarModule } from 'primeng/sidebar';
 import { Router } from '@angular/router';
 
 @Component({
     standalone: true,
-    imports: [TableModule, CommonModule, InputTextModule, ButtonModule, IconFieldModule, InputIconModule, ToastModule],
+    imports: [
+        SidebarModule,
+        TableModule,
+        CommonModule,
+        InputTextModule,
+        ButtonModule,
+        IconFieldModule,
+        InputIconModule,
+        ToastModule,
+    ],
     providers: [MessageService, DatePipe],
     templateUrl: './history.component.html',
     styleUrl: './history.component.css',
