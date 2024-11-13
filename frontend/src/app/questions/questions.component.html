@@ -76,7 +76,7 @@
                         <ng-template pTemplate="body" let-question>
                             <tr (click)="onRowSelect(question)">
                                 @if (isAdmin) {
-                                    <td><p-tableCheckbox [value]="question" /></td>
+                                    <td (click)="$event.stopPropagation()"><p-tableCheckbox [value]="question" /></td>
                                     <td>{{ question.id }}</td>
                                     <td>{{ question.title }}</td>
                                     <td>{{ question.topics.join(', ') }}</td>
@@ -88,7 +88,7 @@
                                             icon="pi pi-file-edit"
                                             class="mr-2"
                                             [text]="true"
-                                            (onClick)="editQuestion(question)" />
+                                            (onClick)="$event.stopPropagation(); editQuestion(question)" />
                                     </td>
                                 } @else {
                                     <td>{{ question.id }}</td>
@@ -118,7 +118,8 @@
         position="right"
         [blockScroll]="true"
         styleClass="w-10 md:w-4"
-        transitionOptions="300ms cubic-bezier(0, 0, 0.2, 1)">
+        transitionOptions="200ms cubic-bezier(0, 0, 0.2, 1)"
+        (onHide)="closePanel()">
         <ng-template pTemplate="header">
             <h3>{{ clickedOnQuestion?.title }}</h3>
         </ng-template>
