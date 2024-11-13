@@ -1,4 +1,4 @@
-<div class="card mx-8">
+<div class="card mx-3 md:mx-8">
     @if (loading) {
         <p-progressSpinner
             class="flex align-items-center justify-content-center h-screen"
@@ -41,7 +41,12 @@
                         [value]="questions"
                         [(selection)]="selectedQuestions"
                         datakey="id"
-                        [tableStyle]="{ 'table-layout': 'fixed', width: '100%', 'text-align': 'center' }"
+                        [tableStyle]="{
+                            'table-layout': 'fixed',
+                            width: '100%',
+                            'min-width': '50rem',
+                            'text-align': 'center',
+                        }"
                         [paginator]="true"
                         [rows]="10"
                         [rowsPerPageOptions]="[10, 25, 50]"
