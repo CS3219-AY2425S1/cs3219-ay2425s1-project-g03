@@ -55,7 +55,7 @@ services:
   history:
     command: npm run dev
     ports:
-      - 8086:8086
+      - 8085:8085
     volumes:
       - /app/node_modules
       - ./services/history:/app

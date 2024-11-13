@@ -225,10 +225,10 @@ docker compose down -v
 
 ## Producers
 
-### Match Request Updated Producer
+### Match Request Created Producer
 
 - This producer emits a message when a match request has been created or updated. 
-- **Queue**: `MATCH_REQUEST_UPDATED`
+- **Queue**: `MATCH_REQUEST_CREATED`
 - **Data Produced**
   - `user` - The user associated with the created or updated match request.
   - `topics` - The topics of the created or updated match request.
@@ -279,12 +279,12 @@ docker compose down -v
 
 ## Consumers
 
-### Match Request Updated Consumer
+### Match Request Created Consumer
 
 - This consumer attempts to find and assign a compatible match request based on their preferences (topics and difficulty) upon the update of a given match request.
 - Two match requests are said to be compatible if they share the same difficulty and have at least one topic in common.
 - Upon successfully finding a match, it produces a `MATCH_FOUND` event.
-- **Queue**: `MATCH_REQUEST_UPDATED` - This message is emitted when a match request is created or updated.
+- **Queue**: `MATCH_REQUEST_CREATED` - This message is emitted when a match request is created or updated.
 - **Data Consumed**
   - `user` - The user associated with the created or updated match request.
   - `topics` - The topics of the created or updated match request.

@@ -27,7 +27,7 @@ docker compose down -v
 
 - This endpoint retrieves the history of a user.
 - **HTTP Method**: `GET`
-- **Endpoint**: http://localhost:8086/api/history/history
+- **Endpoint**: http://localhost:8085/api/history/history
 - **Headers**
   - `Authorization: Bearer <JWT_ACCESS_TOKEN>` (Required)
   - The endpoint requires the user to include a JWT (JSON Web Token) in the HTTP Request Header for authentication and authorization. This token is generated during the authentication process (i.e., login) and contains information about the user's identity. The server verifies this token to ensure that the client is authorized to access the data.

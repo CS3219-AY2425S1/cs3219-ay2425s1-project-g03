@@ -55,7 +55,7 @@ async function consumeMatchFailed(msg: MatchFailedEvent) {
 }
 
 export async function initializeConsumers() {
-    messageBroker.consume(Queues.MATCH_REQUEST_UPDATED, consumeMatchUpdated);
+    messageBroker.consume(Queues.MATCH_REQUEST_CREATED, consumeMatchUpdated);
     messageBroker.consume(Queues.COLLAB_CREATED, consumeCollabCreated);
     messageBroker.consume(Queues.MATCH_FAILED, consumeMatchFailed);
 }

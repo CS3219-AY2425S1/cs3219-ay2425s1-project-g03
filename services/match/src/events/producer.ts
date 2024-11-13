@@ -16,7 +16,7 @@ export async function produceMatchUpdatedRequest(
         topics,
         difficulty,
     };
-    await messageBroker.produce(Queues.MATCH_REQUEST_UPDATED, message);
+    await messageBroker.produce(Queues.MATCH_REQUEST_CREATED, message);
 }
 
 export async function produceMatchFound(user1: any, user2: any, topics: string[], difficulty: Difficulty) {
