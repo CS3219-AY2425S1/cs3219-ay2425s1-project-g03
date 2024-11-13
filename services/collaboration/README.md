@@ -346,7 +346,8 @@ curl -X PATCH http://localhost:8080/api/collaboration/room/6724e9d892fb3e9f04c2e
 ## Documentation on Queue (RabbitMQ)
 
 The collaboration service uses RabbitMQ as a message broker to facilitate communication between microservices (such as
-the `matching service` and `collaboration service`) in an asynchronous manner. The system consists of a consumer and four
+the `Matching Service`, `Collaboration Service` and `Question Service`) in an asynchronous manner. The system consists
+of a consumer and four
 producers:
 
 ### Queues Used
@@ -365,9 +366,9 @@ The producer will send a message to the `COLLAB_CREATED` queue when a collaborat
 
 - **Queue**: `COLLAB_CREATED`
 - **Data in the Message**:
-    - `requestId1` (Required) - The request ID of the first user.
-    - `requestId2` (Required) - The request ID of the second user.
-    - `collabId` (Required) - The ID of the collaboration room.
+  - `requestId1` (Required) - The request ID of the first user.
+  - `requestId2` (Required) - The request ID of the second user.
+  - `collabId` (Required) - The ID of the collaboration room.
 
 ```json
 {
@@ -381,9 +382,9 @@ The producer will send a message to the `MATCH_FAILED` queue when a collaboratio
 
 - **Queue**: `MATCH_FAILED`
 - **Data Produced**
-    - `requestId1` (Required) - The first request ID associated with the match failure.
-    - `requestId2` (Required) - The second request ID associated with the match failure.
-    - `reason` (Required) - The error encountered.
+  - `requestId1` (Required) - The first request ID associated with the match failure.
+  - `requestId2` (Required) - The second request ID associated with the match failure.
+  - `reason` (Required) - The error encountered.
 
 ```json
 {
@@ -420,17 +421,19 @@ The producer will send a message to the `CREATE_HISTORY` queue when a collaborat
         "topics": [ "Algorithms" ],
         "difficulty": "Easy",
         "_id": "671a0615dc63fe2d5f3bbae5"
-      },
+      }
     },
   ```
 
-The producer will send a message to the `UPDATE_HISTORY` queue when a user forfeits or completes a collaborative session.
+The producer will send a message to the `UPDATE_HISTORY` queue when a user forfeits or completes a collaborative
+session.
 
 - **Queue**: `UPDATE_HISTORY`
 - **Data Produced**
   - `roomId` - The ID of the collaboration room.
   - `userId` - The user associated with the update.
-  - `status` - The new status associated with the collaboration room. It may be `"IN_PROGRESS"`, `"FORFEITED"`, or `"COMPLETED"`.
+  - `status` - The new status associated with the collaboration room. It may be `"IN_PROGRESS"`, `"FORFEITED"`,
+    or `"COMPLETED"`.
 
   ```json
     {
@@ -449,9 +452,9 @@ matched.
 
 - **Queue**: `QUESTION_FOUND`
 - **Data in the Message**:
-    - `user1` (Required) - The details of the first user.
-    - `user2` (Required) - The details of the second user.
-    - `question` (Required) - The question assigned to the users.
+  - `user1` (Required) - The details of the first user.
+  - `user2` (Required) - The details of the second user.
+  - `question` (Required) - The question assigned to the users.
 
 ```json
 {

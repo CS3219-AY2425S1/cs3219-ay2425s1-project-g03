@@ -9,23 +9,9 @@ import {
     updateRoomUserStatus,
 } from '../services/mongodbService';
 import { handleHttpNotFound, handleHttpSuccess, handleHttpServerError, handleHttpBadRequest } from '../utils/helper';
-import { Room } from './types';
+import { Room, Question } from '../types/collab';
 import { produceUpdateHistory } from '../events/producer';
 import { HistoryStatus } from '../types/message';
-
-export enum Difficulty {
-    Easy = 'Easy',
-    Medium = 'Medium',
-    Hard = 'Hard',
-}
-
-export interface Question {
-    id: number;
-    description: string;
-    difficulty: Difficulty;
-    title: string;
-    topics?: string[];
-}
 
 /**
  * Create a room with users, question details, and Yjs document

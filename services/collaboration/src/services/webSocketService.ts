@@ -14,7 +14,6 @@ const URL_REGEX = /^.*\/([0-9a-f]{24})\?accessToken=([a-zA-Z0-9\-._~%]{1,})$/;
 /**
  * Verifies the user's access to a specific room by validating the JWT token,
  * checking the room's status, and ensuring the user has not forfeited.
- * Returns `roomId` if the access is authorized, or `null` otherwise.
  * @param ws
  * @param request
  * @returns
@@ -67,7 +66,7 @@ const authorize = async (ws: WebSocket, request: IncomingMessage): Promise<strin
 
 /**
  * Start and configure the WebSocket server
- * @returns {WebSocketServer} The configured WebSocket server instance
+ * @returns {WebSocketServer}
  */
 export const startWebSocketServer = (server: Server) => {
     const wss = new WebSocketServer({ server });
