@@ -8,7 +8,7 @@ import { produceCollabCreated, produceCollabCreateFailedEvent, produceCreateHist
  * Consume the question found event and create a room
  * @param message
  */
-async function consumeQuestionFound(message: QuestionFoundEvent) {
+export async function consumeQuestionFound(message: QuestionFoundEvent) {
     console.log('Attempting to create room:', message);
     const { user1, user2, question } = message;
 

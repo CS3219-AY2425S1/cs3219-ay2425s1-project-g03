@@ -1,9 +1,10 @@
-require('dotenv').config();
+import dotenv from 'dotenv';
+dotenv.config({ path: '.env.test' });
 import { expect } from 'chai';
 import sinon, { SinonStub } from 'sinon';
 import { Question } from '../../src/models/questionModel';
 import * as prod from '../../src/events/producer';
-import { consumeMatchFound, initializeConsumers } from'../../src/events/consumer';
+import { consumeMatchFound, initializeConsumers } from '../../src/events/consumer';
 import { Difficulty, MatchFoundEvent } from '../../src/types/event';
 import messageBroker from '../../src/events/broker';
 import { Queues } from '../../src/events/queues';
@@ -40,6 +41,7 @@ describe('consumeMatchFound', () => {
 
         expect(findStub).to.have.been.calledWith({ topics: { $in: ['topic1'] }, difficulty: 'Easy' });
         expect(produceMatchFailedEventStub).to.have.been.calledWith('user1', 'user2');
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         expect(produceQuestionFoundEventStub).not.to.have.been.called;
     });
 
@@ -60,6 +62,7 @@ describe('consumeMatchFound', () => {
         await consumeMatchFound(msg);
 
         expect(findStub).to.have.been.calledWith({ topics: { $in: ['topic1'] }, difficulty: 'Easy' });
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         expect(produceMatchFailedEventStub).not.to.have.been.called;
         expect(produceQuestionFoundEventStub).to.have.been.calledWith(msg.user1, msg.user2, mockQuestions[0]);
     });
@@ -82,7 +85,9 @@ describe('consumeMatchFound', () => {
         }
 
         expect(findStub).to.have.been.calledWith({ topics: { $in: ['topic1'] }, difficulty: 'Easy' });
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         expect(produceMatchFailedEventStub).not.to.have.been.called;
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         expect(produceQuestionFoundEventStub).not.to.have.been.called;
     });
 });

@@ -1,4 +1,5 @@
-require('dotenv').config();
+import dotenv from 'dotenv';
+dotenv.config();
 import { expect } from 'chai';
 import sinon, { SinonStub } from 'sinon';
 import client, { Channel, Connection } from 'amqplib';
@@ -47,9 +48,10 @@ describe('MessageBroker', () => {
         it('should connect to RabbitMQ', async () => {
             await messageBroker.connect();
 
-            console.log(connectStub.args);
             expect(connectStub).to.have.been.calledWith(config.BROKER_URL);
+            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             expect(connection.createChannel).to.have.been.called;
+            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             expect(messageBroker['connected']).to.be.true;
         });
 
@@ -60,7 +62,9 @@ describe('MessageBroker', () => {
 
             await messageBroker.connect();
 
+            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             expect(connectStub).not.to.have.been.called;
+            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             expect(connection.createChannel).not.to.have.been.called;
         });
 
@@ -81,8 +85,12 @@ describe('MessageBroker', () => {
         it('should produce a message to the queue', async () => {
             await messageBroker.produce('testQueue', { test: 'message' });
 
+            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             expect(connectStub).to.have.been.called;
-            expect(sendToQueueStub).to.have.been.calledWith('testQueue', Buffer.from(JSON.stringify({ test: 'message' })));
+            expect(sendToQueueStub).to.have.been.calledWith(
+                'testQueue',
+                Buffer.from(JSON.stringify({ test: 'message' })),
+            );
         });
 
         it('should throw an error if producing message fails', async () => {
@@ -107,6 +115,7 @@ describe('MessageBroker', () => {
 
             await messageBroker.consume('testQueue', onMessage);
 
+            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             expect(connectStub).to.have.been.called;
             expect(assertQueueStub).to.have.been.calledWith('testQueue', { durable: true });
             expect(consumeStub).to.have.been.calledWith('testQueue', sinon.match.func, { noAck: false });

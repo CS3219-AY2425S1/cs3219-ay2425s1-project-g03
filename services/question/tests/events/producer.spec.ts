@@ -1,10 +1,18 @@
-require('dotenv').config();
+import dotenv from 'dotenv';
+dotenv.config();
 import { expect } from 'chai';
 import sinon, { SinonStub } from 'sinon';
 import * as producer from '../../src/events/producer';
 import messageBroker from '../../src/events/broker';
 import { Queues } from '../../src/events/queues';
-import { UserWithRequest, Question, IdType, QuestionFoundEvent, MatchFailedEvent, Difficulty } from '../../src/types/event';
+import {
+    UserWithRequest,
+    Question,
+    IdType,
+    QuestionFoundEvent,
+    MatchFailedEvent,
+    Difficulty,
+} from '../../src/types/event';
 
 describe('Producer Tests', () => {
     let produceStub: SinonStub;
@@ -19,9 +27,25 @@ describe('Producer Tests', () => {
 
     describe('produceQuestionFoundEvent', () => {
         it('should produce a question found event', async () => {
-            const user1: UserWithRequest = { requestId: 'user1', id: 'id1', username: 'user1', email: 'user1@example.com' };
-            const user2: UserWithRequest = { requestId: 'user2', id: 'id2', username: 'user2', email: 'user2@example.com' };
-            const question: Question = { id: 1, title: 'Question 1', description: 'Description 1', topics: ['topic1'], difficulty: Difficulty.Easy };
+            const user1: UserWithRequest = {
+                requestId: 'user1',
+                id: 'id1',
+                username: 'user1',
+                email: 'user1@example.com',
+            };
+            const user2: UserWithRequest = {
+                requestId: 'user2',
+                id: 'id2',
+                username: 'user2',
+                email: 'user2@example.com',
+            };
+            const question: Question = {
+                id: 1,
+                title: 'Question 1',
+                description: 'Description 1',
+                topics: ['topic1'],
+                difficulty: Difficulty.Easy,
+            };
 
             const expectedMessage: QuestionFoundEvent = {
                 user1,

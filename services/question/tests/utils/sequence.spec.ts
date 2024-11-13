@@ -29,12 +29,13 @@ describe('Sequence Functions', () => {
 
             await initializeCounter();
 
+            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             expect(findOneQuestionStub).to.have.been.calledOnce;
             expect(sortStub).to.have.been.calledWith('-id');
             expect(findOneAndUpdateCounterStub).to.have.been.calledWith(
                 { _id: 'questionId' },
                 { $set: { sequence_value: mockQuestion.id } },
-                { upsert: true }
+                { upsert: true },
             );
         });
 
@@ -43,12 +44,13 @@ describe('Sequence Functions', () => {
 
             await initializeCounter();
 
+            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             expect(findOneQuestionStub).to.have.been.calledOnce;
             expect(sortStub).to.have.been.calledWith('-id');
             expect(findOneAndUpdateCounterStub).to.have.been.calledWith(
                 { _id: 'questionId' },
                 { $set: { sequence_value: 0 } },
-                { upsert: true }
+                { upsert: true },
             );
         });
     });
@@ -74,7 +76,7 @@ describe('Sequence Functions', () => {
             expect(findByIdAndUpdateStub).to.have.been.calledWith(
                 sequenceName,
                 { $inc: { sequence_value: 1 } },
-                { new: true, upsert: true }
+                { new: true, upsert: true },
             );
             expect(result).to.equal(mockCounter.sequence_value);
         });
