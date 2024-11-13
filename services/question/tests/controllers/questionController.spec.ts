@@ -1,16 +1,27 @@
 import chai, { expect } from 'chai';
-import sinon from 'sinon';
+import sinon, { SinonStub } from 'sinon';
 import sinonChai from 'sinon-chai';
 import { Request, Response } from 'express';
-import { getQuestions } from '../../src/controllers/questionController';
+import {
+    getQuestions,
+    getQuestionById,
+    getQuestionByParameters,
+    getTopics,
+    addQuestion,
+    updateQuestion,
+    deleteQuestion,
+} from '../../src/controllers/questionController';
 import { Question } from '../../src/models/questionModel';
+import * as seq from '../../src/utils/sequence';
+import { getNextSequenceValue } from '../../src/utils/sequence';
 
 chai.use(sinonChai);
 
+// Testing function getQuestions
 describe('getQuestions', () => {
     let req: Partial<Request>;
     let res: Partial<Response>;
-    let findStub: sinon.SinonStub;
+    let findStub: SinonStub;
 
     beforeEach(() => {
         req = {
@@ -50,7 +61,6 @@ describe('getQuestions', () => {
         req.query = { title: 'Question 1' };
         const mockQuestions = [
             { title: 'Question 1', description: 'Description 1', topics: ['topic1'], difficulty: 'easy' },
-            { title: 'Question 2', description: 'Description 2', topics: ['topic2'], difficulty: 'medium' },
         ];
 
         findStub.resolves(mockQuestions);
@@ -62,7 +72,7 @@ describe('getQuestions', () => {
         expect(res.json).to.have.been.calledWith({
             status: 'Success',
             message: 'Questions retrieved successfully',
-            data:[{ title: 'Question 1', description: 'Description 1', topics: ['topic1'], difficulty: 'easy' }],
+            data: mockQuestions,
         });
     });
 
@@ -70,19 +80,18 @@ describe('getQuestions', () => {
         req.query = { description: 'Description 1' };
         const mockQuestions = [
             { title: 'Question 1', description: 'Description 1', topics: ['topic1'], difficulty: 'easy' },
-            { title: 'Question 2', description: 'Description 2', topics: ['topic2'], difficulty: 'medium' },
         ];
 
         findStub.resolves(mockQuestions);
 
         await getQuestions(req as Request, res as Response);
 
-        expect(findStub).to.have.been.calledWith({ description: '1' });
+        expect(findStub).to.have.been.calledWith({ description: { $regex: 'Description|1', $options: 'i' } });
         expect(res.status).to.have.been.calledWith(200);
         expect(res.json).to.have.been.calledWith({
             status: 'Success',
             message: 'Questions retrieved successfully',
-            data: [{ title: 'Question 1', description: 'Description 1', topics: ['topic1'], difficulty: 'easy' }],
+            data: mockQuestions,
         });
     });
 
@@ -91,22 +100,18 @@ describe('getQuestions', () => {
         const mockQuestions = [
             { title: 'Question 1', description: 'Description 1', topics: ['topic1'], difficulty: 'easy' },
             { title: 'Question 2', description: 'Description 2', topics: ['topic2'], difficulty: 'medium' },
-            { title: 'Question 3', description: 'Description 3', topics: ['topic3'], difficulty: 'hard' },
         ];
 
         findStub.resolves(mockQuestions);
 
         await getQuestions(req as Request, res as Response);
 
-        expect(findStub).to.have.been.calledWith({ topics: 'topic1, topic2' });
+        expect(findStub).to.have.been.calledWith({ topics: { $in: [/topic1/i, /topic2/i] } });
         expect(res.status).to.have.been.calledWith(200);
         expect(res.json).to.have.been.calledWith({
             status: 'Success',
             message: 'Questions retrieved successfully',
-            data: [
-                { title: 'Question 1', description: 'Description 1', topics: ['topic1'], difficulty: 'easy' },
-                { title: 'Question 2', description: 'Description 2', topics: ['topic2'], difficulty: 'medium' },
-            ],
+            data: mockQuestions,
         });
     });
 
@@ -114,7 +119,6 @@ describe('getQuestions', () => {
         req.query = { difficulty: 'easy' };
         const mockQuestions = [
             { title: 'Question 1', description: 'Description 1', topics: ['topic1'], difficulty: 'easy' },
-            { title: 'Question 2', description: 'Description 2', topics: ['topic2'], difficulty: 'medium' },
         ];
 
         findStub.resolves(mockQuestions);
@@ -126,7 +130,7 @@ describe('getQuestions', () => {
         expect(res.json).to.have.been.calledWith({
             status: 'Success',
             message: 'Questions retrieved successfully',
-            data: [{ title: 'Question 1', description: 'Description 1', topics: ['topic1'], difficulty: 'easy' }],
+            data: mockQuestions,
         });
     });
 
@@ -140,6 +144,689 @@ describe('getQuestions', () => {
         expect(res.json).to.have.been.calledWith({
             status: 'Error',
             message: 'Failed to retrieve questions',
+        });
+    });
+
+    it('should return no questions found', async () => {
+        req.query = { title: 'Question 3' };
+
+        findStub.resolves([]);
+
+        await getQuestions(req as Request, res as Response);
+
+        expect(findStub).to.have.been.calledWith({ title: 'Question 3' });
+        expect(res.status).to.have.been.calledWith(200);
+        expect(res.json).to.have.been.calledWith({
+            status: 'Success',
+            message: 'No questions found matching the provided parameters.',
+            data: [],
+        });
+    });
+});
+
+// Testing function getQuestionById
+describe('getQuestionById', () => {
+    let req: Partial<Request>;
+    let res: Partial<Response>;
+    let findOneStub: SinonStub;
+
+    beforeEach(() => {
+        req = {
+            params: {},
+        };
+        res = {
+            status: sinon.stub().returnsThis(),
+            json: sinon.stub(),
+        };
+        findOneStub = sinon.stub(Question, 'findOne');
+    });
+
+    afterEach(() => {
+        sinon.restore();
+    });
+    it('should retrieve a question by ID', async () => {
+        const mockQuestion = {
+            id: 1,
+            title: 'Question 1',
+            description: 'Description 1',
+            topics: ['topic1'],
+            difficulty: 'easy',
+        };
+        req.params = { id: '1' };
+
+        findOneStub.resolves(mockQuestion);
+
+        await getQuestionById(req as Request, res as Response);
+
+        expect(findOneStub).to.have.been.calledWith({ id: 1 });
+        expect(res.status).to.have.been.calledWith(200);
+        expect(res.json).to.have.been.calledWith({
+            status: 'Success',
+            message: 'Question with ID retrieved successfully',
+            data: mockQuestion,
+        });
+    });
+
+    it('should return an error for an invalid question ID', async () => {
+        req.params = { id: 'invalid' };
+
+        await getQuestionById(req as Request, res as Response);
+
+        expect(res.status).to.have.been.calledWith(400);
+        expect(res.json).to.have.been.calledWith({
+            status: 'Error',
+            message: 'Invalid question ID',
+        });
+    });
+
+    it('should return a not found error if the question does not exist', async () => {
+        req.params = { id: '1' };
+
+        findOneStub.resolves(null);
+
+        await getQuestionById(req as Request, res as Response);
+
+        expect(findOneStub).to.have.been.calledWith({ id: 1 });
+        expect(res.status).to.have.been.calledWith(404);
+        expect(res.json).to.have.been.calledWith({
+            status: 'Error',
+            message: 'Question not found',
+        });
+    });
+
+    it('should handle errors during the retrieval process', async () => {
+        req.params = { id: '1' };
+
+        const error = new Error('Database error');
+        findOneStub.rejects(error);
+
+        await getQuestionById(req as Request, res as Response);
+
+        expect(findOneStub).to.have.been.calledWith({ id: 1 });
+        expect(res.status).to.have.been.calledWith(500);
+        expect(res.json).to.have.been.calledWith({
+            status: 'Error',
+            message: 'Failed to retrieve question',
+        });
+    });
+});
+
+// Testing function getQuestionByParameters
+describe('getQuestionByParameters', () => {
+    let req: Partial<Request>;
+    let res: Partial<Response>;
+    let countDocumentsStub: SinonStub;
+    let aggregateStub: SinonStub;
+
+    beforeEach(() => {
+        req = {
+            query: {},
+        };
+        res = {
+            status: sinon.stub().returnsThis(),
+            json: sinon.stub(),
+        };
+        countDocumentsStub = sinon.stub(Question, 'countDocuments');
+        aggregateStub = sinon.stub(Question, 'aggregate');
+    });
+
+    afterEach(() => {
+        sinon.restore();
+    });
+
+    it('should return bad request if topics are not provided', async () => {
+        req.query = { difficulty: 'easy' };
+
+        await getQuestionByParameters(req as Request, res as Response);
+
+        expect(res.status).to.have.been.calledWith(400);
+        expect(res.json).to.have.been.calledWith({
+            status: 'Error',
+            message: 'Topics are required',
+        });
+    });
+
+    it('should return bad request if difficulty is not provided', async () => {
+        req.query = { topics: 'topic1,topic2' };
+
+        await getQuestionByParameters(req as Request, res as Response);
+
+        expect(res.status).to.have.been.calledWith(400);
+        expect(res.json).to.have.been.calledWith({
+            status: 'Error',
+            message: 'Difficulty is required',
+        });
+    });
+
+    it('should return bad request if limit is not a valid positive integer', async () => {
+        req.query = { topics: 'topic1,topic2', difficulty: 'easy', limit: 'invalid' };
+
+        await getQuestionByParameters(req as Request, res as Response);
+
+        expect(res.status).to.have.been.calledWith(400);
+        expect(res.json).to.have.been.calledWith({
+            status: 'Error',
+            message: 'Limit must be a valid positive integer',
+        });
+    });
+
+    it('should return bad request if limit is less than or equal to 0', async () => {
+        req.query = { topics: 'topic1,topic2', difficulty: 'easy', limit: '0' };
+
+        await getQuestionByParameters(req as Request, res as Response);
+
+        expect(res.status).to.have.been.calledWith(400);
+        expect(res.json).to.have.been.calledWith({
+            status: 'Error',
+            message: 'Limit must be more than 0',
+        });
+    });
+
+    it('should return no questions found if none match the parameters', async () => {
+        req.query = { topics: 'topic1,topic2', difficulty: 'easy', limit: '1' };
+
+        countDocumentsStub.resolves(0);
+
+        await getQuestionByParameters(req as Request, res as Response);
+
+        expect(countDocumentsStub).to.have.been.calledWith({
+            topics: { $in: [/topic1/i, /topic2/i] },
+            difficulty: 'easy',
+        });
+        expect(res.status).to.have.been.calledWith(200);
+        expect(res.json).to.have.been.calledWith({
+            status: 'Success',
+            message: 'No questions found with the given parameters',
+            data: [],
+        });
+    });
+
+    it('should retrieve questions matching the parameters', async () => {
+        req.query = { topics: 'topic1,topic2', difficulty: 'easy', limit: '2' };
+
+        const mockQuestions = [
+            { title: 'Question 1', description: 'Description 1', topics: ['topic1'], difficulty: 'easy' },
+            { title: 'Question 2', description: 'Description 2', topics: ['topic2'], difficulty: 'easy' },
+        ];
+
+        countDocumentsStub.resolves(2);
+        aggregateStub.resolves(mockQuestions);
+
+        await getQuestionByParameters(req as Request, res as Response);
+
+        expect(countDocumentsStub).to.have.been.calledWith({
+            topics: { $in: [/topic1/i, /topic2/i] },
+            difficulty: 'easy',
+        });
+        expect(aggregateStub).to.have.been.calledWith([
+            { $match: { topics: { $in: [/topic1/i, /topic2/i] }, difficulty: 'easy' } },
+            { $sample: { size: 2 } },
+        ]);
+        expect(res.status).to.have.been.calledWith(200);
+        expect(res.json).to.have.been.calledWith({
+            status: 'Success',
+            message: 'Questions with Parameters retrieved successfully',
+            data: mockQuestions,
+        });
+    });
+
+    it('should retrieve questions matching limit', async () => {
+        req.query = { topics: 'topic1,topic2', difficulty: 'easy', limit: '1' };
+
+        const mockQuestions = [
+            { title: 'Question 1', description: 'Description 1', topics: ['topic1'], difficulty: 'easy' },
+        ];
+
+        countDocumentsStub.resolves(2);
+        aggregateStub.resolves(mockQuestions);
+
+        await getQuestionByParameters(req as Request, res as Response);
+
+        expect(countDocumentsStub).to.have.been.calledWith({
+            topics: { $in: [/topic1/i, /topic2/i] },
+            difficulty: 'easy',
+        });
+        expect(aggregateStub).to.have.been.calledWith([
+            { $match: { topics: { $in: [/topic1/i, /topic2/i] }, difficulty: 'easy' } },
+            { $sample: { size: 1 } },
+        ]);
+        expect(res.status).to.have.been.calledWith(200);
+        expect(res.json).to.have.been.calledWith({
+            status: 'Success',
+            message: 'Questions with Parameters retrieved successfully',
+            data: mockQuestions,
+        });
+    });
+
+    it('should retrieve questions matching number of questions', async () => {
+        req.query = { topics: 'topic1,topic2', difficulty: 'easy', limit: '2' };
+
+        const mockQuestions = [
+            { title: 'Question 1', description: 'Description 1', topics: ['topic1'], difficulty: 'easy' },
+        ];
+
+        countDocumentsStub.resolves(1);
+        aggregateStub.resolves(mockQuestions);
+
+        await getQuestionByParameters(req as Request, res as Response);
+
+        expect(countDocumentsStub).to.have.been.calledWith({
+            topics: { $in: [/topic1/i, /topic2/i] },
+            difficulty: 'easy',
+        });
+        expect(aggregateStub).to.have.been.calledWith([
+            { $match: { topics: { $in: [/topic1/i, /topic2/i] }, difficulty: 'easy' } },
+            { $sample: { size: 1 } },
+        ]);
+        expect(res.status).to.have.been.calledWith(200);
+        expect(res.json).to.have.been.calledWith({
+            status: 'Success',
+            message: 'Questions with Parameters retrieved successfully',
+            data: mockQuestions,
+        });
+    });
+
+    it('should handle errors during the retrieval process', async () => {
+        req.query = { topics: 'topic1,topic2', difficulty: 'easy', limit: '2' };
+
+        const error = new Error('Database error');
+        countDocumentsStub.rejects(error);
+
+        await getQuestionByParameters(req as Request, res as Response);
+
+        expect(res.status).to.have.been.calledWith(500);
+        expect(res.json).to.have.been.calledWith({
+            status: 'Error',
+            message: 'Failed to search for questions',
+        });
+    });
+});
+
+describe('getTopics', () => {
+    let req: Partial<Request>;
+    let res: Partial<Response>;
+    let distinctStub: SinonStub;
+
+    beforeEach(() => {
+        req = {};
+        res = {
+            status: sinon.stub().returnsThis(),
+            json: sinon.stub(),
+        };
+        distinctStub = sinon.stub(Question, 'distinct');
+    });
+
+    afterEach(() => {
+        sinon.restore();
+    });
+
+    it('should retrieve all unique topics', async () => {
+        const mockTopics = ['topic1', 'topic2', 'topic3'];
+
+        distinctStub.resolves(mockTopics);
+
+        await getTopics(req as Request, res as Response);
+
+        expect(distinctStub).to.have.been.calledWith('topics');
+        expect(res.status).to.have.been.calledWith(200);
+        expect(res.json).to.have.been.calledWith({
+            status: 'Success',
+            message: 'Topics retrieved successfully',
+            data: mockTopics,
+        });
+    });
+
+    it('should handle errors during the retrieval process', async () => {
+        const error = new Error('Database error');
+        distinctStub.rejects(error);
+
+        await getTopics(req as Request, res as Response);
+
+        expect(res.status).to.have.been.calledWith(500);
+        expect(res.json).to.have.been.calledWith({
+            status: 'Error',
+            message: 'Failed to retrieve topics',
+        });
+    });
+});
+
+// Testing function addQuestion
+describe('addQuestion', () => {
+    let req: Partial<Request>;
+    let res: Partial<Response>;
+    let saveStub: SinonStub;
+    let findOneStub: SinonStub;
+    let getNextSequenceValueStub: SinonStub;
+
+    beforeEach(() => {
+        req = {
+            body: {},
+        };
+        res = {
+            status: sinon.stub().returnsThis(),
+            json: sinon.stub(),
+        };
+        saveStub = sinon.stub(Question.prototype, 'save');
+        findOneStub = sinon.stub(Question, 'findOne');
+        getNextSequenceValueStub = sinon.stub(seq, 'getNextSequenceValue');
+    });
+
+    afterEach(() => {
+        sinon.restore();
+    });
+
+    it('should add a new question successfully', async () => {
+        req.body = {
+            title: 'New Question',
+            description: 'New Description',
+            topics: ['topic1'],
+            difficulty: 'easy',
+        };
+
+        findOneStub.resolves(null);
+        getNextSequenceValueStub.resolves(1);
+        saveStub.resolves({
+            id: 1,
+            title: 'New Question',
+            description: 'New Description',
+            topics: ['topic1'],
+            difficulty: 'easy',
+        });
+
+        await addQuestion(req as Request, res as Response);
+
+        expect(findOneStub).to.have.been.calledWith({
+            $or: [{ title: 'New Question' }, { description: 'New Description' }],
+        });
+        expect(getNextSequenceValueStub).to.have.been.calledWith('questionId');
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+        expect(saveStub).to.have.been.calledOnce;
+        expect(res.status).to.have.been.calledWith(201);
+        expect(res.json).to.have.been.calledWith({
+            status: 'Success',
+            message: 'Question created successfully',
+            data: {
+                id: 1,
+                title: 'New Question',
+                description: 'New Description',
+                topics: ['topic1'],
+                difficulty: 'easy',
+            },
+        });
+    });
+
+    it('should return bad request if title is missing', async () => {
+        req.body = {
+            description: 'New Description',
+            topics: ['topic1'],
+            difficulty: 'easy',
+        };
+
+        await addQuestion(req as Request, res as Response);
+
+        expect(res.status).to.have.been.calledWith(400);
+        expect(res.json).to.have.been.calledWith({
+            status: 'Error',
+            message: 'Title is required',
+        });
+    });
+
+    it('should return bad request if description is missing', async () => {
+        req.body = {
+            title: 'New Question',
+            topics: ['topic1'],
+            difficulty: 'easy',
+        };
+
+        await addQuestion(req as Request, res as Response);
+
+        expect(res.status).to.have.been.calledWith(400);
+        expect(res.json).to.have.been.calledWith({
+            status: 'Error',
+            message: 'Description is required',
+        });
+    });
+
+    it('should return bad request if topics are missing', async () => {
+        req.body = {
+            title: 'New Question',
+            description: 'New Description',
+            difficulty: 'easy',
+        };
+
+        await addQuestion(req as Request, res as Response);
+
+        expect(res.status).to.have.been.calledWith(400);
+        expect(res.json).to.have.been.calledWith({
+            status: 'Error',
+            message: 'Topics are required',
+        });
+    });
+
+    it('should return bad request if difficulty is missing', async () => {
+        req.body = {
+            title: 'New Question',
+            description: 'New Description',
+            topics: ['topic1'],
+        };
+
+        await addQuestion(req as Request, res as Response);
+
+        expect(res.status).to.have.been.calledWith(400);
+        expect(res.json).to.have.been.calledWith({
+            status: 'Error',
+            message: 'Difficulty is required',
+        });
+    });
+
+    it('should return bad request if a question with the same title exists', async () => {
+        req.body = {
+            title: 'Existing Question',
+            description: 'Non-Existing Description',
+            topics: ['topic1'],
+            difficulty: 'easy',
+        };
+
+        findOneStub.resolves({
+            id: 1,
+            title: 'Existing Question',
+            description: 'Existing Description',
+            topics: ['topic1'],
+            difficulty: 'easy',
+        });
+
+        await addQuestion(req as Request, res as Response);
+
+        expect(findOneStub).to.have.been.calledWith({
+            $or: [{ title: 'Existing Question' }, { description: 'Non-Existing Description' }],
+        });
+        expect(res.status).to.have.been.calledWith(400);
+        expect(res.json).to.have.been.calledWith({
+            status: 'Error',
+            message: 'A question with the same title or description already exists.',
+        });
+    });
+
+    it('should return bad request if a question with the same description exists', async () => {
+        req.body = {
+            title: 'Non-Existing Question',
+            description: 'Existing Description',
+            topics: ['topic1'],
+            difficulty: 'easy',
+        };
+
+        findOneStub.resolves({
+            id: 1,
+            title: 'Existing Question',
+            description: 'Existing Description',
+            topics: ['topic1'],
+            difficulty: 'easy',
+        });
+
+        await addQuestion(req as Request, res as Response);
+
+        expect(findOneStub).to.have.been.calledWith({
+            $or: [{ title: 'Non-Existing Question' }, { description: 'Existing Description' }],
+        });
+        expect(res.status).to.have.been.calledWith(500);
+        expect(res.json).to.have.been.calledWith({
+            status: 'Error',
+            message: 'A question with the same title or description already exists.',
+        });
+    });
+
+    it('should handle errors during the addition process', async () => {
+        req.body = {
+            title: 'New Question',
+            description: 'New Description',
+            topics: ['topic1'],
+            difficulty: 'easy',
+        };
+
+        const error = new Error('Database error');
+        findOneStub.rejects(error);
+
+        await addQuestion(req as Request, res as Response);
+
+        expect(res.status).to.have.been.calledWith(500);
+        expect(res.json).to.have.been.calledWith({
+            status: 'Error',
+            message: 'Failed to add question',
+        });
+    });
+
+    it('should add a new question successfully', async () => {
+        await addQuestion(req as Request, res as Response);
+
+        expect(findOneStub).to.have.been.calledWith({
+            $or: [{ title: 'New Question' }, { description: 'New Description' }],
+        });
+        expect(getNextSequenceValueStub).to.have.been.calledWith('questionId');
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+        expect(saveStub).to.have.been.calledOnce;
+        expect(res.status).to.have.been.calledWith(201);
+        expect(res.json).to.have.been.calledWith({
+            status: 'Success',
+            message: 'Question created successfully',
+            data: {
+                id: 1,
+                title: 'New Question',
+                description: 'New Description',
+                topics: ['topic1'],
+                difficulty: 'easy',
+            },
+        });
+    });
+
+    it('should return bad request if title is missing', async () => {
+        req.body = {
+            description: 'New Description',
+            topics: ['topic1'],
+            difficulty: 'easy',
+        };
+
+        await addQuestion(req as Request, res as Response);
+
+        expect(res.status).to.have.been.calledWith(400);
+        expect(res.json).to.have.been.calledWith({
+            status: 'Error',
+            message: 'Title is required',
+        });
+    });
+
+    it('should return bad request if description is missing', async () => {
+        req.body = {
+            title: 'New Question',
+            topics: ['topic1'],
+            difficulty: 'easy',
+        };
+
+        await addQuestion(req as Request, res as Response);
+
+        expect(res.status).to.have.been.calledWith(400);
+        expect(res.json).to.have.been.calledWith({
+            status: 'Error',
+            message: 'Description is required',
+        });
+    });
+
+    it('should return bad request if topics are missing', async () => {
+        req.body = {
+            title: 'New Question',
+            description: 'New Description',
+            difficulty: 'easy',
+        };
+
+        await addQuestion(req as Request, res as Response);
+
+        expect(res.status).to.have.been.calledWith(400);
+        expect(res.json).to.have.been.calledWith({
+            status: 'Error',
+            message: 'Topics are required',
+        });
+    });
+
+    it('should return bad request if difficulty is missing', async () => {
+        req.body = {
+            title: 'New Question',
+            description: 'New Description',
+            topics: ['topic1'],
+        };
+
+        await addQuestion(req as Request, res as Response);
+
+        expect(res.status).to.have.been.calledWith(400);
+        expect(res.json).to.have.been.calledWith({
+            status: 'Error',
+            message: 'Difficulty is required',
+        });
+    });
+
+    it('should return bad request if a question with the same title or description already exists', async () => {
+        req.body = {
+            title: 'Existing Question',
+            description: 'Existing Description',
+            topics: ['topic1'],
+            difficulty: 'easy',
+        };
+
+        findOneStub.resolves({
+            id: 1,
+            title: 'Existing Question',
+            description: 'Existing Description',
+            topics: ['topic1'],
+            difficulty: 'easy',
+        });
+
+        await addQuestion(req as Request, res as Response);
+
+        expect(findOneStub).to.have.been.calledWith({
+            $or: [{ title: 'Existing Question' }, { description: 'Existing Description' }],
+        });
+        expect(res.status).to.have.been.calledWith(400);
+        expect(res.json).to.have.been.calledWith({
+            status: 'Error',
+            message: 'A question with the same title or description already exists.',
+        });
+    });
+
+    it('should handle errors during the addition process', async () => {
+        req.body = {
+            title: 'New Question',
+            description: 'New Description',
+            topics: ['topic1'],
+            difficulty: 'easy',
+        };
+
+        const error = new Error('Database error');
+        findOneStub.rejects(error);
+
+        await addQuestion(req as Request, res as Response);
+
+        expect(res.status).to.have.been.calledWith(500);
+        expect(res.json).to.have.been.calledWith({
+            status: 'Error',
+            message: 'Failed to add question',
         });
     });
 });
