@@ -31,9 +31,7 @@
             </ng-template>
             <ng-template pTemplate="header" let-columns>
                 <tr>
-                    <th pSortableColumn="question" style="width: 20%">
-                        Question<p-sortIcon field="question"></p-sortIcon>
-                    </th>
+                    <th pSortableColumn="title" style="width: 20%">Question<p-sortIcon field="title"></p-sortIcon></th>
                     <th pSortableColumn="difficulty" style="width: 15%">
                         Difficulty<p-sortIcon field="difficulty"></p-sortIcon>
                     </th>
@@ -47,7 +45,7 @@
             </ng-template>
             <ng-template pTemplate="body" let-history>
                 <tr (click)="onRowSelect(history)">
-                    <td>{{ history.question.title }}</td>
+                    <td>{{ history.title }}</td>
                     <td>{{ history.difficulty }}</td>
                     <td>{{ history.topics.join(', ') }}</td>
                     <td>{{ history.collaborator }}</td>
@@ -73,10 +71,10 @@
         transitionOptions="200ms cubic-bezier(0, 0, 0.2, 1)"
         (onHide)="closePanel()">
         <ng-template pTemplate="header">
-            <h3>{{ panelHistory?.question?.title }}</h3>
+            <h3>{{ panelHistory?.title }}</h3>
         </ng-template>
         <div class="panel-content">
-            <p style="white-space: pre-wrap">{{ panelHistory?.question?.description }}</p>
+            <p style="white-space: pre-wrap">{{ panelHistory?.description }}</p>
             <h4>Submitted Solution</h4>
             <div #editor class="editor-content text-lg"></div>
         </div>
