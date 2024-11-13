@@ -43,6 +43,22 @@ export const registrationSchema = z.object({
     password: passwordSchema,
 });
 
+export const updateUserSchema = z.object({
+    username: usernameSchema.optional(),
+    email: emailSchema.optional(),
+    password: passwordSchema.optional(),
+}).superRefine((data, ctx) => {
+    if (!data.username && !data.email && !data.password) {
+        // If none of the variables are present, assign error to each one
+        // Granular control over which is missing is not needed
+        ctx.addIssue({
+          path: ['username', 'password', 'email'],
+          message: UserValidationErrors.REQUIRED,
+          code: z.ZodIssueCode.custom,
+        });
+      }
+});
+
 export const updateUsernameAndEmailSchema = z.object({
     username: usernameSchema,
     email: emailSchema,
