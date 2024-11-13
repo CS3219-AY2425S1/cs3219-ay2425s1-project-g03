@@ -138,9 +138,7 @@ export class QuestionsComponent implements OnInit {
 
     onRowSelect(question: Question) {
         this.clickedOnQuestion = question;
-        if (!this.isDialogVisible) {
-            this.isPanelVisible = true;
-        }
+        this.isPanelVisible = true;
     }
 
     closePanel() {
