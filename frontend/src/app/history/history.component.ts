@@ -1,9 +1,9 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { TableModule } from 'primeng/table';
+import { Table, TableModule } from 'primeng/table';
 import { CommonModule, DatePipe } from '@angular/common';
 import { HistoryStatus, MatchingHistory } from './history.model';
 import { HistoryService } from '../../_services/history.service';
-import { MessageService } from 'primeng/api';
+import { MessageService, SortEvent } from 'primeng/api';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { IconFieldModule } from 'primeng/iconfield';
@@ -34,28 +34,28 @@ import { Router } from '@angular/router';
 })
 export class HistoryComponent implements OnInit {
     @ViewChild('editor') editor!: ElementRef;
+    @ViewChild('dt') dt!: Table;
 
     histories: MatchingHistory[] = [];
+    initialValue: MatchingHistory[] = [];
     loading = true;
     isPanelVisible = false;
     panelHistory: MatchingHistory | null = null;
     editorView: EditorView | null = null;
     customTheme!: Extension;
+    isSorted: null | undefined | boolean;
 
     constructor(
         private historyService: HistoryService,
         private messageService: MessageService,
-        private datePipe: DatePipe,
         private router: Router,
     ) {}
 
     ngOnInit() {
         this.historyService.getHistories().subscribe({
             next: data => {
-                this.histories = data.map(history => ({
-                    ...history,
-                    time: this.datePipe.transform(history.time, 'short'), // Pipe to format date for searching
-                }));
+                this.histories = data;
+                this.initialValue = [...data];
                 this.loading = false;
             },
             error: () => {
@@ -68,6 +68,49 @@ export class HistoryComponent implements OnInit {
                     life: 3000,
                 });
             },
+        });
+    }
+
+    customSort(event: SortEvent) {
+        if (this.isSorted == null || this.isSorted === undefined) {
+            this.isSorted = true;
+            this.sortTableData(event);
+        } else if (this.isSorted == true) {
+            this.isSorted = false;
+            this.sortTableData(event);
+        } else if (this.isSorted == false) {
+            this.isSorted = null;
+            this.histories = [...this.initialValue];
+            this.dt.reset();
+        }
+    }
+
+    sortTableData(event: SortEvent) {
+        event.data?.sort((data1, data2) => {
+            console.log(event.field);
+            const value1 = data1[event.field ?? ''] ?? null;
+            const value2 = data2[event.field ?? ''] ?? null;
+            let result = 0;
+
+            // Null checks
+            if (value1 === null && value2 !== null) {
+                result = -1;
+            } else if (value1 !== null && value2 === null) {
+                result = 1;
+            } else if (value1 === null && value2 === null) {
+                result = 0;
+            } else if (event.field == 'time') {
+                console.log(new Date(value1));
+                result = new Date(value1) >= new Date(value2) ? 1 : -1;
+            } else if (typeof value1 === 'string' && typeof value2 === 'string') {
+                // String comparison
+                result = value1.localeCompare(value2);
+            } else {
+                // Generic comparison for numbers and other types
+                result = value1 < value2 ? -1 : value1 > value2 ? 1 : 0;
+            }
+
+            return (event.order ?? 1) * result;
         });
     }
 

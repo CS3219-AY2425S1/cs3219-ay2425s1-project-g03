@@ -11,7 +11,9 @@
             [rows]="10"
             [rowsPerPageOptions]="[10, 25, 50]"
             [globalFilterFields]="['question', 'difficulty', 'topics', 'collaborator', 'status', 'time']"
-            styleClass="p-datatable-gridlines-striped">
+            styleClass="p-datatable-gridlines-striped"
+            (sortFunction)="customSort($event)"
+            [customSort]="true">
             <ng-template pTemplate="caption">
                 <div class="flex flex-wrap align-items-center justify-content-between">
                     <h3 class="">Matching History</h3>
@@ -58,7 +60,7 @@
                             <i class="pi pi-spin pi-spinner" style="color: white; font-size: large"></i>
                         }
                     </td>
-                    <td>{{ history.time }}</td>
+                    <td>{{ history.time | date: 'dd/MM/yyyy HH:mm a' }}</td>
                 </tr>
             </ng-template>
         </p-table>
@@ -67,7 +69,7 @@
         [(visible)]="isPanelVisible"
         position="right"
         [blockScroll]="true"
-        styleClass="w-10 md:w-4"
+        styleClass="w-10 md:w-8 lg:w-6"
         transitionOptions="200ms cubic-bezier(0, 0, 0.2, 1)"
         (onHide)="closePanel()">
         <ng-template pTemplate="header">
