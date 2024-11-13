@@ -16,11 +16,18 @@
     </div>
     <p-progressBar mode="indeterminate" [style]="{ height: '6px' }" />
     <ng-template pTemplate="footer">
-        <div class="flex w-full justify-content-end gap-4">
-            <p-button type="button" label="Cancel" severity="danger" [outlined]="true" (click)="cancel()" />
-            @if (!isInitiator || (numForfeit !== 2 && numUniqueUsers === 1)) {
-                <p-button type="button" label="Agree" severity="success" [outlined]="true" (click)="agreeSubmit()" />
-            }
-        </div>
+        @if (!isConsent) {
+            <div class="flex w-full justify-content-end gap-4">
+                <p-button type="button" label="Cancel" severity="danger" [outlined]="true" (click)="cancel()" />
+                @if (!isInitiator || (numForfeit !== 2 && numUniqueUsers === 1)) {
+                    <p-button
+                        type="button"
+                        label="Agree"
+                        severity="success"
+                        [outlined]="true"
+                        (click)="agreeSubmit()" />
+                }
+            </div>
+        }
     </ng-template>
 </p-dialog>
