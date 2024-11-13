@@ -4,7 +4,8 @@
   "description": "Collaboration service using Yjs, WebSocket, and MongoDB.",
   "main": "server.js",
   "scripts": {
-    "build": "npx tsc",
+    "clean": "rm -rf dist",
+    "build": "npm run clean && npx tsc --build src/tsconfig.json",
     "start": "npm run build && node ./dist/server.js",
     "dev": "nodemon --files ./src/server.ts",
     "lint": "npx eslint .",
