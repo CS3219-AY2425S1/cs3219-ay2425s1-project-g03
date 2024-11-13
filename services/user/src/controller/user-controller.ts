@@ -237,9 +237,9 @@ export async function updateUser(req: Request, res: Response) {
         const salt = bcrypt.genSaltSync(10);
         const updatedUser = (await _updateUserById(
             userId,
-            username ?? user.username, 
-            email ?? user.email, 
-            password ? bcrypt.hashSync(password, salt) : user.password
+            username ?? user.username,
+            email ?? user.email,
+            password ? bcrypt.hashSync(password, salt) : user.password,
         )) as User;
         handleSuccess(res, 200, `Updated data for user ${userId}`, formatUserResponse(updatedUser));
     } catch (err) {
