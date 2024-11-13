@@ -5,6 +5,7 @@ import { MatchingComponent } from './matching/matching.component';
 import { HomeComponent } from './home/home.component';
 import { AuthGuardService } from '../_services/auth.guard.service';
 import { CollabGuardService } from '../_services/collab.guard.service';
+import { HistoryComponent } from './history/history.component';
 
 const accountModule = () => import('./account/account.module').then(x => x.AccountModule);
 
@@ -31,6 +32,11 @@ export const routes: Routes = [
     {
         path: 'home',
         component: HomeComponent,
+        canActivate: [AuthGuardService],
+    },
+    {
+        path: 'history',
+        component: HistoryComponent,
         canActivate: [AuthGuardService],
     },
     {

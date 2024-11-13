@@ -25,6 +25,7 @@ import {
     registrationSchema,
     updatePasswordSchema,
     updateUsernameAndEmailSchema,
+    updateUserSchema,
     UserValidationErrors,
 } from '../types/custom';
 
@@ -44,10 +45,8 @@ export async function createUser(req: Request, res: Response) {
             const createdUser = await _createUser(username, email, hashedPassword);
             handleSuccess(res, 201, `Created new user ${username} successfully`, formatUserResponse(createdUser));
         } else {
-            const required_errors = parseResult.error.errors.filter(
-                err => err.message == UserValidationErrors.REQUIRED,
-            );
-            if (required_errors.length > 0) {
+            const requiredErrors = parseResult.error.errors.filter(err => err.message == UserValidationErrors.REQUIRED);
+            if (requiredErrors.length > 0) {
                 handleBadRequest(res, 'username and/or email and/or password are missing');
             }
             handleBadRequest(res, 'invalid username and/or email and/or password');
@@ -128,10 +127,8 @@ export async function updateUsernameAndEmail(req: Request, res: Response) {
             handleSuccess(res, 200, `Updated data for user ${userId}`, formatUserResponse(updatedUser));
         } else {
             console.log(parseResult.error.errors);
-            const required_errors = parseResult.error.errors.filter(
-                err => err.message == UserValidationErrors.REQUIRED,
-            );
-            if (required_errors.length > 0) {
+            const requiredErrors = parseResult.error.errors.filter(err => err.message == UserValidationErrors.REQUIRED);
+            if (requiredErrors.length > 0) {
                 handleBadRequest(res, 'username and/or email and/or password are missing');
                 return;
             }
@@ -177,11 +174,9 @@ export async function updatePassword(req: Request, res: Response) {
             )) as User;
             handleSuccess(res, 200, `Updated data for user ${userId}`, formatUserResponse(updatedUser));
         } else {
-            const required_errors = parseResult.error.errors.filter(
-                err => err.message == UserValidationErrors.REQUIRED,
-            );
-            if (required_errors.length > 0) {
-                handleBadRequest(res, 'old password and/or new password are missing');
+            const requiredErrors = parseResult.error.errors.filter(err => err.message == UserValidationErrors.REQUIRED);
+            if (requiredErrors.length > 0) {
+                handleBadRequest(res, 'No field to update: username and email and password are all missing!');
             }
             handleBadRequest(res, 'invalid password');
         }
@@ -194,11 +189,18 @@ export async function updatePassword(req: Request, res: Response) {
 
 export async function updateUser(req: Request, res: Response) {
     try {
-        const { username, email, password } = req.body;
-        if (!(username || email || password)) {
-            handleBadRequest(res, 'No field to update: username and email and password are all missing!');
+        const parseResult = updateUserSchema.safeParse(req.body);
+        if (!parseResult.success) {
+            const requiredErrors = parseResult.error.errors.filter(err => err.message == UserValidationErrors.REQUIRED);
+            if (requiredErrors.length > 0) {
+                handleBadRequest(res, 'No field to update: username and email and password are all missing!');
+                return;
+            }
+            handleBadRequest(res, 'invalid username and/or email and/or password');
             return;
         }
+
+        const { username, email, password } = req.body;
 
         const userId = req.params.id;
         if (!isValidObjectId(userId)) {
@@ -210,6 +212,7 @@ export async function updateUser(req: Request, res: Response) {
             handleNotFound(res, `User ${userId} not found`);
             return;
         }
+
         if (username || email) {
             const userByUsername = await _findUserByUsername(username);
             if (userByUsername && userByUsername.id !== userId) {
@@ -223,14 +226,13 @@ export async function updateUser(req: Request, res: Response) {
             }
         }
 
-        if (!password) {
-            handleBadRequest(res, 'No field to update: password is missing!');
-            return;
-        }
         const salt = bcrypt.genSaltSync(10);
-        const hashedPassword = bcrypt.hashSync(password, salt);
-
-        const updatedUser = (await _updateUserById(userId, username, email, hashedPassword)) as User;
+        const updatedUser = (await _updateUserById(
+            userId,
+            username ?? user.username,
+            email ?? user.email,
+            password ? bcrypt.hashSync(password, salt) : user.password,
+        )) as User;
         handleSuccess(res, 200, `Updated data for user ${userId}`, formatUserResponse(updatedUser));
     } catch (err) {
         console.error(err);

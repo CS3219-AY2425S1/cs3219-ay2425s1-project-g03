@@ -1,4 +1,4 @@
-import { DifficultyLevels } from '../../questions/difficulty-levels.enum';
+import { DifficultyLevels } from '../questions/difficulty-levels.enum';
 
 export enum HistoryStatus {
     COMPLETED = 'COMPLETED',
@@ -10,7 +10,8 @@ export interface MatchingHistory {
     id: string;
     roomId: string;
     collaborator: string; // collaborator username
-    question: Question; // question
+    title: string;
+    description: string;
     difficulty: DifficultyLevels; // question difficulty
     topics: string[]; // question topics
     status: HistoryStatus; // status of the session

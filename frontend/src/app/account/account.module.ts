@@ -7,7 +7,6 @@ import { RegisterComponent } from './register/register.component';
 import { LayoutComponent } from './layout.component';
 import { AccountRoutingModule } from './account.component';
 import { ProfileComponent } from './profile/profile.component';
-import { HistoryComponent } from './history/history.component';
 
 @NgModule({
     imports: [
@@ -18,7 +17,6 @@ import { HistoryComponent } from './history/history.component';
         LoginComponent,
         RegisterComponent,
         ProfileComponent,
-        HistoryComponent,
     ],
 })
 export class AccountModule {}

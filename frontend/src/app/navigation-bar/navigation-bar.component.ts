@@ -71,7 +71,7 @@ export class NavigationBarComponent implements OnInit {
                 {
                     label: 'Match History',
                     icon: 'pi pi-trophy',
-                    routerLink: '/account/history',
+                    routerLink: '/history',
                     class: 'p-submenu-list',
                 },
                 {

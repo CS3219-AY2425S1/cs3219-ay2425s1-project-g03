@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { historyResponse, MatchingHistory } from '../app/account/history/history.model';
+import { historyResponse, MatchingHistory } from '../app/history/history.model';
 import { ApiService } from './api.service';
 
 @Injectable({
@@ -22,7 +22,8 @@ export class HistoryService extends ApiService {
                     id: item._id,
                     roomId: item.roomId,
                     collaborator: item.collaborator.username,
-                    question: item.question,
+                    title: item.question.title,
+                    description: item.question.description,
                     topics: item.question.topics,
                     difficulty: item.question.difficulty,
                     status: item.status,
