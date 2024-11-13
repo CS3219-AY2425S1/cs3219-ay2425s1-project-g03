@@ -13,12 +13,24 @@ import {
 } from '../model/repository';
 import { Request, Response } from 'express';
 import { User } from '../model/user-model';
-import { handleBadRequest, handleConflict, handleInternalError, handleNotFound, handleSuccess } from '../utils/helper';
-import { userSchema, UserValidationErrors } from '../types/custom';
+import {
+    handleBadRequest,
+    handleConflict,
+    handleInternalError,
+    handleNotFound,
+    handleSuccess,
+    handleUnauthorized,
+} from '../utils/helper';
+import {
+    registrationSchema,
+    updatePasswordSchema,
+    updateUsernameAndEmailSchema,
+    UserValidationErrors,
+} from '../types/custom';
 
 export async function createUser(req: Request, res: Response) {
     try {
-        const parseResult = userSchema.safeParse(req.body);
+        const parseResult = registrationSchema.safeParse(req.body);
 
         if (parseResult.success) {
             const { username, email, password } = req.body;
@@ -78,6 +90,108 @@ export async function getAllUsers(req: Request, res: Response) {
     }
 }
 
+export async function updateUsernameAndEmail(req: Request, res: Response) {
+    try {
+        const parseResult = updateUsernameAndEmailSchema.safeParse(req.body);
+        if (parseResult.success) {
+            const { username, email, password } = req.body;
+
+            const userId = req.params.id;
+            if (!isValidObjectId(userId)) {
+                handleNotFound(res, `User ${userId} not found`);
+                return;
+            }
+
+            const userByUsername = await _findUserByUsername(username);
+            if (userByUsername && userByUsername.id !== userId) {
+                handleConflict(res, 'The username already exists');
+                return;
+            }
+            const userByEmail = await _findUserByEmail(email);
+            if (userByEmail && userByEmail.id !== userId) {
+                handleConflict(res, 'The email already exists');
+                return;
+            }
+
+            const userById = await _findUserById(userId);
+            if (!userById) {
+                handleNotFound(res, `User ${userId} not found`);
+                return;
+            }
+            const match = await bcrypt.compare(password, userById.password);
+            if (!match) {
+                handleUnauthorized(res, 'Wrong password');
+                return;
+            }
+
+            const updatedUser = (await _updateUserById(userId, username, email, userById.password)) as User;
+            handleSuccess(res, 200, `Updated data for user ${userId}`, formatUserResponse(updatedUser));
+        } else {
+            console.log(parseResult.error.errors);
+            const required_errors = parseResult.error.errors.filter(
+                err => err.message == UserValidationErrors.REQUIRED,
+            );
+            if (required_errors.length > 0) {
+                handleBadRequest(res, 'username and/or email and/or password are missing');
+                return;
+            }
+            handleBadRequest(res, 'invalid username and/or email');
+        }
+    } catch (err) {
+        console.error(err);
+        handleInternalError(res, 'Unknown error when updating user!');
+        return;
+    }
+}
+
+export async function updatePassword(req: Request, res: Response) {
+    try {
+        const parseResult = updatePasswordSchema.safeParse(req.body);
+        if (parseResult.success) {
+            const { oldPassword, newPassword } = req.body;
+
+            const userId = req.params.id;
+            if (!isValidObjectId(userId)) {
+                handleNotFound(res, `User ${userId} not found`);
+                return;
+            }
+            const userById = await _findUserById(userId);
+            if (!userById) {
+                handleNotFound(res, `User ${userId} not found`);
+                return;
+            }
+            const match = await bcrypt.compare(oldPassword, userById.password);
+            if (!match) {
+                handleUnauthorized(res, 'Wrong password');
+                return;
+            }
+
+            const salt = bcrypt.genSaltSync(10);
+            const hashedPassword = bcrypt.hashSync(newPassword, salt);
+
+            const updatedUser = (await _updateUserById(
+                userId,
+                userById.username,
+                userById.email,
+                hashedPassword,
+            )) as User;
+            handleSuccess(res, 200, `Updated data for user ${userId}`, formatUserResponse(updatedUser));
+        } else {
+            const required_errors = parseResult.error.errors.filter(
+                err => err.message == UserValidationErrors.REQUIRED,
+            );
+            if (required_errors.length > 0) {
+                handleBadRequest(res, 'old password and/or new password are missing');
+            }
+            handleBadRequest(res, 'invalid password');
+        }
+    } catch (err) {
+        console.error(err);
+        handleInternalError(res, 'Unknown error when updating user!');
+        return;
+    }
+}
+
 export async function updateUser(req: Request, res: Response) {
     try {
         const { username, email, password } = req.body;
@@ -98,12 +212,12 @@ export async function updateUser(req: Request, res: Response) {
         }
         if (username || email) {
             const userByUsername = await _findUserByUsername(username);
-            if (userByUsername?.id !== userId) {
+            if (userByUsername && userByUsername.id !== userId) {
                 handleConflict(res, 'username already exists');
                 return;
             }
             const userByEmail = await _findUserByEmail(email);
-            if (userByEmail?.id !== userId) {
+            if (userByEmail && userByEmail.id !== userId) {
                 handleConflict(res, 'email already exists');
                 return;
             }

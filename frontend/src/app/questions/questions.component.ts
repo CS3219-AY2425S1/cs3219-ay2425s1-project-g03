@@ -12,6 +12,7 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { ReactiveFormsModule } from '@angular/forms';
 import { DropdownModule } from 'primeng/dropdown';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { SidebarModule } from 'primeng/sidebar';
 import { Question } from './question.model';
 import { QuestionService } from '../../_services/question.service';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -26,6 +27,7 @@ import { User } from '../../_models/user.model';
     imports: [
         TableModule,
         NgFor,
+        SidebarModule,
         CommonModule,
         FormsModule,
         ToastModule,

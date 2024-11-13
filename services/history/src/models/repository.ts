@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import config from '../config';
-import { HistoryModel, HistoryStatus, IdType, Question, User } from './historyModel';
+import { HistoryModel, HistoryStatus, IdType, Question, Snapshot, User } from './historyModel';
 
 export async function connectToDB() {
     await mongoose.connect(config.DB_URI);
@@ -13,8 +13,12 @@ export async function createHistory(roomId: IdType, user1: User, user2: User, qu
     ]);
 }
 
-export async function updateHistory(roomId: IdType, userId: IdType, status: HistoryStatus) {
-    return await HistoryModel.findOneAndUpdate({ roomId, 'user._id': userId }, { $set: { status } }, { new: true });
+export async function updateHistory(roomId: IdType, userId: IdType, status: HistoryStatus, snapshot: Snapshot) {
+    return await HistoryModel.findOneAndUpdate(
+        { roomId, 'user._id': userId },
+        { $set: { status, snapshot } },
+        { new: true },
+    );
 }
 
 export async function retrieveHistoryByUserId(userId: IdType) {

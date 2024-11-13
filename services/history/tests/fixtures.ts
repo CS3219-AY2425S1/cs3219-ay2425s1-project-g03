@@ -38,3 +38,8 @@ export const user3Token = jwt.sign(
         expiresIn: '1d',
     },
 );
+
+export const snapshot = {
+    language: 'python',
+    code: 'print("Hello, World!")',
+};

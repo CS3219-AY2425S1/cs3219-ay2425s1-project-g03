@@ -48,10 +48,20 @@ export const handleHttpServerError = (client: Response, message = 'Internal Serv
  * WS-specific handlers
  */
 
+/**
+ * Handle auth failed for WS
+ * @param ws
+ * @param message
+ */
 export const handleAuthFailed = (ws: WebSocket, message: string) => {
     ws.close(WEBSOCKET_AUTH_FAILED, message);
 };
 
+/**
+ * Handle room closed for WS
+ * @param ws
+ * @param message
+ */
 export const handleRoomClosed = (ws: WebSocket, message = 'Room closed') => {
     ws.close(WEBSOCKET_ROOM_CLOSED, message);
 };

@@ -6,7 +6,7 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose, { Types } from 'mongoose';
 import { HistoryModel, HistoryStatus } from '../../src/models/historyModel';
 import { createHistory, updateHistory } from '../../src/models/repository';
-import { question, roomId, user1, user2, users } from '../fixtures';
+import { question, roomId, user1, user2, users, snapshot } from '../fixtures';
 
 describe('History Repository', function () {
     before(async function () {
@@ -49,13 +49,13 @@ describe('History Repository', function () {
         });
 
         it('Should update history status for a specific user', async function () {
-            const updatedHistory = await updateHistory(roomId, user1._id, HistoryStatus.FORFEITED);
+            const updatedHistory = await updateHistory(roomId, user1._id, HistoryStatus.FORFEITED, snapshot);
             expect(updatedHistory).to.not.equal(null);
             expect(updatedHistory).to.have.property('status', HistoryStatus.FORFEITED);
         });
 
         it('Should return null if no history found', async function () {
-            const updatedHistory = await updateHistory(roomId, new Types.ObjectId(), HistoryStatus.FORFEITED);
+            const updatedHistory = await updateHistory(roomId, new Types.ObjectId(), HistoryStatus.FORFEITED, snapshot);
             expect(updatedHistory).to.be.equal(null);
         });
     });

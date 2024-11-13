@@ -65,13 +65,13 @@ export class NavigationBarComponent implements OnInit {
                 {
                     label: 'View Profile',
                     icon: 'pi pi-user',
-                    // routerLink: '',
+                    routerLink: '/account/profile',
                     class: 'p-submenu-list',
                 },
                 {
-                    label: 'View Match History',
+                    label: 'Match History',
                     icon: 'pi pi-trophy',
-                    // routerLink: '',
+                    routerLink: '/account/history',
                     class: 'p-submenu-list',
                 },
                 {

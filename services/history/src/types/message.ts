@@ -1,4 +1,4 @@
-import { HistoryStatus, IdType, Question, User } from '../models/historyModel';
+import { HistoryStatus, IdType, Question, Snapshot, User } from '../models/historyModel';
 
 export interface CreateHistoryMessage {
     roomId: IdType;
@@ -11,4 +11,5 @@ export interface UpdateHistoryMessage {
     roomId: IdType;
     userId: IdType;
     status: HistoryStatus;
+    snapshot: Snapshot;
 }
