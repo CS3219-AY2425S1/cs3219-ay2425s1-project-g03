@@ -3,13 +3,12 @@
   "version": "0.0.0",
   "main": "server.js",
   "scripts": {
-    "clean": "rm -rf dist",
-    "build": "npm run clean && npx tsc --build src/tsconfig.json",
+    "build": "npx tsc",
     "start": "npm run build && node ./dist/server.js",
     "dev": "nodemon --files ./src/server.ts",
     "lint": "npx eslint .",
     "lint:fix": "npx eslint . --fix",
-    "test": "mocha --require ts-node/register tests/**/*.spec.ts --exit"
+    "test": "node --env-file=.env.sample ./node_modules/mocha/bin/mocha --require ts-node/register tests/**/*.spec.ts --exit"
   },
   "author": "",
   "license": "ISC",
