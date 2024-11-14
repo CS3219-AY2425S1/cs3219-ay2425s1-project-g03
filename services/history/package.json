@@ -8,7 +8,7 @@
     "dev": "nodemon --files ./src/server.ts",
     "lint": "npx eslint src tests",
     "lint:fix": "npx eslint src tests --fix",
-    "test": "mocha --require ts-node/register tests/**/*.spec.ts --exit"
+    "test": "node --env-file=.env.sample ./node_modules/mocha/bin/mocha --require ts-node/register tests/**/*.spec.ts --exit"
   },
   "author": "",
   "license": "ISC",

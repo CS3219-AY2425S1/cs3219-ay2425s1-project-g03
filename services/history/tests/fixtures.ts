@@ -1,6 +1,3 @@
-import dotenv from 'dotenv';
-dotenv.config({ path: '.env.sample' });
-
 import jwt from 'jsonwebtoken';
 import { Types } from 'mongoose';
 import { Difficulty, Question, User } from '../src/models/historyModel';
