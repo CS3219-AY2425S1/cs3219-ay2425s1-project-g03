@@ -1,12 +1,10 @@
-import dotenv from 'dotenv';
-dotenv.config({ path: '.env.sample' });
+import { question, roomId, user1, user2, users, snapshot } from '../fixtures';
 
 import { expect } from 'chai';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose, { Types } from 'mongoose';
 import { HistoryModel, HistoryStatus } from '../../src/models/historyModel';
 import { createHistory, updateHistory } from '../../src/models/repository';
-import { question, roomId, user1, user2, users, snapshot } from '../fixtures';
 
 describe('History Repository', function () {
     before(async function () {

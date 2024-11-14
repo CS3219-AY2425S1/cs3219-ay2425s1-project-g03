@@ -1,5 +1,4 @@
-import dotenv from 'dotenv';
-dotenv.config({ path: '.env.sample' });
+import { question, roomId, user1, user1Token, user2, user3Token } from '../fixtures';
 
 import { use, expect } from 'chai';
 import chaiHttp from 'chai-http';
@@ -8,7 +7,6 @@ import mongoose from 'mongoose';
 import { HistoryModel } from '../../src/models/historyModel';
 import { createHistory } from '../../src/models/repository';
 import app from '../../src/app';
-import { question, roomId, user1, user1Token, user2, user3Token } from '../fixtures';
 
 const chai = use(chaiHttp);
 
