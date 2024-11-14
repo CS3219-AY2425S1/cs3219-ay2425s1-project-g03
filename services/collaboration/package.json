@@ -4,19 +4,17 @@
   "description": "Collaboration service using Yjs, WebSocket, and MongoDB.",
   "main": "server.js",
   "scripts": {
-    "clean": "rm -rf dist",
-    "build": "npm run clean && npx tsc --build src/tsconfig.json",
+    "build": "npx tsc",
     "start": "npm run build && node ./dist/server.js",
     "dev": "nodemon --files ./src/server.ts",
     "lint": "npx eslint .",
     "lint:fix": "npx eslint . --fix",
-    "test": "mocha --require ts-node/register tests/**/*.spec.ts"
+    "test": "node --env-file=.env.sample ./node_modules/mocha/bin/mocha --require ts-node/register tests/**/*.spec.ts --exit"
   },
   "dependencies": {
     "amqplib": "^0.10.4",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
     "express": "^4.21.0",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^5.9.2",

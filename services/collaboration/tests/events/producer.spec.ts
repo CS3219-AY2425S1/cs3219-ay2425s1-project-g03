@@ -1,12 +1,9 @@
-import dotenv from "dotenv";
-dotenv.config({ path: "../../.env.sample" });
 import { expect } from "chai";
 import sinon, { SinonStub } from "sinon";
 import {
   produceCollabCreated,
   produceCollabCreateFailedEvent,
   produceCreateHistory,
-  produceUpdateHistory,
 } from "../../src/events/producer";
 import messageBroker from "../../src/events/broker";
 import { Queues } from "../../src/events/queues";

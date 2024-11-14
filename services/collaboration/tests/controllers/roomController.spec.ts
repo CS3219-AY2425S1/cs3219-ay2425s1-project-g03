@@ -1,5 +1,3 @@
-import dotenv from "dotenv";
-dotenv.config({ path: "../../.env.sample" });
 import chai, { expect } from "chai";
 import sinon, { SinonStub } from "sinon";
 import sinonChai from "sinon-chai";
@@ -7,7 +5,6 @@ import {
   createRoomWithQuestion,
   getRoomByRoomIdController,
   closeRoomController,
-  updateUserStatusInRoomController,
 } from "../../src/controllers/roomController";
 import { Request, Response } from "express";
 import * as mongodbService from "../../src/services/mongodbService";
