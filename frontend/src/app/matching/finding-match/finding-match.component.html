@@ -1,0 +1,65 @@
+<p-dialog
+    styleClass="w-11 sm:w-22rem"
+    [(visible)]="isVisible"
+    [modal]="true"
+    [draggable]="false"
+    [closeOnEscape]="false"
+    (onShow)="onDialogShow()"
+    [closable]="false">
+    <ng-template pTemplate="header">
+        <div class="flex flex-column w-full align-items-center justify-content-center gap-2">
+            @if (isFindingMatch) {
+                <p-progressSpinner styleClass="w-2rem h-2rem mt-0" strokeWidth="6" />
+                <h2 class="mt-0 mb-0">Finding a Match...</h2>
+                <div class="flex gap-2 align-items-center">
+                    <i class="pi pi-stopwatch"></i>
+                    <p class="m-0">Time Left: {{ matchTimeLeft }}</p>
+                </div>
+            } @else {
+                <i class="pi pi-check text-4xl text-green-300"></i>
+                <h2 class="mt-0 mb-0">Match Found!</h2>
+            }
+        </div>
+    </ng-template>
+
+    <div class="flex flex-column gap-4">
+        <div class="flex flex-column gap-2 align-items-center">
+            <p class="m-0">Topics selected</p>
+            <div class="flex flex-wrap gap-2 justify-content-center">
+                @for (topic of userCriteria.topics; track topic) {
+                    <p-chip [label]="topic" styleClass="text-sm" />
+                }
+            </div>
+        </div>
+
+        <div class="flex flex-column gap-2 align-items-center">
+            <p class="m-0">Difficulty selected</p>
+            <p-chip
+                [label]="userCriteria.difficulty"
+                styleClass="text-sm"
+                [ngClass]="{
+                    'easy-chip': userCriteria.difficulty === 'Easy',
+                    'medium-chip': userCriteria.difficulty === 'Medium',
+                    'hard-chip': userCriteria.difficulty === 'Hard',
+                }" />
+        </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+        <div class="flex w-full justify-content-center align-items-center">
+            @if (isFindingMatch) {
+                <p-button
+                    type="button"
+                    label="Cancel Match"
+                    severity="danger"
+                    [outlined]="true"
+                    (click)="closeDialog()" />
+            } @else {
+                <div class="flex flex-column w-full align-items-center justify-content-center gap-2">
+                    <p-progressSpinner styleClass="w-2rem h-2rem mt-2" strokeWidth="6" />
+                    <p class="mb-0 mt-0 font-medium text-blue-300">Redirecting you to the workspace...</p>
+                </div>
+            }
+        </div>
+    </ng-template>
+</p-dialog>

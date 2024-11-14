@@ -1,0 +1,21 @@
+/* Visit https://aka.ms/tsconfig to read more about this file */
+{
+  "compilerOptions": {
+    "target": "es2016",
+    "module": "CommonJS",
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+  },
+  "references": [
+    { "path": "./src" },
+    { "path": "./tests" }
+  ],
+  "exclude": ["node_modules"],
+  "ts-node": {
+    "files": true
+  }
+}

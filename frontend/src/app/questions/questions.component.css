@@ -1,0 +1,20 @@
+.p-sortable-column {
+    background-color: #181818 !important;
+}
+
+.p-sortable-column:not(.p-highlight):hover {
+    background-color: #181818 !important;
+}
+
+.panel-content {
+    line-height: 1.6; /* Adjust line height for better readability */
+    color: #ffffff; /* Ensure text color is readable */
+}
+
+.panel-content p {
+    margin-bottom: 1rem; /* Add margin to paragraphs for spacing */
+}
+
+tr:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}

@@ -1,0 +1,64 @@
+name: Deploy Backend Services
+
+on:
+  push:
+    branches: [ 'production' ]
+
+  workflow_dispatch:
+
+permissions:
+  id-token: write   # This is required for requesting the JWT
+  contents: read    # This is required for actions/checkout
+
+env:
+  AWS_REGION: ap-southeast-1
+  ECS_CLUSTER: backend-cluster
+
+jobs:
+  deploy:
+    name: Deploy Backend Service
+    runs-on: ubuntu-latest
+    environment: production
+
+    strategy:
+      matrix:
+        service: [ 'question', 'user', 'match', 'collaboration', 'history' ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        id: aws-configure
+        uses: aws-actions/configure-aws-credentials@v4.0.2
+        with:
+          role-to-assume: ${{ secrets.AWS_BACKEND_ROLE }}
+          role-session-name: GitHub_to_AWS_via_FederatedOIDC
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to AWS ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2.0.1
+
+      - name: Build and push ${{ matrix.service }} image to AWS ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ matrix.service }}
+          IMAGE_TAG: latest
+        run: |
+          echo "Building $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./services/${{ matrix.service }}
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+      - name: Update AWS Service (${{ matrix.service }}) # Trigger re-deployment with latest image
+        id: update-service
+        env:
+          ECS_SERVICE: ${{ matrix.service }}-service
+        run: |
+          echo "Updating $ECS_SERVICE for $ECS_CLUSTER"
+          aws ecs update-service \
+            --cluster $ECS_CLUSTER \
+            --service $ECS_SERVICE \
+            --force-new-deployment \
+            --region $AWS_REGION

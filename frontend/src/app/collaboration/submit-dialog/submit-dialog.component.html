@@ -1,0 +1,33 @@
+<p-dialog
+    styleClass="w-11 sm:w-22rem"
+    [(visible)]="isVisible"
+    [modal]="true"
+    [draggable]="false"
+    [closeOnEscape]="false"
+    (onShow)="onDialogShow()"
+    [closable]="false">
+    <ng-template pTemplate="header">
+        <h2 class="mt-0 mb-0">Submit</h2>
+    </ng-template>
+    <div class="mb-4" style="white-space: pre-line">
+        <span>
+            <p class="m-0">{{ message }}</p>
+        </span>
+    </div>
+    <p-progressBar mode="indeterminate" [style]="{ height: '6px' }" />
+    <ng-template pTemplate="footer">
+        @if (!isConsent) {
+            <div class="flex w-full justify-content-end gap-4">
+                <p-button type="button" label="Cancel" severity="danger" [outlined]="true" (click)="cancel()" />
+                @if (!isInitiator || (numForfeit !== 2 && numUniqueUsers === 1)) {
+                    <p-button
+                        type="button"
+                        label="Agree"
+                        severity="success"
+                        [outlined]="true"
+                        (click)="agreeSubmit()" />
+                }
+            </div>
+        }
+    </ng-template>
+</p-dialog>

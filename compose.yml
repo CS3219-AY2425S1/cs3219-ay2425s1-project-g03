@@ -1,0 +1,201 @@
+services:
+  frontend:
+    container_name: frontend
+    image: frontend
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    ports:
+      - 4200:4200
+    restart: always
+
+  gateway:
+    container_name: gateway
+    image: nginx:1.27
+    ports:
+      - 8080:8080
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - question
+      - user
+      - match
+      - collaboration
+      - history
+    networks:
+      - gateway-network
+    restart: always
+  
+  broker:
+    container_name: broker
+    hostname: broker
+    image: rabbitmq:4.0.2
+    user: rabbitmq
+    networks:
+      - gateway-network
+    healthcheck:
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 30s
+      timeout: 30s
+      retries: 10
+      start_period: 30s
+    restart: always
+
+  question:
+    container_name: question
+    image: question
+    build:
+      context: services/question
+      dockerfile: Dockerfile
+    environment:
+      DB_CLOUD_URI: ${QUESTION_DB_CLOUD_URI}
+      DB_LOCAL_URI: ${QUESTION_DB_LOCAL_URI}
+      BROKER_URL: ${BROKER_URL}
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      broker:
+        condition: service_healthy
+    networks:
+      - gateway-network
+      - question-db-network
+    restart: always
+
+  question-db:
+    container_name: question-db
+    image: mongo:7.0.14
+    volumes:
+      - question-db:/data/db
+    networks:
+      - question-db-network
+    command: --quiet
+    restart: always
+
+  user:
+    container_name: user
+    image: user
+    build:
+      context: services/user
+      dockerfile: Dockerfile
+    environment:
+      DB_CLOUD_URI: ${USER_DB_CLOUD_URI}
+      DB_LOCAL_URI: ${USER_DB_LOCAL_URI}
+      JWT_SECRET: ${JWT_SECRET}
+    networks:
+      - gateway-network
+      - user-db-network
+    restart: always
+
+  user-db:
+    container_name: user-db
+    image: mongo:7.0.14
+    volumes:
+      - user-db:/data/db
+    networks:
+      - user-db-network
+    command: --quiet
+    restart: always
+
+  match:
+    container_name: match
+    image: match
+    build:
+      context: services/match
+      dockerfile: Dockerfile
+    environment:
+      DB_CLOUD_URI: ${MATCH_DB_CLOUD_URI}
+      DB_LOCAL_URI: ${MATCH_DB_LOCAL_URI}
+      JWT_SECRET: ${JWT_SECRET}
+      BROKER_URL: ${BROKER_URL}
+    depends_on:
+      broker:
+        condition: service_healthy
+    networks:
+      - gateway-network
+      - match-db-network
+    restart: always
+
+  match-db:
+    container_name: match-db
+    image: mongo:7.0.14
+    volumes:
+      - match-db:/data/db
+    networks:
+      - match-db-network
+    restart: always
+
+  collaboration:
+    container_name: collaboration
+    image: collaboration
+    build:
+      context: services/collaboration
+      dockerfile: Dockerfile
+    environment:
+      COLLAB_DB_CLOUD_URI: ${COLLAB_DB_CLOUD_URI}
+      COLLAB_DB_LOCAL_URI: ${COLLAB_DB_LOCAL_URI}
+      YJS_DB_CLOUD_URI: ${YJS_DB_CLOUD_URI}
+      YJS_DB_LOCAL_URI: ${YJS_DB_LOCAL_URI}
+      BROKER_URL: ${BROKER_URL}
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      broker:
+        condition: service_healthy
+    networks:
+      - gateway-network
+      - collaboration-db-network
+    restart: always
+
+  collaboration-db:
+    container_name: collaboration-db
+    image: mongo:7.0.14
+    volumes:
+      - collaboration-db:/data/db
+    networks:
+      - collaboration-db-network
+    restart: always
+  
+  history:
+    container_name: history
+    image: history
+    build:
+      context: services/history
+      dockerfile: Dockerfile
+    environment:
+      DB_CLOUD_URI: ${HISTORY_DB_CLOUD_URI}
+      DB_LOCAL_URI: ${HISTORY_DB_LOCAL_URI}
+      BROKER_URL: ${BROKER_URL}
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      broker:
+        condition: service_healthy
+    networks:
+      - gateway-network
+      - history-db-network
+
+  history-db:
+    container_name: history-db
+    image: mongo:7.0.14
+    volumes:
+      - history-db:/data/db
+    networks:
+      - history-db-network
+
+volumes:
+  question-db:
+  user-db:
+  match-db:
+  collaboration-db:
+  history-db:
+
+networks:
+  gateway-network:
+    driver: bridge
+  question-db-network:
+    driver: bridge
+  user-db-network:
+    driver: bridge
+  match-db-network:
+    driver: bridge
+  collaboration-db-network:
+    driver: bridge
+  history-db-network:
+    driver: bridge

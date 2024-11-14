@@ -1,0 +1,69 @@
+<p-dialog
+    styleClass="w-11 sm:w-22rem"
+    [(visible)]="isVisible"
+    [modal]="true"
+    [draggable]="false"
+    [closeOnEscape]="false"
+    [closable]="true"
+    (onShow)="onDialogShow()"
+    (onHide)="closeDialog()">
+    <ng-template pTemplate="header">
+        <h2 class="my-0">Edit Profile</h2>
+    </ng-template>
+
+    <ng-container>
+        <form
+            [formGroup]="editProfileForm"
+            (keydown.enter)="onEditSubmit()"
+            (ngSubmit)="onEditSubmit()"
+            class="form-container">
+            <div class="form-field">
+                <div class="flex flex-row align-items-center gap-2">
+                    <i class="pi pi-user"></i>
+                    <label for="username">Username</label>
+                </div>
+                <input id="username" type="text" formControlName="username" pInputText />
+                @if (formUtils.isUsernameInvalid(editProfileForm)) {
+                    <small class="text-red-300">
+                        The provided username can only contain alphanumeric characters, dots, dashes, and underscores
+                    </small>
+                }
+            </div>
+            <div class="form-field">
+                <div class="flex flex-row align-items-center gap-2">
+                    <i class="pi pi-envelope"></i>
+                    <label for="email">Email</label>
+                </div>
+                <input id="email" type="email" formControlName="email" pInputText />
+                @if (formUtils.isEmailInvalid(editProfileForm)) {
+                    <small class="text-red-300">The provided email is invalid</small>
+                }
+            </div>
+            <div class="form-field">
+                <div class="flex flex-row align-items-center gap-2">
+                    <i class="pi pi-lock"></i>
+                    <label for="editProfilePassword">Password</label>
+                </div>
+                <p-password
+                    inputId="editProfilePassword"
+                    name="password"
+                    class="p-fluid"
+                    formControlName="password"
+                    [toggleMask]="true"
+                    [feedback]="false">
+                </p-password>
+            </div>
+        </form>
+    </ng-container>
+
+    <ng-template pTemplate="footer">
+        <p-button
+            type="submit"
+            [label]="isProcessingEdit ? '' : 'Confirm Edit'"
+            [loading]="isProcessingEdit"
+            styleClass="w-full justify-content-center"
+            [disabled]="isProcessingEdit || !editProfileForm.valid"
+            (click)="onEditSubmit()">
+        </p-button>
+    </ng-template>
+</p-dialog>

@@ -1,0 +1,4 @@
+export enum Queues {
+    CREATE_HISTORY = 'CREATE_HISTORY',
+    UPDATE_HISTORY = 'UPDATE_HISTORY',
+}

@@ -1,0 +1,10 @@
+/**
+ * Enum for queues
+ */
+export enum Queues {
+    QUESTION_FOUND = 'QUESTION_FOUND',
+    COLLAB_CREATED = 'COLLAB_CREATED',
+    MATCH_FAILED = 'MATCH_FAILED',
+    CREATE_HISTORY = 'CREATE_HISTORY',
+    UPDATE_HISTORY = 'UPDATE_HISTORY',
+}

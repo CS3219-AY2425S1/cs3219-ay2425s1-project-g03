@@ -1,0 +1,25 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    min-height: calc(100dvh - 160px);
+    padding: 1rem;
+}
+
+.form-wrapper {
+    background-color: var(--surface-section);
+    padding: 2rem;
+    border-radius: 8px; 
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); 
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.custom-multi .p-multiselect-panel {
+    height: 300px;
+}
