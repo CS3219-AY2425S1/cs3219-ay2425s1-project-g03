@@ -8,7 +8,8 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,    
+    "forceConsistentCasingInFileNames": true,
+    "allowJs": true    // <-- Add this line
   },
-  "include": ["**/*.ts"]
+  "include": ["**/*.ts", "**/*.js"] // <-- Edit this line
 }
