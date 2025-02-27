@@ -1,0 +1,56 @@
+:host ::ng-deep .p-menubar {
+    border-radius: 0;
+    border-style: none;
+    position: sticky;
+    background-color: rgba(9, 9, 11, 0.8);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+    justify-content: center;
+    align-items: center;
+    height: 80px;
+    width: 100%;
+    overflow: hidden;
+}
+
+:host ::ng-deep p-menubarsub {
+    width: 100%;
+}
+
+:host ::ng-deep .p-submenu-list {
+    right: 0%;
+    left: unset;
+}
+
+:host ::ng-deep .p-button {
+    background: transparent;
+    border: transparent;
+    color: white;
+    padding: 5px;
+    border-radius: 0.5rem;
+}
+
+a.fill-div {
+    display: block;
+    height: 100%;
+    width: 100%;
+    text-decoration: none;
+}
+
+/* fonts */
+.poppins-thin {
+    font-family: "Poppins", sans-serif;
+    font-weight: 100;
+    font-style: normal;
+}
+  
+.poppins-bold {
+    font-family: "Poppins", sans-serif;
+    font-weight: 700;
+    font-style: normal;
+}
+
+p.logo-font-size {
+    font-size: 1.5rem;
+}

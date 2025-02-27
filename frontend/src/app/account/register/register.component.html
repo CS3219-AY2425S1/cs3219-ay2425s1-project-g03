@@ -1,0 +1,98 @@
+<div class="container w-full sm:w-22rem">
+    <h2 class="mt-0 align-self-start">Register</h2>
+
+    <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="form-container">
+        <div class="form-field">
+            <div class="flex flex-row align-items-center gap-2">
+                <i class="pi pi-user"></i>
+                <label for="username">Username</label>
+            </div>
+            <input id="username" type="text" formControlName="username" pInputText />
+            @if (formUtils.isUsernameInvalid(userForm)) {
+                <small class="text-red-300">
+                    The provided username can only contain alphanumeric characters, dots, dashes, and underscores
+                </small>
+            }
+        </div>
+        <div class="form-field">
+            <div class="flex flex-row align-items-center gap-2">
+                <i class="pi pi-envelope"></i>
+                <label for="email">Email</label>
+            </div>
+            <input id="email" type="email" formControlName="email" pInputText />
+            @if (formUtils.isEmailInvalid(userForm)) {
+                <small class="text-red-300">The provided email is invalid</small>
+            }
+        </div>
+        <div class="form-field">
+            <div class="flex flex-row align-items-center gap-2">
+                <i class="pi pi-lock"></i>
+                <label for="password">Password</label>
+            </div>
+            <p-password
+                inputId="password"
+                name="password"
+                class="p-fluid"
+                formControlName="password"
+                [toggleMask]="true"
+                [feedback]="false">
+            </p-password>
+
+            @if (formUtils.isPasswordInvalid(userForm)) {
+                <small class="text-red-300">The provided password contains invalid characters</small>
+            }
+
+            @if (formUtils.isPasswordControlDirty(userForm)) {
+                <ul class="pl-0 m-0 text-sm line-height-3">
+                    @if (formUtils.isPasswordWeak(userForm)) {
+                        @for (req of passwordRequirements; track $index) {
+                            <li class="flex gap-2 align-items-center">
+                                <i
+                                    class="pi text-sm"
+                                    [ngClass]="req.check() ? 'pi-times text-gray-300' : 'pi-check text-green-300'"></i>
+                                <p class="m-0" [ngClass]="req.check() ? 'text-gray-300' : 'text-green-300'">
+                                    {{ req.msg }}
+                                </p>
+                            </li>
+                        }
+                    } @else if (formUtils.isPasswordStrong(userForm)) {
+                        <li class="flex gap-2 align-items-center">
+                            <i class="pi pi-check text-sm text-green-300"></i>
+                            <p class="m-0 text-sm text-green-300">Your password is strong enough!</p>
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+
+        <div class="form-field">
+            <div class="flex flex-row align-items-center gap-2">
+                <i class="pi pi-check-square"></i>
+                <label for="confirmPassword">Confirm Password</label>
+            </div>
+            <p-password
+                inputId="confirmPassword"
+                name="confirmPassword"
+                class="p-fluid"
+                formControlName="confirmPassword"
+                [toggleMask]="true"
+                [feedback]="false" />
+            @if (formUtils.hasPasswordMismatch(userForm)) {
+                <small class="text-red-300">The provided passwords do not match!</small>
+            }
+        </div>
+        <p-button
+            type="submit"
+            [label]="isProcessingRegistration ? '' : 'Register'"
+            [loading]="isProcessingRegistration"
+            [disabled]="!userForm.valid"
+            styleClass="w-full justify-content-center" />
+    </form>
+
+    <p class="mt-4 mb-0">
+        Already have an account?
+        <a routerLink="../login" class="text-blue-500 no-underline">Log In</a>
+    </p>
+
+    <p-toast position="bottom-right" [breakpoints]="{ '920px': { width: '90%' } }" />
+</div>

@@ -1,0 +1,102 @@
+<p-dialog
+    header="Header"
+    (onHide)="cancel()"
+    (onShow)="show()"
+    [(visible)]="isDialogVisible"
+    [modal]="true"
+    [style]="{ width: '25rem' }">
+    <ng-template pTemplate="header">
+        <div class="inline-flex align-items-center justify-content-center gap-2">
+            <span class="font-bold white-space-nowrap"> {{ headerMessage }}</span>
+        </div>
+    </ng-template>
+
+    <form [formGroup]="questionFormGroup">
+        <div class="form-field mb-4">
+            <label for="title">Title</label>
+            <input
+                formControlName="title"
+                type="text"
+                pInputText
+                id="title"
+                required
+                class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full" />
+            @if (isTitleInvalid) {
+                <small class="text-red-300">Title is required.</small>
+            }
+        </div>
+        <div class="form-field mb-4">
+            <label for="questionTopics">Topics</label>
+
+            <p-multiSelect
+                #topicSelector
+                required="true"
+                class="w-12"
+                [style]="{ width: '100%' }"
+                [options]="topics"
+                (onFilter)="onFilterTopics($event)"
+                formControlName="topics"
+                optionLabel="label"
+                optionValue="value"
+                placeholder="Select Topics">
+                <ng-template class="w-12 p-fluid" let-option pTemplate="item">
+                    <span>{{ option.label }}</span>
+                </ng-template>
+
+                <ng-template pTemplate="footer" class="w-12 p-fluid">
+                    @if (hasNoResultsFound) {
+                        <p-button
+                            class="w-12 p-fluid"
+                            type="button"
+                            label="Add as New Topic"
+                            icon="pi pi-plus"
+                            (click)="addNewTopic()" />
+                    }
+                </ng-template>
+            </p-multiSelect>
+            @if (isTopicsInvalid) {
+                <small class="text-red-300">Topic(s) is required.</small>
+            }
+        </div>
+        <div class="form-field mb-4">
+            <label for="questionTopics">Difficulty</label>
+
+            <p-dropdown
+                class="w-12"
+                autoWidth="false"
+                [required]="true"
+                [style]="{ width: '100%' }"
+                [options]="difficulties"
+                formControlName="difficulty"
+                optionLabel="label"
+                optionValue="value"
+                placeholder="Select Difficulty" />
+            @if (isDifficultyInvalid) {
+                <small class="text-red-300">Difficulty is required.</small>
+            }
+        </div>
+        <div class="form-field">
+            <label for="questionDescription">Description</label>
+            <textarea
+                formControlName="description"
+                [required]="true"
+                id="questionDescription"
+                type="text"
+                rows="6"
+                class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full">
+            </textarea>
+            @if (isDescriptionInvalid) {
+                <small class="text-red-300">Description is required.</small>
+            }
+        </div>
+    </form>
+
+    <ng-template pTemplate="footer">
+        <p-button label="Cancel" [text]="true" severity="secondary" (onClick)="dialogClose.emit()" />
+        <p-button
+            label="Save"
+            class="p-button-success"
+            (onClick)="saveQuestion()"
+            [disabled]="!questionFormGroup.valid" />
+    </ng-template>
+</p-dialog>

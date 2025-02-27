@@ -1,0 +1,42 @@
+<div class="container w-full sm:w-22rem">
+    <h2 class="mt-0 align-self-start">Log In</h2>
+
+    <form #loginForm="ngForm" (ngSubmit)="onSubmit()" class="form-container">
+        <div class="form-field">
+            <div class="flex flex-row align-items-center gap-2">
+                <i class="pi pi-user"></i>
+                <label for="username">Username</label>
+            </div>
+            <input pInputText required type="text" id="username" name="username" [(ngModel)]="userForm.username" />
+        </div>
+
+        <div class="form-field">
+            <div class="flex flex-row align-items-center gap-2">
+                <i class="pi pi-lock"></i>
+                <label for="password">Password</label>
+            </div>
+            <p-password
+                required
+                inputId="password"
+                name="password"
+                [(ngModel)]="userForm.password"
+                [toggleMask]="true"
+                [feedback]="false"
+                class="p-fluid" />
+        </div>
+
+        <p-button
+            type="submit"
+            [label]="isProcessingLogin ? '' : 'Log In'"
+            [loading]="isProcessingLogin"
+            [disabled]="!loginForm.valid"
+            styleClass="w-full justify-content-center" />
+    </form>
+
+    <p class="mt-4 mb-0">
+        Don't have an account?
+        <a routerLink="../register" class="text-blue-500 no-underline">Register</a>
+    </p>
+
+    <p-toast position="bottom-right" [breakpoints]="{ '920px': { width: '90%' } }" />
+</div>

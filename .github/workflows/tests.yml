@@ -1,0 +1,61 @@
+## https://docs.github.com/en/actions
+name: CI
+
+# Controls when the workflow will run
+on:
+  push:
+    branches: [ 'main' ]
+  pull_request:
+    branches: [ 'main' ]
+    types: [ 'opened', 'reopened', 'synchronize'] 
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+env:
+  node-version: '20.x'
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  build-service:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        service: [frontend, services/user, services/match]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.node-version }}
+      - name: Install Node Modules
+        run: cd ${{ matrix.service }} && npm ci
+      - name: Linting
+        run: cd ${{ matrix.service }} && npm run lint
+      - name: Build App
+        run: cd ${{ matrix.service }} && npm run build
+
+          
+  build-service-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        service: [services/question, services/collaboration, services/history]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.node-version }}
+      - name: Install Node Modules
+        run: cd ${{ matrix.service }} && npm ci
+      - name: Linting
+        run: cd ${{ matrix.service }} && npm run lint
+      - name: Build App
+        run: cd ${{ matrix.service }} && npm run build
+      - name: Run tests
+        run: cd ${{ matrix.service }} && npm run test

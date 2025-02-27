@@ -1,0 +1,52 @@
+.flex-50 {
+    flex: 0 50%;
+}
+
+::ng-deep .header {
+    font-size: 25px;
+    font-weight: 500;
+}
+
+::ng-deep .background {
+    background-color: #121212;
+}
+
+::ng-deep .container {
+    background-color: var(--surface-section);
+    border-radius: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+:host ::ng-deep .p-splitter {
+    border: 0px;
+}
+
+::ng-deep .b1 {
+    height: calc(100% - 80px);
+}
+
+:host .grid {
+    margin-right: 0rem;
+    margin-left: 0rem;
+    margin-top: 0rem;
+}
+
+:host ::ng-deep .p-splitter-gutter:hover {
+    background-color: #bbbbbb;
+    cursor: pointer; 
+}
+
+:host ::ng-deep .p-splitter-gutter {
+    transition: background-color 0.3s ease;
+}
+
+:host ::ng-deep .p-splitter-gutter-handle {
+    background-color: #bbbbbb;
+    cursor: pointer;
+}
+
+:host ::ng-deep .p-splitter-gutter-handle {
+    transition: background-color 0.3s ease;
+}

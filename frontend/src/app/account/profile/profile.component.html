@@ -1,0 +1,41 @@
+<div class="container w-full sm:w-22rem">
+    <div class="profile-container">
+        <h2 class="mt-0 align-self-start">Profile</h2>
+        <div class="profile-field">
+            <div class="flex flex-row align-items-center gap-2">
+                <i class="pi pi-user text-lg text-gray-400"></i>
+                <p class="my-0 text-lg">{{ user?.username ?? 'No Username Found' }}</p>
+            </div>
+        </div>
+        <div class="profile-field">
+            <div class="flex flex-row align-items-center gap-2">
+                <i class="pi pi-envelope text-lg text-gray-400"></i>
+                <p class="my-0 text-lg">{{ user?.email ?? 'No Email Found' }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="w-full">
+        <p-button
+            type="button"
+            label="Update Username and/or Email"
+            styleClass="mt-4 col-12 text-lg"
+            [outlined]="true"
+            (click)="onUpdateProfile()" />
+
+        <p-button
+            type="button"
+            label="Update Password"
+            styleClass="mt-2 col-12 text-lg"
+            [outlined]="true"
+            (click)="onUpdatePassword()" />
+    </div>
+
+    <app-edit-profile-dialog [isVisible]="showEditProfile" [user]="user" (dialogClose)="onEditProfileDialogClose()" />
+    <app-edit-password-dialog
+        [isVisible]="showEditPassword"
+        [user]="user"
+        (dialogClose)="onEditPasswordDialogClose()" />
+
+    <p-toast position="bottom-right" [breakpoints]="{ '920px': { width: '90%' } }" />
+</div>
